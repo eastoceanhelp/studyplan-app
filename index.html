@@ -35,6 +35,8 @@
   --line:rgba(35,33,28,.16);
   --line-soft:rgba(35,33,28,.08);
   --weekend:rgba(187,60,40,.05);
+  --sun-bg:rgba(187,60,40,.11);
+  --sat-bg:rgba(47,79,100,.10);
   --shadow:0 1px 0 rgba(255,255,255,.6),0 18px 40px -22px rgba(35,33,28,.5);
   --serif:"Zen Old Mincho",serif;
   --gothic:"Zen Kaku Gothic New",sans-serif;
@@ -59,6 +61,8 @@
   --line:rgba(236,228,210,.16);
   --line-soft:rgba(236,228,210,.08);
   --weekend:rgba(212,88,60,.09);
+  --sun-bg:rgba(212,88,60,.17);
+  --sat-bg:rgba(134,168,193,.15);
   --shadow:0 1px 0 rgba(255,255,255,.04),0 18px 40px -22px rgba(0,0,0,.7);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -230,6 +234,11 @@ thead th{
 .yt thead th.date{left:0;z-index:4;background:var(--paper-2);border-right:2px solid var(--line)}  /* top-left corner: stick to both top & left */
 .yt tr.wknd td.date{background:var(--paper-2)}
 .yt tr.wknd{background:var(--weekend)}
+.yt tr.sun{background:var(--sun-bg)}
+.yt tr.sat{background:var(--sat-bg)}
+.yt td.date .wd{color:var(--ink-faint);font-size:11px;font-weight:600}
+.yt tr.sun td.date .wd{color:var(--vermilion)}
+.yt tr.sat td.date .wd{color:var(--indigo)}
 .yt tr.today td.date{box-shadow:inset 3px 0 0 var(--vermilion)}
 .yt td.range{font-family:var(--serif);min-width:54px;cursor:grab}
 .yt td.range[draggable="true"]:active{cursor:grabbing}
@@ -1048,10 +1057,11 @@ function renderDetail(id){
   t+=`</tr></thead><tbody>`;
 
   days.forEach(d=>{
-    const wknd=isWeekend(parseD(d));
+    const wd=parseD(d).getDay();
+    const wkndCls = wd===0?'wknd sun':(wd===6?'wknd sat':'');
     const dt = dayTot[d];
-    t+=`<tr data-date="${d}" class="${wknd?'wknd':''} ${d===today?'today':''}">
-      <td class="date">${mdLabel(d)} <span class="muted" style="font-size:11px">${WD[parseD(d).getDay()]}</span></td>
+    t+=`<tr data-date="${d}" class="${wkndCls} ${d===today?'today':''}">
+      <td class="date">${mdLabel(d)} <span class="wd">${WD[wd]}</span></td>
       <td class="num daytot plan">${dt?dt.plan:''}</td>
       <td class="num daytot act">${dt&&dt.hasActual?dt.actual:''}</td>`;
     groups.forEach((g,gi)=>{
@@ -1508,7 +1518,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v17";
+const APP_VERSION = "v18";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
