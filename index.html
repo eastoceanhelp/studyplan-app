@@ -101,6 +101,7 @@ header.mast::after{content:"";position:absolute;left:0;right:0;bottom:-6px;heigh
 }
 .brand h1{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.06em;line-height:1}
 .brand .sub{font-family:var(--serif);font-size:11px;letter-spacing:.42em;color:var(--vermilion);text-transform:uppercase;margin-top:8px;padding-left:3px}
+.brand .sub .ver{margin-left:.7em;letter-spacing:.1em;color:var(--ink-faint);font-weight:600}
 .dateline{text-align:right;font-family:var(--serif);color:var(--ink-soft)}
 .dateline .big{font-size:21px;color:var(--ink);letter-spacing:.04em}
 .dateline .small{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
@@ -342,7 +343,7 @@ thead th{
       <div class="seal">学習<br/>計画</div>
       <div>
         <h1>学習計画手帳</h1>
-        <div class="sub">Study Almanac</div>
+        <div class="sub">Study Almanac<span class="ver" id="appVer"></span></div>
       </div>
     </div>
     <div class="dateline">
@@ -1506,6 +1507,9 @@ document.getElementById("themeBtn").addEventListener("click", ()=>{
 document.getElementById("globalExcludeBtn").addEventListener("click", openGlobalExclude);
 
 /* boot */
+/* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
+const APP_VERSION = "v17";
+document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
 repairCollisions();   // heal plans generated before the collision fix (keeps actuals)
