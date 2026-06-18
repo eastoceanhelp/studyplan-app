@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>学習計画手帳 — Study Almanac</title>
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#bb3c28" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="学習計画手帳" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#f4efe3;
+  --paper-2:#ece4d2;
+  --paper-3:#e4d9c2;
+  --card:#fbf7ee;
+  --input-bg:#ffffff;
+  --cell-fill:rgba(255,255,255,.55);
+  --noise-blend:multiply;
+  --noise-opacity:.5;
+  --ink:#23211c;
+  --ink-soft:#6a6353;
+  --ink-faint:#9a9079;
+  --vermilion:#bb3c28;
+  --vermilion-deep:#8c2a1c;
+  --indigo:#2f4f64;
+  --indigo-soft:#5a7588;
+  --gold:#a8843a;
+  --line:rgba(35,33,28,.16);
+  --line-soft:rgba(35,33,28,.08);
+  --weekend:rgba(187,60,40,.05);
+  --shadow:0 1px 0 rgba(255,255,255,.6),0 18px 40px -22px rgba(35,33,28,.5);
+  --serif:"Zen Old Mincho",serif;
+  --gothic:"Zen Kaku Gothic New",sans-serif;
+}
+:root[data-theme="dark"]{
+  --paper:#1b1915;
+  --paper-2:#252119;
+  --paper-3:#322c22;
+  --card:#221f19;
+  --input-bg:#2b271f;
+  --cell-fill:rgba(236,228,210,.06);
+  --noise-blend:overlay;
+  --noise-opacity:.3;
+  --ink:#ece3d1;
+  --ink-soft:#b6ab92;
+  --ink-faint:#857b66;
+  --vermilion:#d4583c;
+  --vermilion-deep:#a23a24;
+  --indigo:#86a8c1;
+  --indigo-soft:#5a7588;
+  --gold:#c2a05a;
+  --line:rgba(236,228,210,.16);
+  --line-soft:rgba(236,228,210,.08);
+  --weekend:rgba(212,88,60,.09);
+  --shadow:0 1px 0 rgba(255,255,255,.04),0 18px 40px -22px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--gothic);
+  color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 100% 0%,rgba(187,60,40,.05),transparent 55%),
+    radial-gradient(110% 90% at 0% 100%,rgba(47,79,100,.06),transparent 50%),
+    var(--paper);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1;
+  line-height:1.6;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  mix-blend-mode:var(--noise-blend);opacity:var(--noise-opacity);
+}
+.app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+header.mast{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:20px;padding:38px 0 18px;border-bottom:2px solid var(--ink);
+  position:relative;
+}
+header.mast::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--ink);opacity:.25}
+.brand{display:flex;align-items:center;gap:18px}
+.seal{
+  width:58px;height:58px;flex:none;border-radius:8px;
+  background:var(--vermilion);color:#f6f1e6;
+  display:grid;place-items:center;font-family:var(--serif);font-weight:900;
+  font-size:13px;line-height:1.05;text-align:center;letter-spacing:.04em;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),0 8px 18px -8px var(--vermilion-deep);
+  transform:rotate(-3deg);
+  writing-mode:vertical-rl;padding:6px 2px;
+}
+.brand h1{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.06em;line-height:1}
+.brand .sub{font-family:var(--serif);font-size:11px;letter-spacing:.42em;color:var(--vermilion);text-transform:uppercase;margin-top:8px;padding-left:3px}
+.dateline{text-align:right;font-family:var(--serif);color:var(--ink-soft)}
+.dateline .big{font-size:21px;color:var(--ink);letter-spacing:.04em}
+.dateline .small{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+
+/* ---------- nav ---------- */
+nav.tabs{display:flex;gap:4px;margin:22px 0 30px;flex-wrap:wrap}
+nav.tabs button{
+  font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.14em;
+  color:var(--ink-soft);background:transparent;border:none;cursor:pointer;
+  padding:10px 20px 9px;position:relative;border-radius:3px;transition:color .2s;
+}
+nav.tabs button .en{display:block;font-size:9px;letter-spacing:.28em;color:var(--ink-faint);margin-top:3px;font-weight:500}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.active{color:var(--vermilion)}
+nav.tabs button.active::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;
+  background:var(--vermilion);border-radius:3px;
+}
+nav.tabs .theme-toggle{
+  border:1.5px solid var(--line);border-radius:30px;
+  padding:0 16px;height:35px;background:var(--card);color:var(--ink-soft);
+  font-size:13px;letter-spacing:.1em;display:inline-flex;align-items:center;justify-content:center;gap:8px;overflow:hidden;
+}
+nav.tabs .theme-toggle::after{display:none}
+nav.tabs .theme-toggle:hover{color:var(--vermilion);border-color:var(--vermilion)}
+nav.tabs .nav-icon{margin-left:auto;padding:0 14px;margin-right:8px;font-size:16px;line-height:1}
+
+/* ---------- generic ---------- */
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+.section-head h2{font-family:var(--serif);font-weight:700;font-size:23px;letter-spacing:.08em;display:flex;align-items:center;gap:12px}
+.section-head h2::before{content:"";width:9px;height:22px;background:var(--vermilion);display:inline-block;border-radius:1px;transform:skewX(-12deg)}
+.muted{color:var(--ink-soft);font-size:13px}
+.btn{
+  font-family:var(--serif);font-weight:600;letter-spacing:.1em;font-size:14px;cursor:pointer;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);
+  padding:9px 18px;border-radius:5px;transition:transform .12s,box-shadow .2s,background .2s;
+  box-shadow:0 4px 0 -1px rgba(35,33,28,.25);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 -1px rgba(35,33,28,.25)}
+.btn.accent{background:var(--vermilion);border-color:var(--vermilion);box-shadow:0 4px 0 -1px var(--vermilion-deep)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn.ghost:hover{background:var(--paper-2)}
+.btn.sm{padding:5px 12px;font-size:12px;box-shadow:none}
+.tag{display:inline-block;font-size:11px;letter-spacing:.1em;padding:2px 9px;border-radius:20px;background:var(--paper-3);color:var(--ink-soft);font-weight:500}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.card{
+  background:linear-gradient(180deg,var(--card),var(--paper));
+  border:1px solid var(--line);border-radius:10px;padding:22px 22px 18px;position:relative;
+  box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 1px 0 rgba(255,255,255,.6),0 26px 46px -24px rgba(35,33,28,.55)}
+.card .swatch{position:absolute;top:0;left:0;width:6px;height:100%}
+.card h3{font-family:var(--serif);font-size:21px;letter-spacing:.04em;margin-bottom:4px;padding-left:6px}
+.card .meta{font-size:12px;color:var(--ink-soft);padding-left:6px;margin-bottom:14px}
+.card .stats{display:flex;gap:18px;padding-left:6px;border-top:1px dashed var(--line);padding-top:14px}
+.card .stat .n{font-family:var(--serif);font-size:24px;font-weight:700;line-height:1}
+.card .stat .l{font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase;margin-top:3px}
+.card .bar{height:6px;background:var(--paper-3);border-radius:4px;margin:14px 6px 0;overflow:hidden}
+.card .bar > i{display:block;height:100%;border-radius:4px;background:var(--vermilion)}
+.card.add{display:grid;place-items:center;border-style:dashed;background:transparent;box-shadow:none;min-height:180px}
+.card.add:hover{background:var(--paper-2)}
+.card.add .plus{font-family:var(--serif);font-size:40px;color:var(--vermilion);line-height:1}
+.card.add p{font-family:var(--serif);letter-spacing:.18em;color:var(--ink-soft);margin-top:8px}
+
+/* ---------- today ---------- */
+.today-grid{display:grid;grid-template-columns:1fr;gap:26px}
+.day-block .day-label{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.day-block.overdue .day-label{color:var(--vermilion)}
+.day-label .rule{flex:1;height:1px;background:var(--line)}
+.task{
+  display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);
+  border-left:5px solid var(--mat,var(--ink));border-radius:8px;padding:13px 18px;margin-bottom:9px;
+  transition:background .2s,opacity .2s;box-shadow:0 6px 16px -14px rgba(35,33,28,.6);
+}
+.task.done{opacity:.5;background:transparent}
+.task.done .t-range{text-decoration:line-through}
+.task .chk{
+  width:24px;height:24px;flex:none;border:2px solid var(--ink-soft);border-radius:6px;cursor:pointer;
+  display:grid;place-items:center;color:var(--paper);transition:.15s;
+}
+.task .chk:hover{border-color:var(--vermilion)}
+.task.done .chk{background:var(--vermilion);border-color:var(--vermilion)}
+.task .chk svg{width:14px;height:14px;opacity:0}
+.task.done .chk svg{opacity:1}
+.task .t-mat{font-family:var(--serif);font-weight:600;font-size:15px;min-width:120px}
+.task .t-type{font-size:11px;letter-spacing:.1em;padding:2px 10px;border-radius:20px;font-weight:700}
+.t-type.new{background:rgba(47,79,100,.14);color:var(--indigo)}
+.t-type.rev{background:rgba(187,60,40,.13);color:var(--vermilion)}
+.task .t-range{font-family:var(--serif);font-size:16px;letter-spacing:.03em;margin-left:auto}
+.task .t-count{font-size:12px;color:var(--ink-soft);min-width:54px;text-align:right}
+.empty-state{text-align:center;padding:70px 20px;color:var(--ink-soft)}
+.empty-state .mark{font-family:var(--serif);font-size:52px;color:var(--vermilion);opacity:.8}
+.empty-state p{font-family:var(--serif);letter-spacing:.1em;margin-top:6px}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line-soft);padding:7px 10px;text-align:center;white-space:nowrap}
+thead th{
+  background:var(--paper-2);font-family:var(--serif);font-weight:600;letter-spacing:.06em;
+  position:sticky;top:0;z-index:2;border-bottom:2px solid var(--line);
+}
+.matrix th.matname,.matrix td.matname{
+  position:sticky;left:0;z-index:3;background:var(--paper-2);text-align:left;
+  font-family:var(--serif);min-width:140px;border-right:2px solid var(--line);
+}
+.matrix thead th.matname{z-index:5}        /* top-left corner: above both sticky row & column */
+.matrix td.matname{background:var(--card);cursor:pointer;color:var(--indigo);font-weight:600}
+.matrix td.matname:hover{color:var(--vermilion)}
+.matrix .wknd{background:var(--weekend)}
+.matrix td .cell-n{font-family:var(--serif);font-size:15px}
+.matrix td.zero{color:var(--ink-faint)}
+.matrix td.today{box-shadow:inset 0 0 0 2px var(--vermilion)}
+.matrix thead th.today{color:var(--vermilion)}
+
+/* yojitsu table */
+.yt{width:auto;min-width:0}
+.yt th,.yt td{padding:5px 6px}
+.yt th.grp{background:var(--paper-3);font-size:12px}
+.yt th.grp.new{color:var(--indigo)}
+.yt th.grp.rev{color:var(--vermilion)}
+.yt td.date{font-family:var(--serif);text-align:left;min-width:58px;width:58px;position:sticky;left:0;background:var(--card);border-right:2px solid var(--line);z-index:1}
+.yt thead th.date{left:0;z-index:4;background:var(--paper-2);border-right:2px solid var(--line)}  /* top-left corner: stick to both top & left */
+.yt tr.wknd td.date{background:var(--paper-2)}
+.yt tr.wknd{background:var(--weekend)}
+.yt tr.today td.date{box-shadow:inset 3px 0 0 var(--vermilion)}
+.yt td.range{font-family:var(--serif);min-width:54px;cursor:grab}
+.yt td.range[draggable="true"]:active{cursor:grabbing}
+.yt td.range.has{background:var(--cell-fill)}
+.yt td.range.new.has{box-shadow:inset 0 0 0 1px rgba(47,79,100,.25)}
+.yt td.range.rev.has{box-shadow:inset 0 0 0 1px rgba(187,60,40,.2)}
+.yt td.range.drop-ok{outline:2px dashed var(--vermilion);outline-offset:-3px;background:rgba(187,60,40,.08)}
+.yt td.range.dragging{opacity:.35}
+/* ドラッグ中の追従バナー（スマホで指にセルが隠れて見えづらい対策） */
+#dragbanner{position:fixed;z-index:200;left:0;top:0;transform:translate(-50%,0);
+  pointer-events:none;opacity:0;transition:opacity .12s;
+  max-width:78vw;padding:8px 12px;border-radius:12px;
+  background:rgba(35,33,28,.94);color:#fff;font-size:13px;line-height:1.45;
+  box-shadow:0 6px 22px rgba(0,0,0,.35);text-align:center;white-space:nowrap}
+#dragbanner.on{opacity:1}
+#dragbanner .dbsrc{font-weight:700}
+#dragbanner .dbtgt{font-size:12px;margin-top:2px;opacity:.9}
+#dragbanner .dbnote{font-size:11px;opacity:.7}
+#dragbanner[data-state="ok"]{background:rgba(120,160,90,.96)}
+#dragbanner[data-state="ok"] .dbtgt{opacity:1}
+#dragbanner[data-state="no"]{background:rgba(187,60,40,.96)}
+#dragbanner[data-state="no"] .dbtgt{opacity:1}
+.yt td.range.editable{position:relative}
+.yt td.range.editable .editmark{margin-left:4px;font-size:10px;opacity:0;color:var(--vermilion);transition:opacity .15s}
+.yt td.range.editable:hover .editmark{opacity:.85}
+.yt td.range.editable:hover{outline:1px solid rgba(187,60,40,.35);outline-offset:-3px}
+.yt th.num,.yt td.num{padding:5px 2px;min-width:28px;width:28px}
+.yt .daytot{background:rgba(168,132,58,.1)}
+.yt td.daytot{font-family:var(--serif);font-weight:600}
+.yt td.daytot.act{color:var(--vermilion)}
+.yt .cellinput{width:34px;border:1px solid var(--line);background:var(--input-bg);text-align:center;font-family:var(--gothic);font-size:13px;color:var(--ink);border-radius:4px;box-shadow:inset 0 1px 2px rgba(35,33,28,.06);-moz-appearance:textfield;appearance:textfield;cursor:text}
+.yt .cellinput:hover{border-color:var(--vermilion)}
+.yt .cellinput::-webkit-outer-spin-button,.yt .cellinput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.yt .cellinput:focus{outline:none;background:var(--input-bg);box-shadow:inset 0 0 0 1.5px var(--vermilion)}
+.yt td.actual.full{background:rgba(120,160,90,.16)}
+.yt td.actual.over{background:rgba(187,60,40,.12)}
+.yt .colsep{border-left:2px solid var(--line)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+
+/* ---------- form / modal ---------- */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(35,33,28,.42);backdrop-filter:blur(3px);display:grid;place-items:start center;overflow-y:auto;padding:46px 18px}
+.modal{
+  background:linear-gradient(180deg,var(--card),var(--paper));width:min(620px,100%);border-radius:14px;
+  border:1px solid var(--line);box-shadow:0 30px 80px -30px rgba(35,33,28,.7);padding:30px 32px 26px;position:relative;
+}
+.modal::before{content:"";position:absolute;top:0;left:32px;right:32px;height:4px;background:var(--vermilion);border-radius:0 0 4px 4px}
+.modal h2{font-family:var(--serif);font-size:25px;letter-spacing:.06em;margin-bottom:4px}
+.modal .lead{color:var(--ink-soft);font-size:13px;margin-bottom:22px}
+.field{margin-bottom:18px}
+.field > label{display:block;font-family:var(--serif);font-size:13px;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:6px}
+.field input[type=text],.field input[type=number],.field input[type=date],.field select{
+  width:100%;font-family:var(--gothic);font-size:15px;color:var(--ink);background:var(--input-bg);
+  border:1.5px solid var(--line);border-radius:7px;padding:9px 12px;transition:border .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--vermilion);box-shadow:0 0 0 3px rgba(187,60,40,.12)}
+.field .hint{font-size:11px;color:var(--ink-faint);margin-top:5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.row3 .dash{font-family:var(--serif);font-size:20px;color:var(--ink-soft);padding-bottom:8px;text-align:center}
+.unit-seg{display:flex;gap:0;border:1.5px solid var(--line);border-radius:7px;overflow:hidden;width:fit-content}
+.unit-seg label{padding:8px 18px;font-family:var(--serif);font-size:14px;cursor:pointer;color:var(--ink-soft);background:var(--input-bg);transition:.15s}
+.unit-seg input{display:none}
+.unit-seg input:checked + label{background:var(--ink);color:var(--paper)}
+.reviews{display:flex;flex-direction:column;gap:8px}
+.rev-row{display:flex;align-items:center;gap:10px}
+.rev-row .rk{font-family:var(--serif);font-size:13px;color:var(--vermilion);min-width:54px}
+.rev-row input{width:90px}
+.rev-row .unit-d{font-size:12px;color:var(--ink-soft)}
+.rev-row .del{margin-left:auto;border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:18px;line-height:1}
+.rev-row .del:hover{color:var(--vermilion)}
+.add-rev{align-self:flex-start;margin-top:4px}
+.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.modal-actions .right{display:flex;gap:10px;margin-left:auto}
+.err{color:var(--vermilion);font-size:12px;margin-top:8px;min-height:14px}
+.wd-seg{display:flex;gap:6px;flex-wrap:wrap}
+.wd-btn{font-family:var(--serif);font-size:14px;width:38px;height:36px;border:1.5px solid var(--line);border-radius:7px;background:var(--input-bg);color:var(--ink-soft);cursor:pointer;transition:.15s}
+.wd-btn:hover{border-color:var(--vermilion)}
+.wd-btn.on{background:var(--vermilion);border-color:var(--vermilion);color:#fff}
+.xrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.chips:empty{display:none}
+.xchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--paper-3);border:1px solid var(--line);border-radius:20px;padding:4px 6px 4px 11px;color:var(--ink)}
+.xchip button{border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
+.xchip button:hover{color:var(--vermilion)}
+
+/* detail header */
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px;flex-wrap:wrap}
+.detail-head .crumb{font-family:var(--serif);font-size:13px;color:var(--ink-soft);cursor:pointer;letter-spacing:.08em;margin-bottom:8px;display:inline-flex;gap:6px;align-items:center}
+.detail-head .crumb:hover{color:var(--vermilion)}
+.detail-head h2{font-family:var(--serif);font-size:30px;letter-spacing:.06em;display:flex;align-items:center;gap:14px}
+.detail-head h2 .swatch{width:10px;height:30px;border-radius:2px}
+.detail-meta{display:flex;gap:22px;margin-top:10px;flex-wrap:wrap}
+.detail-meta .m .n{font-family:var(--serif);font-size:20px;font-weight:700}
+.detail-meta .m .l{font-size:10px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+@media(max-width:680px){
+  .brand h1{font-size:26px}.app{padding:0 16px 100px}
+  .task .t-mat{min-width:auto}.row2{grid-template-columns:1fr}
+}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="mast">
+    <div class="brand">
+      <div class="seal">学習<br/>計画</div>
+      <div>
+        <h1>学習計画手帳</h1>
+        <div class="sub">Study Almanac</div>
+      </div>
+    </div>
+    <div class="dateline">
+      <div class="big" id="todayBig">—</div>
+      <div class="small" id="todayEn">—</div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-view="today" class="active">今日<span class="en">Today</span></button>
+    <button data-view="plans">計画一覧<span class="en">Plans</span></button>
+    <button data-view="matrix">全体計画表<span class="en">Overview</span></button>
+    <button id="globalExcludeBtn" class="theme-toggle nav-icon" title="共通の除外日設定" aria-label="共通の除外日設定">⛭</button>
+    <button id="themeBtn" class="theme-toggle" title="テーマを切り替え">☾ 暗く</button>
+  </nav>
+
+  <main id="view"></main>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   Storage layer — abstracted so it can be swapped for a DB/REST backend.
+   Every persistence call goes through `DB`; nothing else touches storage.
+   ========================================================================= */
+const DB = (() => {
+  const KEY = "studyplan.v1";
+  let cache = null;
+  function load(){
+    if(cache) return cache;
+    try{ cache = JSON.parse(localStorage.getItem(KEY)) || {materials:[],entries:[]}; }
+    catch(e){ cache = {materials:[],entries:[]}; }
+    if(!cache.materials) cache.materials=[];
+    if(!cache.entries) cache.entries=[];
+    if(!cache.settings) cache.settings={};
+    if(!Array.isArray(cache.settings.excludeDates)) cache.settings.excludeDates=[];
+    if(!Array.isArray(cache.settings.excludeWeekdays)) cache.settings.excludeWeekdays=[];
+    return cache;
+  }
+  function persist(){ localStorage.setItem(KEY, JSON.stringify(cache)); }
+  return {
+    materials(){ return load().materials; },
+    entries(){ return load().entries; },
+    material(id){ return load().materials.find(m=>m.id===id); },
+    entriesFor(id){ return load().entries.filter(e=>e.materialId===id); },
+    settings(){ return load().settings; },
+    saveSettings(s){
+      const db = load();
+      db.settings = { excludeDates: s.excludeDates||[], excludeWeekdays: s.excludeWeekdays||[] };
+      persist();
+    },
+    saveMaterial(mat, entries){
+      const db = load();
+      const i = db.materials.findIndex(m=>m.id===mat.id);
+      if(i>=0) db.materials[i]=mat; else db.materials.push(mat);
+      db.entries = db.entries.filter(e=>e.materialId!==mat.id).concat(entries);
+      persist();
+    },
+    deleteMaterial(id){
+      const db = load();
+      db.materials = db.materials.filter(m=>m.id!==id);
+      db.entries = db.entries.filter(e=>e.materialId!==id);
+      persist();
+    },
+    updateEntry(id, patch){
+      const e = load().entries.find(x=>x.id===id);
+      if(e){ Object.assign(e, patch); persist(); }
+      return e;
+    },
+    exportData(){ return JSON.parse(JSON.stringify(load())); },
+    replaceAll(data){
+      cache = {
+        materials: data.materials||[], entries: data.entries||[],
+        settings: {
+          excludeDates: (data.settings&&data.settings.excludeDates)||[],
+          excludeWeekdays: (data.settings&&data.settings.excludeWeekdays)||[]
+        }
+      };
+      persist();
+    },
+    save(){ persist(); }
+  };
+})();
+
+/* =========================================================================
+   Date helpers (local-time, no UTC drift)
+   ========================================================================= */
+const WD = ["日","月","火","水","木","金","土"];
+const pad = n => String(n).padStart(2,"0");
+function parseD(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function fmtD(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function diffDays(a,b){ return Math.round((parseD(b)-parseD(a))/86400000); }
+function isWeekend(d){ const w=d.getDay(); return w===0||w===6; }
+function todayStr(){ return fmtD(new Date()); }
+function mdLabel(s){ const d=parseD(s); return (d.getMonth()+1)+"/"+d.getDate(); }
+function fullLabel(s){ const d=parseD(s); return (d.getMonth()+1)+"月"+d.getDate()+"日 ("+WD[d.getDay()]+")"; }
+
+/* =========================================================================
+   Plan generation
+   ========================================================================= */
+const PALETTE = ["#bb3c28","#2f4f64","#a8843a","#5d7a4f","#7a4f6d","#3f6e74","#9c5a2c","#4a5a8a"];
+
+function parseExclusions(str){
+  const set = new Set();
+  if(!str) return set;
+  str.split(/[\s,、，]+/).forEach(tok=>{
+    if(!tok) return;
+    const m = tok.match(/^(\d+)\s*[-~〜]\s*(\d+)$/);
+    if(m){ const a=+m[1],b=+m[2]; for(let i=Math.min(a,b);i<=Math.max(a,b);i++) set.add(i); }
+    else if(/^\d+$/.test(tok)) set.add(+tok);
+  });
+  return set;
+}
+function buildItems(mat){
+  const ex = parseExclusions(mat.excluded);
+  const items=[];
+  for(let n=mat.rangeStart;n<=mat.rangeEnd;n++) if(!ex.has(n)) items.push(n);
+  return items;
+}
+function rangeLabel(items){
+  if(!items.length) return "—";
+  const parts=[]; let s=items[0],p=items[0];
+  for(let i=1;i<items.length;i++){
+    if(items[i]===p+1){ p=items[i]; }
+    else{ parts.push(s===p?`${s}`:`${s}〜${p}`); s=p=items[i]; }
+  }
+  parts.push(s===p?`${s}`:`${s}〜${p}`);
+  return parts.join(", ");
+}
+function unitLabel(u){ return u==="page"?"ページ":"問"; }
+function parseLabelItems(label){
+  if(!label || label==="—") return [];
+  const out=[];
+  label.split(/[,、]/).forEach(part=>{
+    part=part.trim(); if(!part) return;
+    const m = part.match(/^(\d+)\s*[〜~\-]\s*(\d+)$/);
+    if(m){ for(let i=+m[1];i<=+m[2];i++) out.push(i); }
+    else if(/^\d+$/.test(part)) out.push(+part);
+  });
+  return out;
+}
+
+/* Returns a predicate (date-string -> bool) that is true on excluded days,
+   combining global settings with the material's own exclusions. */
+function buildDayExcluder(mat){
+  const g = DB.settings();
+  const dates = new Set([...(g.excludeDates||[]), ...((mat&&mat.excludeDates)||[])]);
+  const wds   = new Set([...(g.excludeWeekdays||[]), ...((mat&&mat.excludeWeekdays)||[])]);
+  return dstr => dates.has(dstr) || wds.has(parseD(dstr).getDay());
+}
+
+/* Generates the full set of study entries for a material. Pure function. */
+function generatePlan(mat){
+  const items = buildItems(mat);
+  const N = items.length;
+  const start = parseD(mat.startDate);
+  const totalDays = diffDays(mat.startDate, mat.endDate)+1;
+  if(N===0 || totalDays<=0) return [];
+
+  // Reserve the tail of the period for the final chunk's reviews so that
+  // reviews also finish by the end date: new study spans only the first
+  // (totalDays - maxReviewOffset) days.
+  const maxOffset = (mat.reviews&&mat.reviews.length)?Math.max(...mat.reviews):0;
+  const D = Math.max(1, totalDays - maxOffset);
+
+  // Day indices (within the new-study window) that may carry new study.
+  // Excluded days (holidays / weekdays the user opted out of) are skipped and
+  // their load is redistributed over the remaining days. If everything is
+  // excluded, fall back to using all days so a plan is still produced.
+  const isExcluded = buildDayExcluder(mat);
+  let avail = [];
+  for(let i=0;i<D;i++){ if(!isExcluded(fmtD(addDays(start,i)))) avail.push(i); }
+  if(!avail.length){ for(let i=0;i<D;i++) avail.push(i); }
+  const M = avail.length;
+
+  // Level new-study load per available day; remainder onto weekends first.
+  const base = Math.floor(N/M);
+  let rem = N - base*M;
+  const counts = {};
+  avail.forEach(i=>counts[i]=base);
+  const weekend=[], weekday=[];
+  avail.forEach(i=>{ (isWeekend(addDays(start,i))?weekend:weekday).push(i); });
+  const order = weekend.concat(weekday);
+  let oi=0;
+  while(rem>0){ counts[order[oi % order.length]]++; oi++; rem--; }
+
+  // The 予実表 grid has exactly one cell per (date, group), where group is
+  // "new" or "r<reviewIndex>". When reviews are pushed off excluded days, two
+  // reviews of the SAME index (from different chunks) can land on the same day
+  // and collide — the grid then shows only one but the day-total counts both,
+  // so the per-day planned sum looks wrong. Track occupied (date|group) cells
+  // and push a review forward until it lands on a day that is neither excluded
+  // nor already taken by the same group, keeping one entry per cell.
+  const occupied = new Set();
+  const entries=[]; let pos=0, chunk=0;
+  for(const i of avail){
+    const c = counts[i];
+    if(c<=0) continue;
+    const slice = items.slice(pos, pos+c); pos+=c;
+    if(!slice.length) continue;
+    const day = addDays(start,i);
+    const label = rangeLabel(slice);
+    occupied.add(fmtD(day)+"|new");
+    entries.push({
+      id:`${mat.id}|c${chunk}|new`, materialId:mat.id, chunkId:chunk,
+      type:"new", reviewIndex:0, date:fmtD(day),
+      label, items:slice.slice(), planCount:slice.length, actualCount:null, done:false
+    });
+    (mat.reviews||[]).forEach((off, ri)=>{
+      // Place the review at its offset, then push it forward off any excluded
+      // day or already-occupied same-group cell to the next free allowed day.
+      const gkey = "r"+(ri+1);
+      let rdate = addDays(day, off);
+      for(let guard=0; (isExcluded(fmtD(rdate))||occupied.has(fmtD(rdate)+"|"+gkey)) && guard<2000; guard++) rdate = addDays(rdate, 1);
+      occupied.add(fmtD(rdate)+"|"+gkey);
+      entries.push({
+        id:`${mat.id}|c${chunk}|r${ri}`, materialId:mat.id, chunkId:chunk,
+        type:"review", reviewIndex:ri+1, date:fmtD(rdate),
+        label, items:slice.slice(), planCount:slice.length, actualCount:null, done:false
+      });
+    });
+    chunk++;
+  }
+  return entries;
+}
+const CIRCLED = ["","①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩"];
+function reviewName(i){ return "復習"+(CIRCLED[i]||i); }
+
+/* One-time data repair for plans generated before the collision fix.
+   Old generatePlan could place two reviews of the SAME index (different chunks)
+   on the same day, which the 予実表 grid (one cell per date×group) can't show,
+   making the per-day planned total look wrong. This pushes the duplicates
+   forward to the next free, non-excluded day — WITHOUT regenerating, so any
+   manually entered actuals are preserved. Idempotent; returns #entries moved. */
+function repairCollisions(){
+  let moved = 0;
+  DB.materials().forEach(m=>{
+    const isExcluded = buildDayExcluder(m);
+    const byGroup = {};
+    DB.entriesFor(m.id).forEach(e=>{
+      const g = e.type==="new" ? "new" : ("r"+e.reviewIndex);
+      (byGroup[g] = byGroup[g] || []).push(e);
+    });
+    Object.keys(byGroup).forEach(g=>{
+      // Stable order: earlier chunk keeps its slot, later ones move forward.
+      const list = byGroup[g].sort((a,b)=> (a.chunkId-b.chunkId) || a.date.localeCompare(b.date));
+      const occupied = new Set();
+      list.forEach(e=>{
+        if(g==="new"){ occupied.add(e.date); return; } // new study never moves
+        let d = e.date, guard = 0;
+        while((occupied.has(d) || isExcluded(d)) && guard<2000){ d = fmtD(addDays(parseD(d),1)); guard++; }
+        if(d!==e.date){ DB.updateEntry(e.id, {date:d}); moved++; }
+        occupied.add(d);
+      });
+    });
+  });
+  if(moved) DB.save();
+  return moved;
+}
+
+/* Pure helper for editChunkCount. Given the ordered list of per-chunk item
+   counts, set chunk k to `newCount` while keeping the total N fixed: chunks
+   before k are untouched; chunks after k keep their old counts but reflow to
+   absorb the difference — the last surviving chunk grows when k shrinks, and
+   later chunks are consumed (dropped) when k grows. Returns the new counts
+   (its length may be shorter than the input = trailing chunks removed). */
+function reflowCounts(counts, k, newCount, N){
+  const head = counts.slice(0, k);
+  const used = head.reduce((s,c)=>s+c, 0);
+  newCount = Math.max(0, Math.round(newCount)||0);
+  newCount = Math.min(newCount, N - used);          // can't exceed what's left
+  if(newCount < 1) newCount = Math.min(1, N - used); // keep ≥1 problem if any room
+  const out = head.concat([newCount]);
+  let R = N - used - newCount;                       // items left for chunks after k
+  const later = counts.slice(k + 1);
+  for(let j=0; j<later.length && R>0; j++){
+    const take = Math.min(later[j], R);
+    out.push(take); R -= take;
+  }
+  if(R > 0){                                         // leftover items (k shrank)
+    if(out.length > k + 1) out[out.length - 1] += R; // last surviving later chunk grows
+    else out[k] += R;                                // no later chunks: this one grows
+  }
+  return out;
+}
+
+/* Edit the planned size (item count) of one chunk, preserving the material's
+   total. Subsequent chunks reflow (content shifts; the last absorbs the
+   difference; chunks emptied out are removed) and every affected chunk's
+   reviews re-sync their range/label/count. Dates and entered actuals are kept
+   in place (position-based) — unlike 再生成 which discards them. Reads/writes
+   DB. Returns true if anything changed. */
+function editChunkCount(materialId, chunkId, newCount){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const items = buildItems(mat);
+  const N = items.length;
+  const es = DB.entriesFor(materialId);
+  const ids = [...new Set(es.map(e=>e.chunkId))].sort((a,b)=>a-b);
+  const k = ids.indexOf(chunkId);
+  if(k < 0 || N === 0) return false;
+
+  const byChunk = {};
+  ids.forEach(id=> byChunk[id] = es.filter(e=>e.chunkId===id));
+  const counts = ids.map(id=>{
+    const nw = byChunk[id].find(e=>e.type==="new");
+    return nw ? nw.planCount : (byChunk[id][0] ? byChunk[id][0].planCount : 0);
+  });
+
+  const newCounts = reflowCounts(counts, k, newCount, N);
+
+  let pos = 0, changed = false;
+  const kept = [];
+  for(let i=0; i<ids.length; i++){
+    const group = byChunk[ids[i]];
+    if(i >= newCounts.length || newCounts[i] <= 0){ changed = true; continue; } // chunk dropped
+    const slice = items.slice(pos, pos + newCounts[i]); pos += slice.length;
+    const label = rangeLabel(slice);
+    group.forEach(e=>{
+      if(e.label !== label || e.planCount !== slice.length) changed = true;
+      e.items = slice.slice();
+      e.label = label;
+      e.planCount = slice.length;
+      e.done = e.actualCount != null && e.actualCount >= e.planCount;
+      kept.push(e);
+    });
+  }
+  if(changed) DB.saveMaterial(mat, kept);
+  return changed;
+}
+
+/* Pure helper for moveChunk. Move the whole chunk `chunkId` (its 新規 + every
+   復習) so the NEW study lands EXACTLY on targetDate; each review keeps its
+   current offset from the new study (the chunk shifts as a block). The new study
+   is placed directly on the drop target — it never silently jumps elsewhere — so
+   invalid targets are REJECTED (returns []) rather than relocated: an excluded
+   day carries no study, and another chunk's new must not share the day (the grid
+   holds one new per day). Reviews are auto-derived, so any review landing on an
+   excluded day or a cell already taken by ANOTHER chunk's same group is pushed
+   forward to the next free allowed day (one entry per (date, group)). Returns the
+   list of {id, date} for entries whose date changed (empty if nothing moves). */
+function planChunkMove(entries, chunkId, targetDate, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const moving = entries.filter(e=>e.chunkId===chunkId);
+  const nw = moving.find(e=>e.type==="new");
+  if(!nw) return [];
+  if(targetDate===nw.date) return [];                       // no move
+  // Reject invalid drop targets for the new study (stay put rather than relocate).
+  if(isExcluded(targetDate)) return [];
+  if(entries.some(e=>e.chunkId!==chunkId && e.type==="new" && e.date===targetDate)) return [];
+  const delta = diffDays(nw.date, targetDate);
+  // Cells already taken by entries that are NOT moving (one entry per date×group).
+  const occupied = new Set();
+  entries.forEach(e=>{ if(e.chunkId!==chunkId) occupied.add(e.date+"|"+gkey(e)); });
+  occupied.add(targetDate+"|new");                          // new lands exactly here
+  const updates = [{id:nw.id, date:targetDate}];
+  // Reviews follow (same delta), pushed off excluded/occupied days to the next free.
+  moving.filter(e=>e.type==="review").sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+    const g = gkey(e);
+    let d = fmtD(addDays(parseD(e.date), delta));
+    for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<2000; guard++)
+      d = fmtD(addDays(parseD(d), 1));
+    occupied.add(d+"|"+g);
+    if(d !== e.date) updates.push({id:e.id, date:d});
+  });
+  return updates;
+}
+
+/* Move a whole chunk by dragging its 新規 cell to targetDate (see planChunkMove).
+   Reviews follow keeping their offset; only dates change — labels/counts/actuals
+   are untouched. Reads/writes DB. Returns true if anything moved. */
+function moveChunk(materialId, chunkId, targetDate){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const updates = planChunkMove(DB.entriesFor(materialId), chunkId, targetDate, buildDayExcluder(mat));
+  if(!updates.length) return false;
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return true;
+}
+
+/* Pure helper for swapChunks. Swap chunks `chunkA` and `chunkB` so each NEW study
+   lands on the OTHER chunk's day; every 復習 follows its own chunk keeping its
+   offset (both chunks shift as blocks). Both targets already hold a new study, so
+   neither is an excluded day — the new studies simply exchange dates. Reviews that
+   collide with an excluded day, a cell taken by a NON-swapping chunk's same group,
+   or the other moving chunk's review are pushed forward to the next free allowed
+   day (one entry per date×group). Returns {id,date} for entries whose date changed
+   (empty for a no-op). Symmetric: swapping (A,B) equals swapping (B,A). */
+function planChunkSwap(entries, chunkA, chunkB, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  if(chunkA===chunkB) return [];
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const newA = entries.find(e=>e.chunkId===chunkA && e.type==="new");
+  const newB = entries.find(e=>e.chunkId===chunkB && e.type==="new");
+  if(!newA || !newB || newA.date===newB.date) return [];
+  const delta = {};
+  delta[chunkA] = diffDays(newA.date, newB.date);   // A → B's day
+  delta[chunkB] = diffDays(newB.date, newA.date);   // B → A's day
+  // Cells already taken by entries that are NOT swapping (one entry per date×group).
+  const occupied = new Set();
+  entries.forEach(e=>{ if(e.chunkId!==chunkA && e.chunkId!==chunkB) occupied.add(e.date+"|"+gkey(e)); });
+  const updates = [];
+  occupied.add(newB.date+"|new"); updates.push({id:newA.id, date:newB.date});
+  occupied.add(newA.date+"|new"); updates.push({id:newB.id, date:newA.date});
+  // Both chunks' reviews follow (each by its chunk's delta), earliest target first,
+  // pushed off excluded/occupied days to the next free.
+  entries.filter(e=>(e.chunkId===chunkA||e.chunkId===chunkB) && e.type==="review")
+    .map(e=>({e, t:fmtD(addDays(parseD(e.date), delta[e.chunkId]))}))
+    .sort((x,y)=>x.t.localeCompare(y.t))
+    .forEach(({e,t})=>{
+      const g=gkey(e); let d=t;
+      for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<2000; guard++)
+        d = fmtD(addDays(parseD(d), 1));
+      occupied.add(d+"|"+g);
+      if(d !== e.date) updates.push({id:e.id, date:d});
+    });
+  return updates;
+}
+
+/* Swap two whole chunks by dragging one 新規 cell onto another's day (see
+   planChunkSwap). Only dates change; labels/counts/actuals are untouched.
+   Reads/writes DB. Returns true if anything moved. */
+function swapChunks(materialId, chunkA, chunkB){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const updates = planChunkSwap(DB.entriesFor(materialId), chunkA, chunkB, buildDayExcluder(mat));
+  if(!updates.length) return false;
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return true;
+}
+
+/* =========================================================================
+   App state + rendering
+   ========================================================================= */
+const state = { view:"today", selected:null };
+const viewEl = document.getElementById("view");
+
+function setDateline(){
+  const d=new Date();
+  document.getElementById("todayBig").textContent = `${d.getFullYear()}年 ${d.getMonth()+1}月${d.getDate()}日 (${WD[d.getDay()]})`;
+  const en = d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  document.getElementById("todayEn").textContent = en;
+}
+
+document.getElementById("tabs").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b || !b.dataset.view) return;
+  state.view=b.dataset.view; state.selected=null;
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));
+  render();
+});
+
+function render(){
+  setDateline();
+  if(state.selected) return renderDetail(state.selected);
+  if(state.view==="today") return renderToday();
+  if(state.view==="plans") return renderPlans();
+  if(state.view==="matrix") return renderMatrix();
+}
+
+/* ---------- TODAY ---------- */
+function renderToday(){
+  const today = todayStr();
+  const mats = Object.fromEntries(DB.materials().map(m=>[m.id,m]));
+  const pending = DB.entries().filter(e=>!e.done && e.date<=today);
+  const overdue = pending.filter(e=>e.date<today).sort((a,b)=>a.date.localeCompare(b.date));
+  const now = pending.filter(e=>e.date===today);
+
+  let html = `<div class="fade"><div class="section-head"><h2>今日の学習</h2>
+    <span class="muted">${fullLabel(today)}</span></div>`;
+
+  if(!DB.materials().length){
+    html += emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return;
+  }
+  if(!pending.length){
+    html += `<div class="empty-state"><div class="mark">了</div>
+      <p>本日およびそれ以前にやり残した学習はありません。</p>
+      <p class="muted">よく出来ました。明日の計画は「全体計画表」から確認できます。</p></div></div>`;
+    viewEl.innerHTML=html; return;
+  }
+  const block = (title, list, cls) => {
+    if(!list.length) return "";
+    let s=`<div class="day-block ${cls}"><div class="day-label">${title}<span class="rule"></span><span class="muted">${list.length}件</span></div>`;
+    list.forEach(e=>{
+      const m=mats[e.materialId]; if(!m) return;
+      const typeCls = e.type==="new"?"new":"rev";
+      const typeTxt = e.type==="new"?"新規":reviewName(e.reviewIndex);
+      s+=`<div class="task" data-id="${e.id}" style="--mat:${m.color}">
+        <div class="chk" data-act="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="t-mat">${esc(m.name)}</span>
+        <span class="t-type ${typeCls}">${typeTxt}</span>
+        <span class="t-range">${e.label}<span class="muted" style="font-family:var(--gothic);font-size:11px"> ${unitLabel(m.unit)}</span></span>
+        <span class="t-count">${e.planCount}${unitLabel(m.unit)}</span>
+      </div>`;
+    });
+    return s+`</div>`;
+  };
+  html += `<div class="today-grid">`;
+  html += block(`やり残し`, overdue, "overdue");
+  html += block(`本日分`, now, "");
+  html += `</div></div>`;
+  viewEl.innerHTML = html;
+
+  viewEl.querySelectorAll(".task").forEach(t=>{
+    t.querySelector(".chk").addEventListener("click", ()=>{
+      const e = DB.entries().find(x=>x.id===t.dataset.id);
+      const done = !e.done;
+      DB.updateEntry(e.id, {done, actualCount: done ? e.planCount : null});
+      renderToday();
+    });
+  });
+}
+
+/* ---------- PLANS ---------- */
+function emptyPlans(){
+  return `<div class="empty-state"><div class="mark"><svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5C10.7 4.6 8.8 4 6.5 4c-1 0-2 .1-2.5.3v13.4c.6-.2 1.5-.3 2.5-.3 2.3 0 4.2.6 5.5 1.6"/><path d="M12 5.5C13.3 4.6 15.2 4 17.5 4c1 0 2 .1 2.5.3v13.4c-.6-.2-1.5-.3-2.5-.3-2.3 0-4.2.6-5.5 1.6z"/><path d="M12 5.5V19"/></svg></div>
+    <p>まだ教材が登録されていません。</p>
+    <p class="muted">最初の学習計画を立てましょう。</p>
+    <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn accent" data-act="new">＋ 教材を追加</button>
+      <button class="btn ghost" data-act="sample">サンプルを作成</button>
+      <button class="btn ghost" data-act="import">⤒ バックアップから復元</button>
+    </div></div>`;
+}
+function bindEmpty(){
+  // The "教材を追加" and "インポート" actions appear both in the header and in
+  // the empty-state body, so bind ALL matches (querySelectorAll), not just the first.
+  viewEl.querySelectorAll('[data-act="new"]').forEach(n=>n.onclick=()=>openForm());
+  viewEl.querySelectorAll('[data-act="import"]').forEach(im=>im.onclick=importData);
+  const s=viewEl.querySelector('[data-act="sample"]'); if(s) s.onclick=createSample;
+}
+function renderPlans(){
+  const mats = DB.materials();
+  let html = `<div class="fade"><div class="section-head"><h2>学習計画一覧</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost sm" data-act="export">⤓ エクスポート</button>
+      <button class="btn ghost sm" data-act="import">⤒ インポート</button>
+      <button class="btn accent" data-act="new">＋ 教材を追加</button>
+    </div></div>`;
+  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
+
+  html += `<div class="cards">`;
+  mats.forEach(m=>{
+    const es = DB.entriesFor(m.id);
+    const total = es.reduce((s,e)=>s+e.planCount,0);
+    const doneSum = es.reduce((s,e)=>s+(e.done?e.planCount:0),0);
+    const pct = total? Math.round(doneSum/total*100):0;
+    const reviews = (m.reviews||[]).length;
+    html += `<div class="card" data-id="${m.id}">
+      <span class="swatch" style="background:${m.color}"></span>
+      <h3>${esc(m.name)}</h3>
+      <div class="meta">${mdLabel(m.startDate)} 〜 ${mdLabel(m.endDate)} ・ ${m.rangeStart}〜${m.rangeEnd}${unitLabel(m.unit)} ・ 復習${reviews}回</div>
+      <div class="stats">
+        <div class="stat"><div class="n">${total}</div><div class="l">総${unitLabel(m.unit)}数</div></div>
+        <div class="stat"><div class="n" style="font-size:20px">${doneSum}/${total}</div><div class="l">タスク</div></div>
+        <div class="stat"><div class="n">${pct}<span style="font-size:13px">%</span></div><div class="l">達成</div></div>
+      </div>
+      <div class="bar"><i style="width:${pct}%;background:${m.color}"></i></div>
+    </div>`;
+  });
+  html += `<div class="card add" data-act="new"><div style="text-align:center"><div class="plus">＋</div><p>教材を追加</p></div></div>`;
+  html += `</div></div>`;
+  viewEl.innerHTML = html;
+
+  viewEl.querySelectorAll(".card[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  viewEl.querySelectorAll('[data-act="new"]').forEach(b=>b.onclick=()=>openForm());
+  const exB=viewEl.querySelector('[data-act="export"]'); if(exB) exB.onclick=exportData;
+  const imB=viewEl.querySelector('[data-act="import"]'); if(imB) imB.onclick=importData;
+}
+
+/* ---------- MATRIX (overview) ---------- */
+function renderMatrix(){
+  const mats = DB.materials();
+  let html = `<div class="fade"><div class="section-head"><h2>全体計画表</h2>
+    <span class="muted">教材名をクリックすると予実表を開きます</span></div>`;
+  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
+
+  const all = DB.entries();
+  if(!all.length){ html+=`<p class="muted">計画がありません。</p></div>`; viewEl.innerHTML=html; return; }
+  let min=all[0].date, max=all[0].date;
+  all.forEach(e=>{ if(e.date<min)min=e.date; if(e.date>max)max=e.date; });
+  const days=[]; for(let i=0;i<=diffDays(min,max);i++) days.push(fmtD(addDays(parseD(min),i)));
+  const today = todayStr();
+
+  // sum per material per date
+  const sum = {};
+  all.forEach(e=>{ (sum[e.materialId]=sum[e.materialId]||{})[e.date]=(sum[e.materialId][e.date]||0)+e.planCount; });
+
+  let t = `<div class="table-wrap"><table class="matrix"><thead><tr><th class="matname">教材 ＼ 日付</th>`;
+  days.forEach(d=>{
+    const wd=parseD(d).getDay();
+    t+=`<th class="${isWeekend(parseD(d))?'wknd':''} ${d===today?'today':''}">${mdLabel(d)}<br/><span class="muted" style="font-size:10px">${WD[wd]}</span></th>`;
+  });
+  t+=`</tr></thead><tbody>`;
+  mats.forEach(m=>{
+    t+=`<tr><td class="matname" data-id="${m.id}"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</td>`;
+    days.forEach(d=>{
+      const v=(sum[m.id]||{})[d]||0;
+      const cls=[isWeekend(parseD(d))?'wknd':'', d===today?'today':'', v?'':'zero'].join(' ');
+      t+=`<td class="${cls}">${v?`<span class="cell-n">${v}</span>`:'·'}</td>`;
+    });
+    t+=`</tr>`;
+  });
+  // total row
+  t+=`<tr><td class="matname" style="font-weight:700">合計</td>`;
+  days.forEach(d=>{
+    let v=0; mats.forEach(m=>v+=(sum[m.id]||{})[d]||0);
+    t+=`<td class="${isWeekend(parseD(d))?'wknd':''} ${d===today?'today':''} ${v?'':'zero'}">${v?`<span class="cell-n">${v}</span>`:'·'}</td>`;
+  });
+  t+=`</tr></tbody></table></div>`;
+  html += t + `<p class="muted" style="margin-top:12px">数字はその日に学習する予定の合計${" "}数（新規＋復習）です。</p></div>`;
+  viewEl.innerHTML = html;
+  viewEl.querySelectorAll("td.matname[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+}
+
+/* Follow-banner shown while dragging a 予実表 cell. On phones the dragged cell
+   sits under the finger, so this pinned pill (offset above the pointer) tells
+   you what you're moving and which day it will land on. Created once; a single
+   document-level dragover keeps it pinned to the pointer. pointer-events:none
+   so it never interferes with the drag. */
+const dragBanner = (()=>{
+  let el=null, active=false;
+  function ensure(){
+    if(el) return el;
+    el=document.createElement("div"); el.id="dragbanner";
+    document.body.appendChild(el);
+    document.addEventListener("dragover", ev=>{ if(active) move(ev.clientX, ev.clientY); });
+    document.addEventListener("drop", hide);
+    document.addEventListener("dragend", hide);
+    return el;
+  }
+  function move(x,y){
+    if(!x && !y) return;            // some browsers report 0,0 on the final event
+    const e=ensure();
+    const left=Math.min(Math.max(x, 70), window.innerWidth-70);
+    e.style.left=left+"px";
+    e.style.top=Math.max(8, y-64)+"px";
+  }
+  function show(srcHtml){ const e=ensure(); active=true; e.removeAttribute("data-state"); e.innerHTML=srcHtml; e.classList.add("on"); }
+  function target(html, ok){ if(!active||!el) return; const t=el.querySelector(".dbtgt"); if(t) t.innerHTML=html;
+    if(ok==null) el.removeAttribute("data-state"); else el.dataset.state=ok?"ok":"no"; }
+  function hide(){ active=false; if(el) el.classList.remove("on"); }
+  return {show, target, hide, move};
+})();
+
+/* ---------- DETAIL (予実表) ---------- */
+function renderDetail(id){
+  const m = DB.material(id);
+  if(!m){ state.selected=null; return render(); }
+  const es = DB.entriesFor(id);
+  const reviews = (m.reviews||[]);
+  const total = es.reduce((s,e)=>s+e.planCount,0);
+  const doneSum = es.reduce((s,e)=>s+(e.done?e.planCount:0),0);
+  const pct = total? Math.round(doneSum/total*100):0;
+  const actualSum = es.reduce((s,e)=>s+(e.actualCount||0),0);
+
+  // date span (continuous) so plans can be dragged onto empty days
+  let min=es.length?es[0].date:m.startDate, max=es.length?es[0].date:m.endDate;
+  es.forEach(e=>{ if(e.date<min)min=e.date; if(e.date>max)max=e.date; });
+  if(m.startDate<min)min=m.startDate; if(m.endDate>max && es.length===0)max=m.endDate;
+  const days=[]; for(let i=0;i<=diffDays(min,max);i++) days.push(fmtD(addDays(parseD(min),i)));
+  const today=todayStr();
+
+  // index entries by date+group, and accumulate per-day totals
+  const byCell={}, dayTot={};
+  es.forEach(e=>{
+    const g = e.type==="new"?"new":("r"+e.reviewIndex);
+    (byCell[e.date]=byCell[e.date]||{})[g]=e;
+    const t = dayTot[e.date]=dayTot[e.date]||{plan:0,actual:0,hasActual:false,has:false};
+    t.plan+=e.planCount; t.has=true;
+    if(e.actualCount!=null){ t.actual+=e.actualCount; t.hasActual=true; }
+  });
+
+  let html = `<div class="fade"><div class="detail-head">
+    <div>
+      <div class="crumb" data-act="back">‹ 計画一覧へ戻る</div>
+      <h2><span class="swatch" style="background:${m.color}"></span>${esc(m.name)}</h2>
+      <div class="detail-meta">
+        <div class="m"><div class="n">${mdLabel(m.startDate)}–${mdLabel(m.endDate)}</div><div class="l">期間</div></div>
+        <div class="m"><div class="n">${m.rangeStart}〜${m.rangeEnd}</div><div class="l">範囲(${unitLabel(m.unit)})</div></div>
+        <div class="m"><div class="n">${reviews.length}</div><div class="l">復習回数</div></div>
+        <div class="m"><div class="n">${total}</div><div class="l">総${unitLabel(m.unit)}数</div></div>
+        <div class="m"><div class="n" id="progN" style="font-size:18px">${doneSum}/${total}<span style="font-size:12px"> (${pct}%)</span></div><div class="l">進捗</div></div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn ghost sm" data-act="edit">編集</button>
+      <button class="btn ghost sm" data-act="regen">再生成</button>
+      <button class="btn ghost sm" data-act="del" style="color:var(--vermilion)">削除</button>
+    </div>
+  </div>`;
+
+  // table
+  const groups = [{key:"new",label:"新規",cls:"new"}].concat(reviews.map((off,i)=>({key:"r"+(i+1),label:reviewName(i+1)+`<br><span class="muted" style="font-size:10px">${off}日後</span>`,cls:"rev"})));
+  let t = `<div class="table-wrap"><table class="yt"><thead><tr><th rowspan="2" class="date" style="vertical-align:middle">日付</th>`;
+  t+=`<th colspan="2" class="grp daytot">日計</th>`;
+  groups.forEach(g=>{ t+=`<th colspan="3" class="grp ${g.cls} colsep">${g.label}</th>`; });
+  t+=`</tr><tr>`;
+  t+=`<th class="num daytot" style="font-size:11px">予</th><th class="num daytot" style="font-size:11px">実</th>`;
+  groups.forEach(g=>{ t+=`<th class="colsep" style="font-size:11px">範囲</th><th class="num" style="font-size:11px">予</th><th class="num" style="font-size:11px">実</th>`; });
+  t+=`</tr></thead><tbody>`;
+
+  days.forEach(d=>{
+    const wknd=isWeekend(parseD(d));
+    const dt = dayTot[d];
+    t+=`<tr data-date="${d}" class="${wknd?'wknd':''} ${d===today?'today':''}">
+      <td class="date">${mdLabel(d)} <span class="muted" style="font-size:11px">${WD[parseD(d).getDay()]}</span></td>
+      <td class="num daytot plan">${dt?dt.plan:''}</td>
+      <td class="num daytot act">${dt&&dt.hasActual?dt.actual:''}</td>`;
+    groups.forEach((g,gi)=>{
+      const e = (byCell[d]||{})[g.key];
+      const sep = 'colsep';
+      if(e){
+        const aCls = e.actualCount==null?'':(e.actualCount>=e.planCount?'full':(e.actualCount>e.planCount?'over':''));
+        const editable = g.key==="new" ? ' editable' : '';
+        t+=`<td class="range ${g.cls} has ${sep}${editable}" draggable="true" data-id="${e.id}" data-date="${d}" data-group="${g.key}" data-chunk="${e.chunkId}"${editable?` title="クリックで範囲・問数を編集"`:''}>${e.label}${editable?'<span class="editmark">✎</span>':''}</td>`;
+        t+=`<td class="num">${e.planCount}</td>`;
+        t+=`<td class="actual num ${aCls}"><input class="cellinput" data-id="${e.id}" data-f="actualCount" type="number" min="0" value="${e.actualCount==null?'':e.actualCount}"></td>`;
+      }else{
+        t+=`<td class="range ${g.cls} ${sep}" data-date="${d}" data-group="${g.key}"></td><td class="num"></td><td class="num"></td>`;
+      }
+    });
+    t+=`</tr>`;
+  });
+  t+=`</tbody></table></div>`;
+  html += t;
+  html += `<div class="legend">
+    <span><i style="background:rgba(47,79,100,.5)"></i>新規学習</span>
+    <span><i style="background:rgba(187,60,40,.5)"></i>復習</span>
+    <span><i style="background:rgba(120,160,90,.45)"></i>実績が予定到達</span>
+    <span>📦 新規セルをドラッグ＝その日のチャンク（復習も含めて）まとめて移動（復習はオフセット維持／他の新規がある日へ落とすと2つのチャンクを入れ替え／除外日には置けません）</span>
+    <span>↕ 復習セルをドラッグ＝その復習だけ別日へ移動</span>
+    <span>✎ 新規学習の範囲セルをクリックすると問数を編集できます（以降が連動）</span>
+    <span>実績の数字はクリックして直接編集できます</span>
+  </div>`;
+  html += `<div style="margin-top:14px" class="muted">実績合計 <span id="actualSumN">${actualSum}</span> / 予定合計 ${total} ${unitLabel(m.unit)}</div></div>`;
+  viewEl.innerHTML = html;
+
+  // actions
+  viewEl.querySelector('[data-act="back"]').onclick=()=>{ state.selected=null; render(); };
+  viewEl.querySelector('[data-act="edit"]').onclick=()=>openForm(m);
+  viewEl.querySelector('[data-act="regen"]').onclick=()=>{
+    if(confirm("計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？")){
+      DB.saveMaterial(m, generatePlan(m)); render();
+    }
+  };
+  viewEl.querySelector('[data-act="del"]').onclick=()=>{
+    if(confirm(`「${m.name}」を削除します。よろしいですか？`)){ DB.deleteMaterial(m.id); state.selected=null; state.view="plans"; render(); }
+  };
+
+  // inline edit — patch in place (no full re-render) so scroll position & focus are kept
+  viewEl.querySelectorAll(".cellinput").forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const e=DB.entries().find(x=>x.id===inp.dataset.id);
+      if(!e) return;
+      const v = inp.value===""?null:Math.max(0, Math.round(+inp.value)||0);
+      DB.updateEntry(inp.dataset.id, {actualCount:v, done: v!=null && v>=e.planCount});
+      inp.value = v==null?'':v; // normalize displayed value
+
+      // 1) this actual cell's color state
+      const td=inp.closest("td.actual");
+      if(td){
+        td.classList.remove('full','over');
+        if(v!=null && v>=e.planCount) td.classList.add('full');
+      }
+
+      // 2) recompute totals from fresh data
+      const es2=DB.entriesFor(id);
+      const dayActual={};
+      es2.forEach(x=>{ const t=dayActual[x.date]=dayActual[x.date]||{a:0,has:false}; if(x.actualCount!=null){t.a+=x.actualCount;t.has=true;} });
+
+      // day-total 実 cell of this row
+      const tr=inp.closest("tr");
+      if(tr&&tr.dataset.date){
+        const dcell=tr.querySelector("td.daytot.act");
+        const t=dayActual[tr.dataset.date];
+        if(dcell) dcell.textContent=(t&&t.has)?t.a:'';
+      }
+
+      // 3) header progress + footer 実績合計
+      const total2=es2.reduce((s,x)=>s+x.planCount,0);
+      const doneSum2=es2.reduce((s,x)=>s+(x.done?x.planCount:0),0);
+      const pct2=total2?Math.round(doneSum2/total2*100):0;
+      const actualSum2=es2.reduce((s,x)=>s+(x.actualCount||0),0);
+      const pn=viewEl.querySelector("#progN"); if(pn) pn.innerHTML=`${doneSum2}/${total2}<span style="font-size:12px"> (${pct2}%)</span>`;
+      const asn=viewEl.querySelector("#actualSumN"); if(asn) asn.textContent=actualSum2;
+    });
+  });
+
+  // drag & drop to move a plan to another day (same column group).
+  // Dragging a 新規 cell moves the WHOLE chunk (its reviews follow, keeping
+  // offsets); dragging a 復習 cell nudges just that one review.
+  let dragId=null, dragGroup=null, dragChunk=null;
+  viewEl.querySelectorAll('td.range[draggable="true"]').forEach(cell=>{
+    cell.addEventListener("dragstart", ev=>{
+      dragId=cell.dataset.id; dragGroup=cell.dataset.group;
+      dragChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+      cell.classList.add("dragging"); ev.dataTransfer.effectAllowed="move";
+      // show the follow-banner (the dragged cell hides under the finger on phones)
+      const lab=cell.textContent.replace("✎","").trim();
+      const isNew=dragGroup==="new";
+      const gname=isNew?"新規":reviewName(+dragGroup.slice(1));
+      const icon=isNew?"📦":"↕";
+      const note=isNew?'<div class="dbnote">復習も一緒に動きます</div>':"";
+      dragBanner.show(`<div class="dbsrc">${icon} ${gname}　${lab}</div><div class="dbtgt">置く日をなぞってください</div>${note}`);
+      dragBanner.move(ev.clientX, ev.clientY);
+    });
+    cell.addEventListener("dragend", ()=>{ cell.classList.remove("dragging"); dragBanner.hide(); });
+  });
+  // A 新規 cell can only be dropped on an allowed, free new-study day: excluded
+  // days carry no study and a day already holding a new study is taken. Invalid
+  // targets get no drop-ok highlight and won't accept the drop (no-drop cursor),
+  // so the chunk never silently jumps elsewhere.
+  const isExcludedDay = buildDayExcluder(m);
+  viewEl.querySelectorAll('td.range[data-date]').forEach(cell=>{
+    cell.addEventListener("dragover", ev=>{
+      if(!(dragGroup && cell.dataset.group===dragGroup && cell.dataset.date)) return;
+      const td=cell.dataset.date;
+      const lbl=`${mdLabel(td)}（${WD[parseD(td).getDay()]}）`;
+      if(dragGroup==="new"){
+        if(isExcludedDay(td)){
+          dragBanner.target(`→ ${lbl}：ここには置けません`, false); // no preventDefault → drop rejected
+          return;
+        }
+        // A day already holding ANOTHER chunk's new study → swap the two chunks.
+        const tChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+        if(cell.classList.contains('has')){
+          if(tChunk===dragChunk) return;       // own cell: no-op, no highlight
+          ev.preventDefault(); cell.classList.add("drop-ok");
+          dragBanner.target(`→ ${lbl} と入れ替える`, true);
+          return;
+        }
+      }
+      ev.preventDefault(); cell.classList.add("drop-ok");
+      dragBanner.target(`→ ${lbl} に置く`, true);
+    });
+    cell.addEventListener("dragleave", ()=>{ cell.classList.remove("drop-ok"); dragBanner.target("置く日をなぞってください", null); });
+    cell.addEventListener("drop", ev=>{
+      ev.preventDefault(); cell.classList.remove("drop-ok");
+      if(!dragId || cell.dataset.group!==dragGroup) return;
+      const targetDate=cell.dataset.date;
+      if(dragGroup==="new" && dragChunk!=null){
+        const tChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+        if(cell.classList.contains('has') && tChunk!=null && tChunk!==dragChunk){
+          // target day holds another chunk's new study → swap the two chunks
+          swapChunks(id, dragChunk, tChunk);
+        }else{
+          // move the whole chunk: new study to targetDate, reviews follow (offset)
+          moveChunk(id, dragChunk, targetDate);
+        }
+      }else{
+        const existing=cell.dataset.id; // entry already in target cell?
+        if(existing && existing!==dragId){
+          // swap the two dates
+          const a=DB.entries().find(x=>x.id===dragId);
+          const b=DB.entries().find(x=>x.id===existing);
+          const ad=a.date; DB.updateEntry(a.id,{date:b.date}); DB.updateEntry(b.id,{date:ad});
+        }else{
+          DB.updateEntry(dragId, {date:targetDate});
+        }
+      }
+      dragId=null; dragGroup=null; dragChunk=null;
+      renderDetail(id);
+    });
+  });
+
+  // click a 新規学習 range cell to edit its planned size (range/count)
+  let suppressClick=false;
+  viewEl.querySelectorAll('td.range.editable').forEach(cell=>{
+    cell.addEventListener("dragstart", ()=>{ suppressClick=true; });
+    cell.addEventListener("click", ()=>{
+      if(suppressClick){ suppressClick=false; return; } // ignore click fired by a drag
+      openChunkEdit(id, +cell.dataset.chunk);
+    });
+  });
+}
+
+/* Modal to edit one chunk's planned size. Total is preserved; later chunks
+   reflow and reviews re-sync (see editChunkCount). Actuals/dates are kept. */
+function openChunkEdit(materialId, chunkId){
+  const m = DB.material(materialId);
+  if(!m) return;
+  const es = DB.entriesFor(materialId);
+  const nw = es.find(e=>e.chunkId===chunkId && e.type==="new");
+  if(!nw) return;
+  const u = unitLabel(m.unit);
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>範囲・問数の編集</h2>
+    <div class="lead">${fullLabel(nw.date)} の新規学習を編集します。総${u}数は変えず、<b>以降の予定（範囲・復習）が自動で連動</b>します。入力済みの実績はそのまま残ります。</div>
+    <div style="margin-bottom:14px"><span class="muted">現在の範囲</span>　<b>${nw.label}</b>（${nw.planCount}${u}）</div>
+    <label style="display:block;font-size:13px;margin-bottom:6px">この日の予定${u}数</label>
+    <input id="ce-count" type="number" min="1" value="${nw.planCount}" style="width:120px">
+    <div class="lead" style="margin-top:8px">※ 増やすと後ろの予定を前倒しで取り込み、減らすと残りは後ろの日へ送られます（最終日が増減）。日数は増えません。</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="ce-cancel">キャンセル</button>
+      <div class="right"><button class="btn accent" id="ce-save">保存する</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#ce-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  const inp=ov.querySelector("#ce-count");
+  inp.focus(); inp.select();
+  ov.querySelector("#ce-save").onclick=()=>{
+    const v=Math.max(1, Math.round(+inp.value)||0);
+    editChunkCount(materialId, chunkId, v);
+    close();
+    renderDetail(materialId);
+  };
+}
+
+/* =========================================================================
+   Material form (create / edit)
+   ========================================================================= */
+/* Renders weekday + date exclusion controls into `container`, mutating the
+   given `model` ({excludeDates:[], excludeWeekdays:[]}) in place. Reused by the
+   material form (per-material) and the global exclusion dialog. */
+function exclusionControls(container, model){
+  function draw(){
+    container.innerHTML=`
+      <div class="field"><label>除外する曜日</label>
+        <div class="wd-seg" data-x="wd"></div>
+        <div class="hint">チェックした曜日には新規学習を入れません（既に土日は自動で軽めに配分されます）。</div></div>
+      <div class="field"><label>除外する日付</label>
+        <div class="xrow"><input type="date" data-x="date">
+          <button type="button" class="btn ghost sm" data-x="add">＋ 追加</button></div>
+        <div class="chips" data-x="chips"></div>
+        <div class="hint">旅行・予定などで学習しない特定の日を計画から除きます。</div></div>`;
+    const wd=container.querySelector('[data-x="wd"]');
+    WD.forEach((w,i)=>{
+      const b=document.createElement("button");
+      b.type="button"; b.className="wd-btn"+(model.excludeWeekdays.includes(i)?" on":"");
+      b.textContent=w;
+      b.onclick=()=>{ const k=model.excludeWeekdays.indexOf(i); if(k>=0)model.excludeWeekdays.splice(k,1); else model.excludeWeekdays.push(i); draw(); };
+      wd.appendChild(b);
+    });
+    const chips=container.querySelector('[data-x="chips"]');
+    model.excludeDates.slice().sort().forEach(ds=>{
+      const c=document.createElement("span"); c.className="xchip";
+      c.innerHTML=`${fullLabel(ds)} <button type="button" title="削除">×</button>`;
+      c.querySelector("button").onclick=()=>{ const k=model.excludeDates.indexOf(ds); if(k>=0)model.excludeDates.splice(k,1); draw(); };
+      chips.appendChild(c);
+    });
+    container.querySelector('[data-x="add"]').onclick=()=>{
+      const inp=container.querySelector('[data-x="date"]'); const v=inp.value;
+      if(v && !model.excludeDates.includes(v)){ model.excludeDates.push(v); draw(); }
+    };
+  }
+  draw();
+}
+
+/* Global (all-material) exclusion-day settings dialog. */
+function openGlobalExclude(){
+  const cur=DB.settings();
+  const model={ excludeDates:(cur.excludeDates||[]).slice(), excludeWeekdays:(cur.excludeWeekdays||[]).slice() };
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>共通の除外日</h2>
+    <div class="lead">すべての教材の計画立案で除外する曜日・日付です。教材ごとの除外は各教材の編集画面で設定できます。</div>
+    <div id="g-ex"></div>
+    <div class="lead" style="margin-top:4px">※ 変更後、既存の計画に反映するには各教材の「再生成」を実行してください。</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="g-cancel">キャンセル</button>
+      <div class="right"><button class="btn accent" id="g-save">保存する</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  exclusionControls(ov.querySelector("#g-ex"), model);
+  const close=()=>ov.remove();
+  ov.querySelector("#g-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelector("#g-save").onclick=()=>{ DB.saveSettings(model); close(); };
+}
+
+function openForm(mat){
+  const editing=!!mat;
+  const m = mat || {
+    name:"", unit:"problem", startDate:todayStr(),
+    endDate:fmtD(addDays(new Date(),29)), rangeStart:1, rangeEnd:90,
+    excluded:"", reviews:[1,3,7,28,56]
+  };
+  const exModel = { excludeDates:(m.excludeDates||[]).slice(), excludeWeekdays:(m.excludeWeekdays||[]).slice() };
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${editing?"教材を編集":"教材を追加"}</h2>
+    <div class="lead">条件から日毎の学習計画を自動で立案します。</div>
+    <div class="field"><label>教材名</label>
+      <input type="text" id="f-name" value="${esc(m.name)}" placeholder="例）英単語ターゲット1900"></div>
+    <div class="field"><label>学習単位</label>
+      <div class="unit-seg">
+        <input type="radio" name="unit" id="u-page" value="page" ${m.unit==="page"?"checked":""}><label for="u-page">ページ</label>
+        <input type="radio" name="unit" id="u-prob" value="problem" ${m.unit==="problem"?"checked":""}><label for="u-prob">問</label>
+      </div></div>
+    <div class="row2">
+      <div class="field"><label>開始日</label><input type="date" id="f-start" value="${m.startDate}"></div>
+      <div class="field"><label>終了日</label><input type="date" id="f-end" value="${m.endDate}"></div>
+    </div>
+    <div class="field"><label>学習範囲</label>
+      <div class="row3">
+        <input type="number" id="f-rs" value="${m.rangeStart}" min="1">
+        <span class="dash">〜</span>
+        <input type="number" id="f-re" value="${m.rangeEnd}" min="1">
+      </div><div class="hint">学習する最初と最後の番号（ページ／問番号）</div></div>
+    <div class="field"><label>除外ページ・問題</label>
+      <input type="text" id="f-ex" value="${esc(m.excluded||"")}" placeholder="例）5, 12, 20-24">
+      <div class="hint">計画から除く番号。カンマ区切り・範囲指定(20-24)が使えます。</div></div>
+    <div id="f-dayex"></div>
+    <div class="field"><label>復習設定</label>
+      <div class="reviews" id="f-reviews"></div>
+      <button type="button" class="btn ghost sm add-rev" id="f-addrev">＋ 復習を追加</button>
+      <div class="hint">各復習を新規学習の何日後に行うか。重複はできません。</div></div>
+    <div class="err" id="f-err"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="f-cancel">キャンセル</button>
+      <div class="right"><button class="btn accent" id="f-save">${editing?"更新する":"計画を立てる"}</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  exclusionControls(ov.querySelector("#f-dayex"), exModel);
+
+  let revs = m.reviews.slice();
+  const revWrap = ov.querySelector("#f-reviews");
+  function drawRevs(){
+    revWrap.innerHTML="";
+    revs.forEach((v,i)=>{
+      const row=document.createElement("div"); row.className="rev-row";
+      row.innerHTML=`<span class="rk">${reviewName(i+1)}</span>
+        <input type="number" min="1" value="${v}" data-i="${i}"><span class="unit-d">日後</span>
+        <button class="del" data-i="${i}" title="削除">×</button>`;
+      revWrap.appendChild(row);
+    });
+    revWrap.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{ revs[+inp.dataset.i]=Math.max(1,Math.round(+inp.value)||1); });
+    revWrap.querySelectorAll(".del").forEach(b=>b.onclick=()=>{ revs.splice(+b.dataset.i,1); drawRevs(); });
+  }
+  drawRevs();
+  ov.querySelector("#f-addrev").onclick=()=>{ const last=revs[revs.length-1]||0; revs.push(last+ (revs.length?Math.max(1,last):1)); drawRevs(); };
+
+  const close=()=>ov.remove();
+  ov.querySelector("#f-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+
+  ov.querySelector("#f-save").onclick=()=>{
+    const err=ov.querySelector("#f-err"); err.textContent="";
+    const name=ov.querySelector("#f-name").value.trim();
+    const unit=ov.querySelector('input[name=unit]:checked').value;
+    const startDate=ov.querySelector("#f-start").value;
+    const endDate=ov.querySelector("#f-end").value;
+    const rangeStart=Math.round(+ov.querySelector("#f-rs").value);
+    const rangeEnd=Math.round(+ov.querySelector("#f-re").value);
+    const excluded=ov.querySelector("#f-ex").value.trim();
+
+    if(!name) return err.textContent="教材名を入力してください。";
+    if(!startDate||!endDate) return err.textContent="開始日と終了日を入力してください。";
+    if(endDate<startDate) return err.textContent="終了日は開始日以降にしてください。";
+    if(!(rangeStart>=1)||!(rangeEnd>=rangeStart)) return err.textContent="学習範囲が正しくありません。";
+    const sorted=revs.slice().sort((a,b)=>a-b);
+    if(new Set(sorted).size!==sorted.length) return err.textContent="復習タイミングが重複しています。重複しない日数を指定してください。";
+    revs=sorted;
+    const items=buildItems({rangeStart,rangeEnd,excluded});
+    if(!items.length) return err.textContent="除外指定により学習範囲が空になっています。";
+
+    const newMat={
+      id: m.id || ("m"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36)),
+      color: m.color || PALETTE[DB.materials().length % PALETTE.length],
+      name, unit, startDate, endDate, rangeStart, rangeEnd, excluded, reviews:revs,
+      excludeDates: exModel.excludeDates.slice(), excludeWeekdays: exModel.excludeWeekdays.slice(),
+      createdAt: m.createdAt || Date.now()
+    };
+    // Only rebuild the plan (which wipes手編集/実績) when a field that actually
+    // shapes the plan changed. A cosmetic edit (e.g. just renaming) keeps the
+    // existing entries. To re-apply 共通除外日 or discard manual edits, use 再生成.
+    const planFields = mm => [mm.rangeStart, mm.rangeEnd, mm.excluded||"", mm.startDate, mm.endDate,
+      (mm.reviews||[]).slice().sort((a,b)=>a-b).join(","),
+      (mm.excludeDates||[]).slice().sort().join(","),
+      (mm.excludeWeekdays||[]).slice().sort((a,b)=>a-b).join(",")].join("|");
+    const planChanged = !editing || planFields(m)!==planFields(newMat);
+    if(planChanged){
+      if(editing && !confirm("計画を作り直します。手入力した予定・実績はリセットされます。よろしいですか？")) return;
+      DB.saveMaterial(newMat, generatePlan(newMat));
+    }else{
+      DB.saveMaterial(newMat, DB.entriesFor(m.id)); // 計画に影響しない変更＝既存の予定・実績を維持
+    }
+    close();
+    state.selected=newMat.id; state.view="plans"; render();
+  };
+}
+
+/* sample data matching the spec example */
+function createSample(){
+  const mat={
+    id:"m"+Date.now().toString(36), color:PALETTE[0],
+    name:"サンプル教材（90問）", unit:"problem",
+    startDate:todayStr(), endDate:fmtD(addDays(new Date(),29)),
+    rangeStart:1, rangeEnd:90, excluded:"", reviews:[1,3], createdAt:Date.now()
+  };
+  DB.saveMaterial(mat, generatePlan(mat));
+  state.selected=mat.id; render();
+}
+
+/* =========================================================================
+   Backup: export / import the whole dataset as a JSON file.
+   ========================================================================= */
+function exportData(){
+  if(!DB.materials().length){ alert("エクスポートする教材がありません。"); return; }
+  const payload = {
+    app:"studyplan", version:1,
+    exportedAt:new Date().toISOString(),
+    data: DB.exportData()
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `studyplan-backup-${todayStr()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function importData(){
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json,.json";
+  inp.onchange = ()=>{
+    const file = inp.files && inp.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        const data = parsed && parsed.data ? parsed.data : parsed; // accept raw {materials,entries} too
+        if(!data || !Array.isArray(data.materials) || !Array.isArray(data.entries))
+          throw new Error("教材／計画データが見つかりません");
+        const mc = data.materials.length, ec = data.entries.length;
+        if(!confirm(`バックアップを読み込みます。\n教材 ${mc}件 ／ 計画 ${ec}件\n\n現在のデータはすべて置き換えられます。よろしいですか？`)) return;
+        DB.replaceAll(data);
+        state.selected = null; state.view = "plans";
+        document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active", x.dataset.view==="plans"));
+        render();
+        alert(`インポートが完了しました。（教材 ${mc}件）`);
+      }catch(err){
+        alert("インポートに失敗しました。正しいバックアップファイルか確認してください。\n("+err.message+")");
+      }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* theme */
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  localStorage.setItem("studyplan.theme", t);
+  const b=document.getElementById("themeBtn");
+  if(b) b.textContent = t==="dark" ? "☀ 明るく" : "☾ 暗く";
+}
+document.getElementById("themeBtn").addEventListener("click", ()=>{
+  const cur=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
+  applyTheme(cur==="dark"?"light":"dark");
+});
+document.getElementById("globalExcludeBtn").addEventListener("click", openGlobalExclude);
+
+/* boot */
+applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
+setDateline();
+repairCollisions();   // heal plans generated before the collision fix (keeps actuals)
+render();
+
+/* PWA: register the service worker for offline / installable use.
+   (Only active over http(s) or localhost — ignored on file://.) */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
