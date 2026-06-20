@@ -786,6 +786,82 @@ function swapChunks(materialId, chunkA, chunkB){
   return true;
 }
 
+/* Pure helper for bulkShift. Shift EVERY chunk whose 新規 falls on/after fromDate
+   by deltaDays (positive = later, negative = earlier); each 復習 keeps its offset
+   from its own new study (chunks move as blocks). Chunks whose 新規 is before
+   fromDate stay put entirely (their dates also act as obstacles). Entries are
+   placed in order (earliest original new date first); any new study or review
+   landing on an excluded day or a cell already taken (one entry per date×group)
+   is pushed forward to the next free allowed day. Returns {id,date} for entries
+   whose date changed (empty for a no-op). Backward clamping is the caller's job
+   (see clampShift) — this function applies deltaDays as given. */
+function planBulkShift(entries, fromDate, deltaDays, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  if(!deltaDays) return [];
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const isMoving = new Set(
+    entries.filter(e=>e.type==="new" && e.date>=fromDate).map(e=>e.chunkId));
+  if(!isMoving.size) return [];
+  // Cells already taken by entries that are NOT moving (one entry per date×group).
+  const occupied = new Set();
+  const byChunk = {};
+  entries.forEach(e=>{
+    if(isMoving.has(e.chunkId)) (byChunk[e.chunkId]=byChunk[e.chunkId]||[]).push(e);
+    else occupied.add(e.date+"|"+gkey(e));
+  });
+  const updates = [];
+  const place = (e, target)=>{
+    const g = gkey(e); let d = target;
+    for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<4000; guard++)
+      d = fmtD(addDays(parseD(d), 1));
+    occupied.add(d+"|"+g);
+    if(d !== e.date) updates.push({id:e.id, date:d});
+    return d;
+  };
+  // Process chunks in order of their original new date so earlier chunks settle first.
+  [...isMoving].sort((a,b)=>{
+    const na=byChunk[a].find(e=>e.type==="new"), nb=byChunk[b].find(e=>e.type==="new");
+    return na.date.localeCompare(nb.date);
+  }).forEach(cid=>{
+    const grp = byChunk[cid];
+    const nw = grp.find(e=>e.type==="new");
+    const placedNew = place(nw, fmtD(addDays(parseD(nw.date), deltaDays)));
+    // Reviews keep their offset from the (possibly pushed) new study.
+    grp.filter(e=>e.type==="review").sort((a,b)=>a.date.localeCompare(b.date)).forEach(rv=>{
+      place(rv, fmtD(addDays(parseD(placedNew), diffDays(nw.date, rv.date))));
+    });
+  });
+  return updates;
+}
+
+/* Effective shift for a bulk move, respecting a floor date. A forward shift
+   (deltaDays>=0) is never limited. A backward shift is clamped so the earliest
+   moving 新規 (on/after fromDate) does not land before floorDate. Pure. */
+function clampShift(entries, fromDate, deltaDays, floorDate){
+  if(deltaDays>=0) return deltaDays;
+  const news = entries.filter(e=>e.type==="new" && e.date>=fromDate);
+  if(!news.length) return deltaDays;
+  const earliest = news.reduce((a,e)=> e.date<a ? e.date : a, news[0].date);
+  const headroom = Math.max(0, diffDays(floorDate, earliest));  // days we may move back
+  return Math.max(deltaDays, -headroom);
+}
+
+/* Shift all chunks from fromDate onward by deltaDays (see planBulkShift). The
+   backward direction is clamped so nothing moves before today. Only dates change;
+   labels/counts/actuals are untouched. Reads/writes DB. Returns
+   {moved, clamped, effectiveDelta}. */
+function bulkShift(materialId, fromDate, deltaDays){
+  const mat = DB.material(materialId);
+  if(!mat) return {moved:false, clamped:false, effectiveDelta:0};
+  const entries = DB.entriesFor(materialId);
+  const eff = clampShift(entries, fromDate, deltaDays, todayStr());
+  const clamped = eff !== deltaDays;
+  if(!eff) return {moved:false, clamped, effectiveDelta:0};
+  const updates = planBulkShift(entries, fromDate, eff, buildDayExcluder(mat));
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return {moved:updates.length>0, clamped, effectiveDelta:eff};
+}
+
 /* =========================================================================
    App state + rendering
    ========================================================================= */
@@ -1041,6 +1117,7 @@ function renderDetail(id){
     </div>
     <div class="detail-actions">
       <button class="btn ghost sm" data-act="edit">編集</button>
+      <button class="btn ghost sm" data-act="shift">ずらす</button>
       <button class="btn ghost sm" data-act="regen">再生成</button>
       <button class="btn ghost sm" data-act="del" style="color:var(--vermilion)">削除</button>
     </div>
@@ -1088,6 +1165,7 @@ function renderDetail(id){
     <span>📦 新規セルをドラッグ＝その日のチャンク（復習も含めて）まとめて移動（復習はオフセット維持／他の新規がある日へ落とすと2つのチャンクを入れ替え／除外日には置けません）</span>
     <span>↕ 復習セルをドラッグ＝その復習だけ別日へ移動</span>
     <span>✎ 新規学習の範囲セルをクリックすると問数を編集できます（以降が連動）</span>
+    <span>📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）</span>
     <span>実績の数字はクリックして直接編集できます</span>
   </div>`;
   html += `<div style="margin-top:14px" class="muted">実績合計 <span id="actualSumN">${actualSum}</span> / 予定合計 ${total} ${unitLabel(m.unit)}</div></div>`;
@@ -1096,6 +1174,7 @@ function renderDetail(id){
   // actions
   viewEl.querySelector('[data-act="back"]').onclick=()=>{ state.selected=null; render(); };
   viewEl.querySelector('[data-act="edit"]').onclick=()=>openForm(m);
+  viewEl.querySelector('[data-act="shift"]').onclick=()=>openBulkShift(m.id);
   viewEl.querySelector('[data-act="regen"]').onclick=()=>{
     if(confirm("計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？")){
       DB.saveMaterial(m, generatePlan(m)); render();
@@ -1264,6 +1343,56 @@ function openChunkEdit(materialId, chunkId){
     const v=Math.max(1, Math.round(+inp.value)||0);
     editChunkCount(materialId, chunkId, v);
     close();
+    renderDetail(materialId);
+  };
+}
+
+/* Bulk-shift dialog: move every chunk from a chosen date onward by ±N days
+   (see bulkShift). The 起点 is forced to today-or-later so past entries (with
+   recorded actuals) never move, and a backward shift is clamped so nothing lands
+   before today. Reviews follow their chunk; counts/actuals are untouched. */
+function openBulkShift(materialId){
+  const m = DB.material(materialId);
+  if(!m) return;
+  const today = todayStr();
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>予定をまとめてずらす</h2>
+    <div class="lead">起点の日以降の予定（新規＋復習）を、指定した日数だけまとめて前後にずらします。復習はオフセットを保って追従し、<b>問数・実績はそのまま</b>です。<b>今日より前（実績のある過去）は動きません。</b></div>
+    <label style="display:block;font-size:13px;margin:12px 0 6px">起点の日（この日以降をずらす）</label>
+    <input id="bs-from" type="date" value="${today}" min="${today}">
+    <label style="display:block;font-size:13px;margin:14px 0 6px">ずらす量</label>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input id="bs-days" type="number" min="1" value="1" style="width:90px"> 日
+      <select id="bs-dir">
+        <option value="back">後ろへ（先送り）</option>
+        <option value="fwd">前へ（前倒し）</option>
+      </select>
+    </div>
+    <div class="lead" style="margin-top:10px">※ 着地が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="bs-cancel">キャンセル</button>
+      <div class="right"><button class="btn accent" id="bs-save">ずらす</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#bs-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelector("#bs-save").onclick=()=>{
+    let from = ov.querySelector("#bs-from").value || today;
+    if(from < today) from = today;                 // never touch the past
+    const n = Math.max(1, Math.round(+ov.querySelector("#bs-days").value)||0);
+    const delta = ov.querySelector("#bs-dir").value==="back" ? n : -n;
+    const r = bulkShift(materialId, from, delta);
+    close();
+    if(!r.moved){
+      alert(r.clamped
+        ? "前倒しできる余地がありません（先頭の予定が既に今日です）。"
+        : "ずらす対象の予定がありません。起点の日を確認してください。");
+      return;
+    }
+    if(r.clamped) alert(`前倒しは今日までに制限し、${Math.abs(r.effectiveDelta)}日だけ前倒ししました。`);
     renderDetail(materialId);
   };
 }
@@ -1518,7 +1647,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v18";
+const APP_VERSION = "v19";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
