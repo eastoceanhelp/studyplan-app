@@ -1,7 +1,7 @@
 /* 学習計画手帳 — Service Worker
    オフライン動作とアプリ的な起動を実現する。
    アプリ本体を更新したら CACHE のバージョン文字列を上げること。 */
-const CACHE = "studyplan-v25";
+const CACHE = "studyplan-v26";
 
 /* インストール時に先読みしておくローカル資産 */
 const PRECACHE = [

@@ -132,6 +132,10 @@ nav.tabs .theme-toggle{
 nav.tabs .theme-toggle::after{display:none}
 nav.tabs .theme-toggle:hover{color:var(--vermilion);border-color:var(--vermilion)}
 nav.tabs .nav-icon{margin-left:auto;padding:0 14px;margin-right:8px;font-size:16px;line-height:1}
+/* 使い方ガイドの「？」＝.nav-icon と同じ小さめ見た目。ただし margin-left:auto を
+   持たせると右端グループに2つ目の auto ができて離れてしまうので付けない
+   （⛭ の auto がグループ全体を右へ寄せる。順序は ⛭ ？ ☾）。 */
+nav.tabs .nav-icon-h{padding:0 13px;margin-right:8px;font-size:16px;line-height:1}
 
 /* ---------- generic ---------- */
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
@@ -294,6 +298,20 @@ thead th{
 .modal::before{content:"";position:absolute;top:0;left:32px;right:32px;height:4px;background:var(--vermilion);border-radius:0 0 4px 4px}
 .modal h2{font-family:var(--serif);font-size:25px;letter-spacing:.06em;margin-bottom:4px}
 .modal .lead{color:var(--ink-soft);font-size:13px;margin-bottom:22px}
+/* オンボーディング（初回の歓迎ガイド・カード式） */
+.modal.onboard{text-align:center;padding-top:34px}
+.onboard .ob-mark{font-family:var(--serif);font-weight:900;font-size:58px;line-height:1;color:var(--vermilion);
+  display:grid;place-items:center;width:104px;height:104px;margin:2px auto 20px;border-radius:50%;
+  background:radial-gradient(circle at 50% 36%,var(--paper),var(--paper-2));
+  box-shadow:inset 0 0 0 2px var(--line),0 12px 28px -16px var(--vermilion-deep)}
+.onboard .ob-title{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.08em;margin-bottom:14px}
+.onboard .ob-body{color:var(--ink-soft);font-size:14px;line-height:2;letter-spacing:.04em;max-width:30em;margin:0 auto;text-align:left}
+.onboard .ob-body b{color:var(--ink);font-weight:700}
+.ob-dots{display:flex;gap:9px;justify-content:center;margin:26px 0 22px}
+.ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:transform .2s,background .2s}
+.ob-dots i.on{background:var(--vermilion);transform:scale(1.3)}
+.ob-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ob-actions .right{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
 .field{margin-bottom:18px}
 .field > label{display:block;font-family:var(--serif);font-size:13px;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:6px}
 .field input[type=text],.field input[type=number],.field input[type=date],.field select{
@@ -373,6 +391,7 @@ thead th{
     <button data-view="plans">計画一覧<span class="en">Plans</span></button>
     <button data-view="matrix">全体計画表<span class="en">Overview</span></button>
     <button id="globalExcludeBtn" class="theme-toggle nav-icon" title="共通の除外日設定" aria-label="共通の除外日設定">⛭</button>
+    <button id="helpBtn" class="theme-toggle nav-icon-h" title="使い方ガイド" aria-label="使い方ガイド">？</button>
     <button id="themeBtn" class="theme-toggle" title="テーマを切り替え">☾ 暗く</button>
   </nav>
 
@@ -1601,6 +1620,58 @@ function createSample(){
   state.selected=mat.id; render();
 }
 
+/* ---- 初回オンボーディング（歓迎ガイド・カード式） ----
+   ストア公開で初見ユーザーが触る前提の「冷たいインストール」対策。
+   既存ロジックには一切触れず、他のモーダルと同じ .overlay として作るので、
+   戻るボタンの履歴同期（uiLayerCount／MutationObserver）とも自然に整合する。
+   初回表示の判定は localStorage フラグ studyplan.onboarded で管理＝テーマと同じ
+   「端末ローカルの UI 設定」なので export/import の対象外（=新端末では再表示）。 */
+const ONBOARD_STEPS = [
+  { mark:"学", title:"学習計画手帳へようこそ",
+    body:"紙の参考書・問題集を<b>「ページ／問の範囲」</b>で計画するアプリです。新しく学ぶ分に加えて、<b>復習①〜⑤</b>を間隔をあけて自動でスケジュールします。" },
+  { mark:"＋", title:"まず教材を追加",
+    body:"<b>「＋ 教材を追加」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。" },
+  { mark:"予", title:"予実表で予定と実績を管理",
+    body:"教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。" },
+  { mark:"今", title:"「今日」タブで今日の分だけ",
+    body:"今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。" },
+  { mark:"控", title:"保存とバックアップ",
+    body:"データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ 復元」</b>してください。" }
+];
+function openOnboarding(){
+  let step=0;
+  const ov=document.createElement("div"); ov.className="overlay";
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  function draw(){
+    const s=ONBOARD_STEPS[step];
+    const last = step===ONBOARD_STEPS.length-1;
+    const dots = ONBOARD_STEPS.map((_,i)=>`<i class="${i===step?'on':''}"></i>`).join("");
+    ov.innerHTML=`<div class="modal onboard">
+      <div class="ob-mark">${s.mark}</div>
+      <div class="ob-title">${s.title}</div>
+      <div class="ob-body">${s.body}</div>
+      <div class="ob-dots">${dots}</div>
+      <div class="ob-actions">
+        <button class="btn ghost sm" id="ob-skip">${last?"閉じる":"スキップ"}</button>
+        <div class="right">
+          ${step>0?`<button class="btn ghost" id="ob-prev">← 戻る</button>`:""}
+          ${last
+            ? `<button class="btn ghost" id="ob-sample">サンプルを見る</button><button class="btn accent" id="ob-add">＋ 教材を追加</button>`
+            : `<button class="btn accent" id="ob-next">次へ →</button>`}
+        </div>
+      </div>
+    </div>`;
+    ov.querySelector("#ob-skip").onclick=close;
+    const prev=ov.querySelector("#ob-prev"); if(prev) prev.onclick=()=>{ step--; draw(); };
+    const next=ov.querySelector("#ob-next"); if(next) next.onclick=()=>{ step++; draw(); };
+    const sample=ov.querySelector("#ob-sample"); if(sample) sample.onclick=()=>{ close(); createSample(); };
+    const add=ov.querySelector("#ob-add"); if(add) add.onclick=()=>{ close(); openForm(); };
+  }
+  draw();
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+}
+
 /* =========================================================================
    Backup: export / import the whole dataset as a JSON file.
    ========================================================================= */
@@ -1660,10 +1731,11 @@ document.getElementById("themeBtn").addEventListener("click", ()=>{
   applyTheme(cur==="dark"?"light":"dark");
 });
 document.getElementById("globalExcludeBtn").addEventListener("click", openGlobalExclude);
+document.getElementById("helpBtn").addEventListener("click", openOnboarding);
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v25";
+const APP_VERSION = "v26";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
@@ -1712,6 +1784,14 @@ new MutationObserver(()=>{
   requestAnimationFrame(()=>{ _syncPending = false; syncHistory(); });
 }).observe(document.body, { childList: true, subtree: true });
 syncHistory();
+
+/* 初回のみ歓迎ガイドを自動表示（テーマと同じ端末ローカルのフラグで管理）。
+   表示した時点でフラグを立てるので、戻るボタンで閉じても次回からは出さない。
+   ナビの「？」からはいつでも再表示できる。 */
+if(!localStorage.getItem("studyplan.onboarded")){
+  localStorage.setItem("studyplan.onboarded","1");
+  openOnboarding();
+}
 
 /* PWA: register the service worker for offline / installable use.
    (Only active over http(s) or localhost — ignored on file://.) */
