@@ -174,31 +174,36 @@ nav.tabs .nav-icon{margin-left:auto;padding:0 14px;margin-right:8px;font-size:16
 .card.add p{font-family:var(--serif);letter-spacing:.18em;color:var(--ink-soft);margin-top:8px}
 
 /* ---------- today ---------- */
-.today-grid{display:grid;grid-template-columns:1fr;gap:26px}
-.day-block .day-label{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:12px;display:flex;align-items:center;gap:10px}
-.day-block.overdue .day-label{color:var(--vermilion)}
-.day-label .rule{flex:1;height:1px;background:var(--line)}
+.today-grid{display:grid;grid-template-columns:1fr;gap:22px}
+.day-block .day-label{font-family:var(--serif);font-size:13px;letter-spacing:.18em;color:var(--ink-soft);
+  margin:0 0 2px;padding:0 2px 7px;display:flex;align-items:center;gap:10px;border-bottom:1.5px solid var(--ink)}
+.day-block.overdue .day-label{color:var(--vermilion);border-bottom-color:var(--vermilion)}
+.day-label .rule{flex:1}
+.day-label .muted{margin-left:auto;font-size:11px;letter-spacing:.08em}
 .task{
-  display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);
-  border-left:5px solid var(--mat,var(--ink));border-radius:8px;padding:13px 18px;margin-bottom:9px;
-  transition:background .2s,opacity .2s;box-shadow:0 6px 16px -14px rgba(35,33,28,.6);
+  display:grid;align-items:center;
+  grid-template-columns:18px minmax(0,1fr) 48px minmax(0,1.1fr) 64px;
+  gap:14px;padding:6px 6px 6px 4px;border-bottom:1px solid var(--line);
+  position:relative;transition:background .12s,opacity .2s;
 }
-.task.done{opacity:.5;background:transparent}
+.task:hover{background:rgba(35,33,28,.035)}
+.task::before{content:"";position:absolute;left:-8px;top:6px;bottom:6px;width:3px;border-radius:3px;background:var(--mat,var(--ink))}
+.task.done{opacity:.42}
 .task.done .t-range{text-decoration:line-through}
 .task .chk{
-  width:24px;height:24px;flex:none;border:2px solid var(--ink-soft);border-radius:6px;cursor:pointer;
+  width:18px;height:18px;flex:none;border:2px solid var(--ink-faint);border-radius:5px;cursor:pointer;
   display:grid;place-items:center;color:var(--paper);transition:.15s;
 }
 .task .chk:hover{border-color:var(--vermilion)}
 .task.done .chk{background:var(--vermilion);border-color:var(--vermilion)}
-.task .chk svg{width:14px;height:14px;opacity:0}
+.task .chk svg{width:11px;height:11px;opacity:0}
 .task.done .chk svg{opacity:1}
-.task .t-mat{font-family:var(--serif);font-weight:600;font-size:15px;min-width:120px}
-.task .t-type{font-size:11px;letter-spacing:.1em;padding:2px 10px;border-radius:20px;font-weight:700}
-.t-type.new{background:rgba(47,79,100,.14);color:var(--indigo)}
-.t-type.rev{background:rgba(187,60,40,.13);color:var(--vermilion)}
-.task .t-range{font-family:var(--serif);font-size:16px;letter-spacing:.03em;margin-left:auto}
-.task .t-count{font-size:12px;color:var(--ink-soft);min-width:54px;text-align:right}
+.task .t-mat{font-family:var(--serif);font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .t-type{font-size:10.5px;letter-spacing:.04em;padding:1.5px 0;border-radius:4px;font-weight:700;text-align:center}
+.t-type.new{background:rgba(47,79,100,.12);color:var(--indigo)}
+.t-type.rev{background:rgba(187,60,40,.11);color:var(--vermilion)}
+.task .t-range{font-family:var(--serif);font-size:15px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .t-count{font-size:13px;font-family:var(--serif);color:var(--ink-soft);text-align:right;white-space:nowrap}
 .empty-state{text-align:center;padding:70px 20px;color:var(--ink-soft)}
 .empty-state .mark{font-family:var(--serif);font-size:52px;color:var(--vermilion);opacity:.8}
 .empty-state p{font-family:var(--serif);letter-spacing:.1em;margin-top:6px}
@@ -339,7 +344,9 @@ thead th{
 
 @media(max-width:680px){
   .brand h1{font-size:26px}.app{padding:0 16px 100px}
-  .task .t-mat{min-width:auto}.row2{grid-template-columns:1fr}
+  .task{grid-template-columns:18px minmax(0,1fr) 42px minmax(0,1fr) 52px;gap:10px}
+  .task .t-range{font-size:14px}.task .t-count{font-size:12px}
+  .row2{grid-template-columns:1fr}
 }
 .fade{animation:fade .35s ease both}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -916,13 +923,13 @@ function renderToday(){
     list.forEach(e=>{
       const m=mats[e.materialId]; if(!m) return;
       const typeCls = e.type==="new"?"new":"rev";
-      const typeTxt = e.type==="new"?"新規":reviewName(e.reviewIndex);
+      const typeTxt = e.type==="new"?"新規":"復"+(CIRCLED[e.reviewIndex]||e.reviewIndex);
       s+=`<div class="task" data-id="${e.id}" style="--mat:${m.color}">
         <div class="chk" data-act="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <span class="t-mat">${esc(m.name)}</span>
         <span class="t-type ${typeCls}">${typeTxt}</span>
-        <span class="t-range">${e.label}<span class="muted" style="font-family:var(--gothic);font-size:11px"> ${unitLabel(m.unit)}</span></span>
-        <span class="t-count">${e.planCount}${unitLabel(m.unit)}</span>
+        <span class="t-range">${e.label}</span>
+        <span class="t-count">${e.planCount}<span style="font-family:var(--gothic);font-size:10px;color:var(--ink-faint)">${unitLabel(m.unit)}</span></span>
       </div>`;
     });
     return s+`</div>`;
@@ -1647,7 +1654,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v19";
+const APP_VERSION = "v20";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
