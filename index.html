@@ -1663,7 +1663,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v23";
+const APP_VERSION = "v24";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
@@ -1684,9 +1684,15 @@ function closeTopLayer(){
   if(state.selected){ state.selected = null; render(); return true; } // 詳細（予実表）→ 一覧へ
   return false;                                                    // 閉じる物なし＝終了を許す
 }
+let backReplenish = null;
 window.addEventListener("popstate", ()=>{
   if(closeTopLayer()){
-    history.pushState({ sp: 1 }, "");   // 控えを補充して次の「戻る」に備える
+    // 控えを補充して次の「戻る」に備える。
+    // popstate ハンドラ内で同期 pushState すると一部の Android WebView/TWA で
+    // 無視され、控えが補充されず「1段戻ると次の戻るで即終了」になる。
+    // 次のタスクへ遅延させて確実に履歴エントリを作る。
+    clearTimeout(backReplenish);
+    backReplenish = setTimeout(()=>history.pushState({ sp: 1 }, ""), 0);
   } else {
     history.back();                     // 閉じる物が無い＝アプリを終了
   }
