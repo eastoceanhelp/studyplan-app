@@ -1663,12 +1663,34 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v22";
+const APP_VERSION = "v23";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
 repairCollisions();   // heal plans generated before the collision fix (keeps actuals)
 render();
+
+/* ---- Android/TWA ハードウェア戻るボタン対応 ----
+   このアプリはモーダルや詳細画面を URL を変えずに開くため、戻るボタンに
+   「戻る先」が無く、TWA（Playアプリ）ごと終了してしまう。History API で常に
+   1つ「控え」の履歴を持たせ、戻る（popstate）が来たら最上位の階層を1つだけ
+   閉じて控えを補充する。モーダル → 詳細（予実表）→ の順で1段ずつ戻り、閉じる
+   物が無ければ本当に終了させる（タブ最上位＝ルートでのみ終了）。
+   既存のモーダル/遷移コードは変更不要（クリック/タップ操作はそのまま動く）。 */
+history.pushState({ sp: 1 }, "");
+function closeTopLayer(){
+  const ovs = document.querySelectorAll(".overlay");
+  if(ovs.length){ ovs[ovs.length-1].remove(); return true; }     // 開いているモーダルを閉じる
+  if(state.selected){ state.selected = null; render(); return true; } // 詳細（予実表）→ 一覧へ
+  return false;                                                    // 閉じる物なし＝終了を許す
+}
+window.addEventListener("popstate", ()=>{
+  if(closeTopLayer()){
+    history.pushState({ sp: 1 }, "");   // 控えを補充して次の「戻る」に備える
+  } else {
+    history.back();                     // 閉じる物が無い＝アプリを終了
+  }
+});
 
 /* PWA: register the service worker for offline / installable use.
    (Only active over http(s) or localhost — ignored on file://.) */
