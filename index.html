@@ -1663,7 +1663,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v24";
+const APP_VERSION = "v25";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
@@ -1672,31 +1672,46 @@ render();
 
 /* ---- Android/TWA ハードウェア戻るボタン対応 ----
    このアプリはモーダルや詳細画面を URL を変えずに開くため、戻るボタンに
-   「戻る先」が無く、TWA（Playアプリ）ごと終了してしまう。History API で常に
-   1つ「控え」の履歴を持たせ、戻る（popstate）が来たら最上位の階層を1つだけ
-   閉じて控えを補充する。モーダル → 詳細（予実表）→ の順で1段ずつ戻り、閉じる
-   物が無ければ本当に終了させる（タブ最上位＝ルートでのみ終了）。
+   「戻る先」が無く、TWA（Playアプリ）ごと終了してしまう。
+   方針＝「開いている階層（モーダル＋詳細）の数」と同じだけ履歴エントリを常に
+   積んでおき、戻る（popstate）が来たら最上位を1段だけ閉じる。階層を“開いた
+   瞬間”にエントリを積むので、戻るボタンを連打しても実在エントリを順に消費でき、
+   「控えを補充し直す」方式のような隙間（補充が間に合わず即終了）が生じない。
+   階層が UI 操作（×ボタン等）で減ったら余分なエントリを1つ畳んで同期する。
+   階層がゼロのときの戻るは履歴のルートなので TWA が自然に終了する。
    既存のモーダル/遷移コードは変更不要（クリック/タップ操作はそのまま動く）。 */
-history.pushState({ sp: 1 }, "");
+function uiLayerCount(){
+  return document.querySelectorAll(".overlay").length + (state.selected ? 1 : 0);
+}
 function closeTopLayer(){
   const ovs = document.querySelectorAll(".overlay");
   if(ovs.length){ ovs[ovs.length-1].remove(); return true; }     // 開いているモーダルを閉じる
   if(state.selected){ state.selected = null; render(); return true; } // 詳細（予実表）→ 一覧へ
-  return false;                                                    // 閉じる物なし＝終了を許す
+  return false;                                                    // 閉じる物なし＝ルート
 }
-let backReplenish = null;
-window.addEventListener("popstate", ()=>{
-  if(closeTopLayer()){
-    // 控えを補充して次の「戻る」に備える。
-    // popstate ハンドラ内で同期 pushState すると一部の Android WebView/TWA で
-    // 無視され、控えが補充されず「1段戻ると次の戻るで即終了」になる。
-    // 次のタスクへ遅延させて確実に履歴エントリを作る。
-    clearTimeout(backReplenish);
-    backReplenish = setTimeout(()=>history.pushState({ sp: 1 }, ""), 0);
-  } else {
-    history.back();                     // 閉じる物が無い＝アプリを終了
+let histDepth = 0;        // 階層用に積んだ履歴エントリ数（通常時 = uiLayerCount）
+let suppressPop = false;  // 同期のために自分で呼んだ history.back() を無視する印
+function syncHistory(){
+  const want = uiLayerCount();
+  while(histDepth < want){ histDepth++; history.pushState({ sp: histDepth }, ""); } // 開いた分を積む
+  if(histDepth > want){    // UI 操作で階層が減った → 余分を1つ畳む（多段は popstate 後に再同期）
+    histDepth--; suppressPop = true; history.back();
   }
+}
+window.addEventListener("popstate", ()=>{
+  if(suppressPop){ suppressPop = false; syncHistory(); return; }  // 自分で畳んだ分は無視＋再同期
+  if(histDepth > 0) histDepth--;
+  closeTopLayer();          // 戻る＝最上位を1段閉じる（閉じる物が無ければ何もしない＝既にルート）
 });
+/* DOM の変化（モーダルの開閉・詳細の描画）を1フレームにまとめて履歴と同期。
+   subtree 監視だが rAF でまとめるので描画中の連続変化でも syncHistory は1回。 */
+let _syncPending = false;
+new MutationObserver(()=>{
+  if(_syncPending) return;
+  _syncPending = true;
+  requestAnimationFrame(()=>{ _syncPending = false; syncHistory(); });
+}).observe(document.body, { childList: true, subtree: true });
+syncHistory();
 
 /* PWA: register the service worker for offline / installable use.
    (Only active over http(s) or localhost — ignored on file://.) */
