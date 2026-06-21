@@ -1169,8 +1169,8 @@ function renderDetail(id){
     <span><i style="background:rgba(47,79,100,.5)"></i>新規学習</span>
     <span><i style="background:rgba(187,60,40,.5)"></i>復習</span>
     <span><i style="background:rgba(120,160,90,.45)"></i>実績が予定到達</span>
-    <span>📦 新規セルをドラッグ＝その日のチャンク（復習も含めて）まとめて移動（復習はオフセット維持／他の新規がある日へ落とすと2つのチャンクを入れ替え／除外日には置けません）</span>
-    <span>↕ 復習セルをドラッグ＝その復習だけ別日へ移動</span>
+    <span>📦 新規の学習範囲をドラッグ＝新規と復習をまとめて移動（復習のタイミングを保つ／他の新規がある日へ落とすと2つを入れ替え／除外日には置けません）</span>
+    <span>↕ 復習の範囲をドラッグ＝その復習だけ別日へ移動</span>
     <span>✎ 新規学習の範囲セルをクリックすると問数を編集できます（以降が連動）</span>
     <span>📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）</span>
     <span>実績の数字はクリックして直接編集できます</span>
@@ -1365,7 +1365,7 @@ function openBulkShift(materialId){
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal">
     <h2>予定をまとめてずらす</h2>
-    <div class="lead">起点の日以降の予定（新規＋復習）を、指定した日数だけまとめて前後にずらします。復習はオフセットを保って追従し、<b>問数・実績はそのまま</b>です。<b>今日より前（実績のある過去）は動きません。</b></div>
+    <div class="lead">起点の日以降の予定（新規＋復習）を、指定した日数だけまとめて前後にずらします。復習は元のタイミングを保って追従し、<b>問数・実績はそのまま</b>です。<b>今日より前（実績のある過去）は動きません。</b></div>
     <label style="display:block;font-size:13px;margin:12px 0 6px">起点の日（この日以降をずらす）</label>
     <input id="bs-from" type="date" value="${today}" min="${today}">
     <label style="display:block;font-size:13px;margin:14px 0 6px">ずらす量</label>
@@ -1376,7 +1376,7 @@ function openBulkShift(materialId){
         <option value="fwd">前へ（前倒し）</option>
       </select>
     </div>
-    <div class="lead" style="margin-top:10px">※ 着地が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。</div>
+    <div class="lead" style="margin-top:10px">※ 移動先が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。</div>
     <div class="modal-actions">
       <button class="btn ghost" id="bs-cancel">キャンセル</button>
       <div class="right"><button class="btn accent" id="bs-save">ずらす</button></div>
@@ -1415,7 +1415,7 @@ function exclusionControls(container, model){
     container.innerHTML=`
       <div class="field"><label>除外する曜日</label>
         <div class="wd-seg" data-x="wd"></div>
-        <div class="hint">チェックした曜日には新規学習を入れません（既に土日は自動で軽めに配分されます）。</div></div>
+        <div class="hint">チェックした曜日には新規学習を入れません（土日には平日より多く配分されることがあります）。</div></div>
       <div class="field"><label>除外する日付</label>
         <div class="xrow"><input type="date" data-x="date">
           <button type="button" class="btn ghost sm" data-x="add">＋ 追加</button></div>
@@ -1654,7 +1654,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v20";
+const APP_VERSION = "v21";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
