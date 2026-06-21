@@ -397,6 +397,8 @@ const DB = (() => {
     if(!cache.settings) cache.settings={};
     if(!Array.isArray(cache.settings.excludeDates)) cache.settings.excludeDates=[];
     if(!Array.isArray(cache.settings.excludeWeekdays)) cache.settings.excludeWeekdays=[];
+    // 初回利用日を記録（grandfather=後で無料上限を厳しくする際、既存ユーザーを日付で据え置くため）。一度きり・以後不変。
+    if(!cache.settings.installedAt){ cache.settings.installedAt = todayStr(); persist(); }
     return cache;
   }
   function persist(){ localStorage.setItem(KEY, JSON.stringify(cache)); }
@@ -406,9 +408,13 @@ const DB = (() => {
     material(id){ return load().materials.find(m=>m.id===id); },
     entriesFor(id){ return load().entries.filter(e=>e.materialId===id); },
     settings(){ return load().settings; },
+    installedAt(){ return load().settings.installedAt; },
     saveSettings(s){
       const db = load();
-      db.settings = { excludeDates: s.excludeDates||[], excludeWeekdays: s.excludeWeekdays||[] };
+      db.settings = {
+        excludeDates: s.excludeDates||[], excludeWeekdays: s.excludeWeekdays||[],
+        installedAt: db.settings.installedAt || todayStr()   // 既存の初回利用日は保持
+      };
       persist();
     },
     saveMaterial(mat, entries){
@@ -431,11 +437,14 @@ const DB = (() => {
     },
     exportData(){ return JSON.parse(JSON.stringify(load())); },
     replaceAll(data){
+      const prevInstalled = (cache && cache.settings && cache.settings.installedAt) || null;
       cache = {
         materials: data.materials||[], entries: data.entries||[],
         settings: {
           excludeDates: (data.settings&&data.settings.excludeDates)||[],
-          excludeWeekdays: (data.settings&&data.settings.excludeWeekdays)||[]
+          excludeWeekdays: (data.settings&&data.settings.excludeWeekdays)||[],
+          // インポート元の初回利用日を優先（古いバックアップに無ければ現状値→今日）。ユーザー歴を正しく引き継ぐ。
+          installedAt: (data.settings&&data.settings.installedAt) || prevInstalled || todayStr()
         }
       };
       persist();
@@ -1654,7 +1663,7 @@ document.getElementById("globalExcludeBtn").addEventListener("click", openGlobal
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v21";
+const APP_VERSION = "v22";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
