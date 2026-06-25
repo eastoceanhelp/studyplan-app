@@ -1078,6 +1078,15 @@ function renderMatrix(){
   html += t + `<p class="muted" style="margin-top:12px">数字はその日に学習する予定の合計${" "}数（新規＋復習）です。</p></div>`;
   viewEl.innerHTML = html;
   viewEl.querySelectorAll("td.matname[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  // Scroll the matrix so today's column sits just right of the sticky 教材名 column
+  // (past columns are kept — scroll left to see them). Non-destructive default view.
+  const wrap = viewEl.querySelector(".table-wrap");
+  const todayTh = viewEl.querySelector(".matrix thead th.today");
+  if(wrap && todayTh){
+    const corner = viewEl.querySelector(".matrix thead th.matname");
+    const off = corner ? corner.offsetWidth : 0;
+    wrap.scrollLeft += todayTh.getBoundingClientRect().left - wrap.getBoundingClientRect().left - off;
+  }
 }
 
 /* Follow-banner shown while dragging a 予実表 cell. On phones the dragged cell
@@ -1735,7 +1744,7 @@ document.getElementById("helpBtn").addEventListener("click", openOnboarding);
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v26";
+const APP_VERSION = "v27";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
 setDateline();
