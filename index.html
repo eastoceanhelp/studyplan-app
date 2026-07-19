@@ -2180,7 +2180,8 @@ const dragBanner = (()=>{
     const e=ensure();
     const left=Math.min(Math.max(x, 70), window.innerWidth-70);
     e.style.left=left+"px";
-    e.style.top=Math.max(8, y-64)+"px";
+    // 指と手のひらで隠れないよう、ポインタのかなり上（バナー下端が指の約80px上）に置く
+    e.style.top=Math.max(8, y-140)+"px";
   }
   function show(srcHtml){ const e=ensure(); active=true; e.removeAttribute("data-state"); e.innerHTML=srcHtml; e.classList.add("on"); }
   function target(html, ok){ if(!active||!el) return; const t=el.querySelector(".dbtgt"); if(t) t.innerHTML=html;
@@ -3487,7 +3488,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v59";
+const APP_VERSION = "v60";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
