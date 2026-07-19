@@ -160,6 +160,7 @@ nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);fon
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
 .section-head h2{font-family:var(--serif);font-weight:700;font-size:23px;letter-spacing:.08em;display:flex;align-items:center;gap:12px}
 .section-head h2::before{content:"";width:9px;height:22px;background:var(--vermilion);display:inline-block;border-radius:1px;transform:skewX(-12deg)}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin:-8px 0 18px}
 .muted{color:var(--ink-soft);font-size:13px}
 .btn{
   font-family:var(--serif);font-weight:600;letter-spacing:.1em;font-size:14px;cursor:pointer;
@@ -1843,15 +1844,15 @@ function bindEmpty(){
   // body, so bind ALL matches (querySelectorAll), not just the first.
   viewEl.querySelectorAll('[data-act="new"]').forEach(n=>n.onclick=()=>openForm());
   const s=viewEl.querySelector('[data-act="sample"]'); if(s) s.onclick=createSample;
-  const r=viewEl.querySelector('[data-act="routeset"]'); if(r) r.onclick=openRouteWizard;
+  viewEl.querySelectorAll('[data-act="routeset"]').forEach(r=>r.onclick=openRouteWizard);
 }
 function renderPlans(){
   const mats = DB.materials();
-  let html = `<div class="fade"><div class="section-head"><h2>${t("計画一覧")}</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+  let html = `<div class="fade"><div class="section-head"><h2>${t("計画一覧")}</h2></div>
+    <div class="head-actions">
       <button class="btn ghost sm" data-act="routeset">${t("計画一括登録")}</button>
       <button class="btn accent" data-act="new">${t("＋ 計画を登録")}</button>
-    </div></div>`;
+    </div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
 
   html += `<div class="cards">`;
@@ -1884,18 +1885,18 @@ function matrixMode(){
   return (m==="week"||m==="month") ? m : "day";
 }
 function matrixHead(mode){
-  return `<div class="fade"><div class="section-head"><h2>${t("全体計画表")}</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+  return `<div class="fade"><div class="section-head"><h2>${t("全体計画表")}</h2></div>
+    <div class="head-actions">
       <div class="seg" id="mxseg">
         <button data-mode="day" class="${mode==='day'?'on':''}">${t("日")}</button>
         <button data-mode="week" class="${mode==='week'?'on':''}">${t("週")}</button>
         <button data-mode="month" class="${mode==='month'?'on':''}">${t("月")}</button>
       </div>
       <button class="btn accent" data-act="new">${t("＋ 計画を登録")}</button>
-    </div></div>`;
+    </div>`;
 }
 function bindMatrixHead(){
-  const nb = viewEl.querySelector('.section-head [data-act="new"]');
+  const nb = viewEl.querySelector('.head-actions [data-act="new"]');
   if(nb) nb.onclick = ()=>openForm();
   viewEl.querySelectorAll("#mxseg button").forEach(b=>b.onclick=()=>{
     localStorage.setItem(MATRIX_MODE_KEY, b.dataset.mode); render();
@@ -3481,7 +3482,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v56";
+const APP_VERSION = "v57";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
