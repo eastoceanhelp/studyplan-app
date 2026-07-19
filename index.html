@@ -818,12 +818,10 @@ const I18N_PAIRS = {
   "条件から日毎の学習計画を自動で立案します。": ["依條件自動排定每日學習計畫。","依条件自动制定每日学习计划。"],
   "教材名": ["教材名稱","教材名称"],
   "例）英単語帳・問題集の名前": ["例：單字書・題庫的名稱","例：单词书・题库的名称"],
-  "定番参考書は入力すると候補が出ます（「化学」など教科名でも探せます）。選ぶとページ数も入ります。": ["輸入常見參考書名會顯示候選（也可用「化学」等科目名搜尋）。選擇後會自動填入頁數。","输入常见参考书名会显示候选（也可用「化学」等科目名搜索）。选择后会自动填入页数。"],
   "学習単位": ["學習單位","学习单位"],
   "開始日": ["開始日","开始日"],
   "終了日": ["結束日","结束日"],
   "学習範囲": ["學習範圍","学习范围"],
-  "学習する最初と最後の番号（ページ／問番号）": ["要學習的起始與結束編號（頁碼／題號）","要学习的起始与结束编号（页码／题号）"],
   "除外の設定": ["排除設定","排除设置"],
   "曜日・日付・ページを計画から除く": ["從計畫排除星期／日期／頁題","从计划排除星期／日期／页题"],
   "除外ページ・問題": ["排除的頁／題","排除的页／题"],
@@ -2777,7 +2775,7 @@ function openForm(mat){
         <input type="text" id="f-name" value="${esc(m.name)}" placeholder="${t("例）英単語帳・問題集の名前")}" autocomplete="off">
         <div class="sug-box" id="f-sug" style="display:none"></div>
       </div>
-      <div class="hint">${t("定番参考書は入力すると候補が出ます（「化学」など教科名でも探せます）。選ぶとページ数も入ります。")}</div></div>
+    </div>
     <div class="field"><label>${t("学習単位")}</label>
       <div class="unit-seg">
         <input type="radio" name="unit" id="u-page" value="page" ${m.unit==="page"?"checked":""}><label for="u-page">${t("ページ")}</label>
@@ -2792,7 +2790,7 @@ function openForm(mat){
         <input type="number" id="f-rs" value="${m.rangeStart}" min="1">
         <span class="dash">〜</span>
         <input type="number" id="f-re" value="${m.rangeEnd}" min="1">
-      </div><div class="hint">${t("学習する最初と最後の番号（ページ／問番号）")}</div></div>
+      </div></div>
     <details class="xfold" ${(editing && (m.excluded || exModel.excludeDates.length || exModel.excludeWeekdays.length))?"open":""}>
       <summary>${t("除外の設定")}<span class="xfold-sub">${t("曜日・日付・ページを計画から除く")}</span></summary>
       <div class="xfold-body">
@@ -3478,7 +3476,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v51";
+const APP_VERSION = "v52";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
