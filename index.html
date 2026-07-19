@@ -720,7 +720,6 @@ const I18N_PAIRS = {
   "最初の学習計画を立てましょう。": ["來建立第一個學習計畫吧。","来制定第一个学习计划吧。"],
   "＋ 教材を追加": ["＋ 新增教材","＋ 添加教材"],
   "サンプルを作成": ["建立範例","创建示例"],
-  "⤒ バックアップから復元": ["⤒ 從備份還原","⤒ 从备份恢复"],
   "学習計画一覧": ["學習計畫清單","学习计划列表"],
   "⤓ エクスポート": ["⤓ 匯出","⤓ 导出"],
   "⤒ インポート": ["⤒ 匯入","⤒ 导入"],
@@ -872,7 +871,7 @@ const I18N_PAIRS = {
   "「今日」タブで今日の分だけ": ["「今日」分頁只看今天的份","「今日」标签只看今天的份"],
   "今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。": ["只列出今天要做的學習。<b>打勾即記為實績</b>，並反映到進度。","只列出今天要做的学习。<b>打勾即记为实绩</b>，并反映到进度。"],
   "保存とバックアップ": ["儲存與備份","保存与备份"],
-  "データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ 復元」</b>してください。": ["資料只儲存在<b>這台裝置內</b>（不會傳送到外部）。更換或新增裝置時，請用<b>「⤓ 匯出」</b>備份，再到新裝置<b>「⤒ 還原」</b>。","数据只保存在<b>这台设备内</b>（不会发送到外部）。更换或新增设备时，请用<b>「⤓ 导出」</b>备份，再到新设备<b>「⤒ 恢复」</b>。"],
+  "データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは、メニュー（☰）の<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ インポート」</b>から復元してください。": ["資料只儲存在<b>這台裝置內</b>（不會傳送到外部）。更換或新增裝置時，請從選單（☰）用<b>「⤓ 匯出」</b>備份，再到新裝置以<b>「⤒ 匯入」</b>還原。","数据只保存在<b>这台设备内</b>（不会发送到外部）。更换或新增设备时，请从菜单（☰）用<b>「⤓ 导出」</b>备份，再到新设备以<b>「⤒ 导入」</b>恢复。"],
   "スキップ": ["略過","跳过"],
   "← 戻る": ["← 上一步","← 上一步"],
   "次へ →": ["下一步 →","下一步 →"],
@@ -910,7 +909,7 @@ const I18N_PAIRS = {
   "ポモドーロ実行中（タップで詳細）": ["番茄鐘進行中（點擊查看）","番茄钟进行中（点按查看）"],
 
   /* ---- 教材セット一括登録 ---- */
-  "セットで追加": ["套組新增","按套装添加"],
+  "教材をまとめて追加": ["一次新增多本教材","一次添加多本教材"],
   "教材セットを追加": ["新增教材套組","添加教材套装"],
   "定番参考書のセットから、期間に合わせて全教材の計画を一括で立てます。": ["從經典參考書套組，依期間一次建立全部教材的計畫。","从经典参考书套装，按期间一次建立全部教材的计划。"],
   "教科": ["科目","科目"],
@@ -1837,16 +1836,14 @@ function emptyPlans(){
     <p class="muted">${t("最初の学習計画を立てましょう。")}</p>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
       <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
-      <button class="btn ghost" data-act="routeset">${t("セットで追加")}</button>
+      <button class="btn ghost" data-act="routeset">${t("教材をまとめて追加")}</button>
       <button class="btn ghost" data-act="sample">${t("サンプルを作成")}</button>
-      <button class="btn ghost" data-act="import">${t("⤒ バックアップから復元")}</button>
     </div></div>`;
 }
 function bindEmpty(){
-  // The "教材を追加" and "インポート" actions appear both in the header and in
-  // the empty-state body, so bind ALL matches (querySelectorAll), not just the first.
+  // The "教材を追加" action appears both in the header and in the empty-state
+  // body, so bind ALL matches (querySelectorAll), not just the first.
   viewEl.querySelectorAll('[data-act="new"]').forEach(n=>n.onclick=()=>openForm());
-  viewEl.querySelectorAll('[data-act="import"]').forEach(im=>im.onclick=importData);
   const s=viewEl.querySelector('[data-act="sample"]'); if(s) s.onclick=createSample;
   const r=viewEl.querySelector('[data-act="routeset"]'); if(r) r.onclick=openRouteWizard;
 }
@@ -1854,10 +1851,7 @@ function renderPlans(){
   const mats = DB.materials();
   let html = `<div class="fade"><div class="section-head"><h2>${t("学習計画一覧")}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn ghost sm" data-act="export">${t("⤓ エクスポート")}</button>
-      <button class="btn ghost sm" data-act="import">${t("⤒ インポート")}</button>
-      <button class="btn ghost sm" data-act="library">${t("教材リスト")}</button>
-      <button class="btn ghost sm" data-act="routeset">${t("セットで追加")}</button>
+      <button class="btn ghost sm" data-act="routeset">${t("教材をまとめて追加")}</button>
       <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
     </div></div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
@@ -1882,9 +1876,6 @@ function renderPlans(){
 
   viewEl.querySelectorAll(".card[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
   viewEl.querySelectorAll('[data-act="new"]').forEach(b=>b.onclick=()=>openForm());
-  const exB=viewEl.querySelector('[data-act="export"]'); if(exB) exB.onclick=exportData;
-  const imB=viewEl.querySelector('[data-act="import"]'); if(imB) imB.onclick=importData;
-  const lbB=viewEl.querySelector('[data-act="library"]'); if(lbB) lbB.onclick=openLibraryImport;
   const rsB=viewEl.querySelector('[data-act="routeset"]'); if(rsB) rsB.onclick=openRouteWizard;
 }
 
@@ -2969,7 +2960,7 @@ const ONBOARD_STEPS = [
   { mark:"今", title:"「今日」タブで今日の分だけ",
     body:"今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。" },
   { mark:"控", title:"保存とバックアップ",
-    body:"データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ 復元」</b>してください。" }
+    body:"データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは、メニュー（☰）の<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ インポート」</b>から復元してください。" }
 ];
 function openOnboarding(){
   let step=0;
@@ -3357,9 +3348,10 @@ document.getElementById("menuBtn").addEventListener("click", openMenu);
 function themeStateLabel(){
   return t(document.documentElement.getAttribute("data-theme")==="dark" ? "暗い" : "明るい");
 }
-/* ---- ハンバーガー（☰）→ 設定／ポモドーロタイマー ----
+/* ---- ハンバーガー（☰）→ 設定／ポモドーロ／教材リスト／エクスポート／インポート ----
    他のモーダルと同じ .overlay なので戻るボタンの履歴同期に自動で乗る。
-   各行は自身を閉じてから対象モーダルを開く（1階層だけ積む）。 */
+   各行は自身を閉じてから対象モーダルを開く（1階層だけ積む）。
+   エクスポート/インポートは計画一覧ヘッダーから移設（v54）。 */
 function openMenu(){
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal" style="width:min(420px,100%)">
@@ -3373,6 +3365,18 @@ function openMenu(){
         <span class="set-label">${t("ポモドーロタイマー")}</span>
         <span class="set-val">${pomo.running ? pomoRemainStr(pomoTarget().getTime()-Date.now())+" " : ""}<span class="set-chev">›</span></span>
       </button>
+      <button class="set-row" id="menu-library">
+        <span class="set-label">${t("教材リスト")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
+      <button class="set-row" id="menu-export">
+        <span class="set-label">${t("⤓ エクスポート")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
+      <button class="set-row" id="menu-import">
+        <span class="set-label">${t("⤒ インポート")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
     </div>
     <div class="modal-actions">
       <button class="btn ghost" id="menu-close">${t("閉じる")}</button>
@@ -3384,6 +3388,9 @@ function openMenu(){
   ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
   ov.querySelector("#menu-settings").onclick=()=>{ close(); openSettings(); };
   ov.querySelector("#menu-pomodoro").onclick=()=>{ close(); openPomodoro(); };
+  ov.querySelector("#menu-library").onclick=()=>{ close(); openLibraryImport(); };
+  ov.querySelector("#menu-export").onclick=()=>{ close(); exportData(); };
+  ov.querySelector("#menu-import").onclick=()=>{ close(); importData(); };
 }
 
 function openSettings(){
@@ -3476,7 +3483,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v53";
+const APP_VERSION = "v54";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
