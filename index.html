@@ -160,7 +160,7 @@ nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);fon
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
 .section-head h2{font-family:var(--serif);font-weight:700;font-size:23px;letter-spacing:.08em;display:flex;align-items:center;gap:12px}
 .section-head h2::before{content:"";width:9px;height:22px;background:var(--vermilion);display:inline-block;border-radius:1px;transform:skewX(-12deg)}
-.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin:-8px 0 18px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:-8px 0 18px}
 .muted{color:var(--ink-soft);font-size:13px}
 .btn{
   font-family:var(--serif);font-weight:600;letter-spacing:.1em;font-size:14px;cursor:pointer;
@@ -1850,8 +1850,8 @@ function renderPlans(){
   const mats = DB.materials();
   let html = `<div class="fade"><div class="section-head"><h2>${t("計画一覧")}</h2></div>
     <div class="head-actions">
-      <button class="btn ghost sm" data-act="routeset">${t("計画一括登録")}</button>
       <button class="btn accent" data-act="new">${t("＋ 計画を登録")}</button>
+      <button class="btn ghost" data-act="routeset">${t("計画一括登録")}</button>
     </div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
 
@@ -1892,12 +1892,17 @@ function matrixHead(mode){
         <button data-mode="week" class="${mode==='week'?'on':''}">${t("週")}</button>
         <button data-mode="month" class="${mode==='month'?'on':''}">${t("月")}</button>
       </div>
+    </div>
+    <div class="head-actions">
       <button class="btn accent" data-act="new">${t("＋ 計画を登録")}</button>
+      <button class="btn ghost" data-act="routeset">${t("計画一括登録")}</button>
     </div>`;
 }
 function bindMatrixHead(){
   const nb = viewEl.querySelector('.head-actions [data-act="new"]');
   if(nb) nb.onclick = ()=>openForm();
+  const rb = viewEl.querySelector('.head-actions [data-act="routeset"]');
+  if(rb) rb.onclick = openRouteWizard;
   viewEl.querySelectorAll("#mxseg button").forEach(b=>b.onclick=()=>{
     localStorage.setItem(MATRIX_MODE_KEY, b.dataset.mode); render();
   });
@@ -1906,7 +1911,7 @@ function renderMatrix(){
   const mats = DB.materials();
   const mode = matrixMode();
   let html = matrixHead(mode);
-  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
+  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); bindMatrixHead(); return; }
   if(mode!=="day") return renderGantt(html, mode);
 
   const all = DB.entries();
@@ -3482,7 +3487,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v57";
+const APP_VERSION = "v58";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
