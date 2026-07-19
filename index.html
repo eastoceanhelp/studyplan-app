@@ -909,7 +909,7 @@ const I18N_PAIRS = {
   "ポモドーロ実行中（タップで詳細）": ["番茄鐘進行中（點擊查看）","番茄钟进行中（点按查看）"],
 
   /* ---- 教材セット一括登録 ---- */
-  "教材をまとめて追加": ["一次新增多本教材","一次添加多本教材"],
+  "計画一括登録": ["批次建立計畫","批量创建计划"],
   "教材セットを追加": ["新增教材套組","添加教材套装"],
   "定番参考書のセットから、期間に合わせて全教材の計画を一括で立てます。": ["從經典參考書套組，依期間一次建立全部教材的計畫。","从经典参考书套装，按期间一次建立全部教材的计划。"],
   "教科": ["科目","科目"],
@@ -1836,7 +1836,7 @@ function emptyPlans(){
     <p class="muted">${t("最初の学習計画を立てましょう。")}</p>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
       <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
-      <button class="btn ghost" data-act="routeset">${t("教材をまとめて追加")}</button>
+      <button class="btn ghost" data-act="routeset">${t("計画一括登録")}</button>
       <button class="btn ghost" data-act="sample">${t("サンプルを作成")}</button>
     </div></div>`;
 }
@@ -1851,7 +1851,7 @@ function renderPlans(){
   const mats = DB.materials();
   let html = `<div class="fade"><div class="section-head"><h2>${t("学習計画一覧")}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn ghost sm" data-act="routeset">${t("教材をまとめて追加")}</button>
+      <button class="btn ghost sm" data-act="routeset">${t("計画一括登録")}</button>
       <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
     </div></div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
@@ -3483,7 +3483,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v54";
+const APP_VERSION = "v55";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
