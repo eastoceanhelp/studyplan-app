@@ -1,0 +1,3549 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>学習計画手帳 — Study Almanac</title>
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#bb3c28" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="学習計画手帳" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --paper:#f4efe3;
+  --paper-2:#ece4d2;
+  --paper-3:#e4d9c2;
+  --card:#fbf7ee;
+  --input-bg:#ffffff;
+  --cell-fill:rgba(255,255,255,.55);
+  --noise-blend:multiply;
+  --noise-opacity:.5;
+  --ink:#23211c;
+  --ink-soft:#6a6353;
+  --ink-faint:#9a9079;
+  --vermilion:#bb3c28;
+  --vermilion-deep:#8c2a1c;
+  --indigo:#2f4f64;
+  --indigo-soft:#5a7588;
+  --gold:#a8843a;
+  --line:rgba(35,33,28,.16);
+  --line-soft:rgba(35,33,28,.08);
+  --weekend:rgba(187,60,40,.05);
+  --sun-bg:rgba(187,60,40,.11);
+  --sat-bg:rgba(47,79,100,.10);
+  --shadow:0 1px 0 rgba(255,255,255,.6),0 18px 40px -22px rgba(35,33,28,.5);
+  --serif:"Zen Old Mincho",serif;
+  --gothic:"Zen Kaku Gothic New",sans-serif;
+}
+:root[data-theme="dark"]{
+  --paper:#1b1915;
+  --paper-2:#252119;
+  --paper-3:#322c22;
+  --card:#221f19;
+  --input-bg:#2b271f;
+  --cell-fill:rgba(236,228,210,.06);
+  --noise-blend:overlay;
+  --noise-opacity:.3;
+  --ink:#ece3d1;
+  --ink-soft:#b6ab92;
+  --ink-faint:#857b66;
+  --vermilion:#d4583c;
+  --vermilion-deep:#a23a24;
+  --indigo:#86a8c1;
+  --indigo-soft:#5a7588;
+  --gold:#c2a05a;
+  --line:rgba(236,228,210,.16);
+  --line-soft:rgba(236,228,210,.08);
+  --weekend:rgba(212,88,60,.09);
+  --sun-bg:rgba(212,88,60,.17);
+  --sat-bg:rgba(134,168,193,.15);
+  --shadow:0 1px 0 rgba(255,255,255,.04),0 18px 40px -22px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--gothic);
+  color:var(--ink);
+  background:
+    radial-gradient(120% 80% at 100% 0%,rgba(187,60,40,.05),transparent 55%),
+    radial-gradient(110% 90% at 0% 100%,rgba(47,79,100,.06),transparent 50%),
+    var(--paper);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"palt" 1;
+  line-height:1.6;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  mix-blend-mode:var(--noise-blend);opacity:var(--noise-opacity);
+}
+.app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px 120px}
+
+/* ---------- masthead ---------- */
+header.mast{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:20px;padding:38px 0 18px;border-bottom:2px solid var(--ink);
+  position:relative;
+}
+header.mast::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--ink);opacity:.25}
+.brand{display:flex;align-items:center;gap:18px}
+.seal{
+  width:58px;height:58px;flex:none;border-radius:8px;
+  background:var(--vermilion);color:#f6f1e6;
+  display:grid;place-items:center;font-family:var(--serif);font-weight:900;
+  font-size:13px;line-height:1.05;text-align:center;letter-spacing:.04em;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),0 8px 18px -8px var(--vermilion-deep);
+  transform:rotate(-3deg);
+  writing-mode:vertical-rl;padding:6px 2px;
+}
+.brand h1{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.06em;line-height:1}
+.brand .sub{font-family:var(--serif);font-size:11px;letter-spacing:.42em;color:var(--vermilion);text-transform:uppercase;margin-top:8px;padding-left:3px}
+.brand .sub .ver{margin-left:.7em;letter-spacing:.1em;color:var(--ink-faint);font-weight:600}
+/* ハンバーガー「☰」＝設定とポモドーロを収める入口。枠なしの素のグリフ（墨線＋朱の
+   エディトリアルに馴染ませる）。.dateline 内に置き bottom:100% で「日付の真上」にアンカー
+   ＝高さのマジックナンバー不要・ブランド側のレイアウトにも影響しない。
+   タップ領域は透明パディングで確保（見た目はグリフのみ）。
+   ポモドーロ実行中(.on)は朱で「☰ 24:30」のように残り時間を出す（数字は等幅で桁揺れ防止）。 */
+.menu-btn{
+  position:absolute;right:-6px;bottom:calc(100% + 2px);
+  border:none;background:transparent;padding:8px 6px 8px 14px;
+  color:var(--ink-soft);font-family:inherit;font-size:20px;line-height:1;
+  display:inline-flex;align-items:center;cursor:pointer;
+  font-variant-numeric:tabular-nums;
+}
+.menu-btn:hover{color:var(--vermilion)}
+.menu-btn.on{color:var(--vermilion);font-size:14px;letter-spacing:.02em}
+.dateline{position:relative;text-align:right;font-family:var(--serif);color:var(--ink-soft)}
+.dateline .big{font-size:21px;color:var(--ink);letter-spacing:.04em}
+.dateline .big span{white-space:nowrap}
+.dateline .small{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+
+/* ---------- nav ---------- */
+nav.tabs{display:flex;gap:4px;margin:22px 0 30px;flex-wrap:wrap}
+nav.tabs button{
+  font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.14em;
+  color:var(--ink-soft);background:transparent;border:none;cursor:pointer;
+  padding:10px 20px 9px;position:relative;border-radius:3px;transition:color .2s;
+}
+nav.tabs button .en{display:block;font-size:9px;letter-spacing:.28em;color:var(--ink-faint);margin-top:3px;font-weight:500}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.active{color:var(--vermilion)}
+nav.tabs button.active::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;
+  background:var(--vermilion);border-radius:3px;
+}
+nav.tabs .theme-toggle{
+  border:1.5px solid var(--line);border-radius:30px;
+  padding:0 16px;height:35px;background:var(--card);color:var(--ink-soft);
+  font-size:13px;letter-spacing:.1em;display:inline-flex;align-items:center;justify-content:center;gap:8px;overflow:hidden;
+}
+nav.tabs .theme-toggle::after{display:none}
+nav.tabs .theme-toggle:hover{color:var(--vermilion);border-color:var(--vermilion)}
+nav.tabs .nav-icon{margin-left:auto;padding:0 14px;margin-right:8px;font-size:16px;line-height:1}
+/* 使い方ガイドの「？」＝.nav-icon と同じ小さめ見た目。ただし margin-left:auto を
+   持たせると右端グループに2つ目の auto ができて離れてしまうので付けない
+   （⛭ の auto がグループ全体を右へ寄せる。順序は ⛭ ⏱ ？ ☾）。 */
+nav.tabs .nav-icon-h{padding:0 13px;margin-right:8px;font-size:16px;line-height:1}
+/* ポモドーロ「⏱」＝？と同様 margin-left:auto は付けない。実行中(.on)は朱で
+   次のチャイムまでの残り時間を表示する（数字は等幅で桁揺れを防ぐ）。 */
+nav.tabs .nav-icon-p{padding:0 13px;margin-right:8px;font-size:15px;line-height:1;font-variant-numeric:tabular-nums}
+nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);font-size:13px;letter-spacing:.02em}
+
+/* ---------- generic ---------- */
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+.section-head h2{font-family:var(--serif);font-weight:700;font-size:23px;letter-spacing:.08em;display:flex;align-items:center;gap:12px}
+.section-head h2::before{content:"";width:9px;height:22px;background:var(--vermilion);display:inline-block;border-radius:1px;transform:skewX(-12deg)}
+.muted{color:var(--ink-soft);font-size:13px}
+.btn{
+  font-family:var(--serif);font-weight:600;letter-spacing:.1em;font-size:14px;cursor:pointer;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);
+  padding:9px 18px;border-radius:5px;transition:transform .12s,box-shadow .2s,background .2s;
+  box-shadow:0 4px 0 -1px rgba(35,33,28,.25);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 -1px rgba(35,33,28,.25)}
+.btn.accent{background:var(--vermilion);border-color:var(--vermilion);box-shadow:0 4px 0 -1px var(--vermilion-deep)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn.ghost:hover{background:var(--paper-2)}
+.btn.sm{padding:5px 12px;font-size:12px;box-shadow:none}
+.tag{display:inline-block;font-size:11px;letter-spacing:.1em;padding:2px 9px;border-radius:20px;background:var(--paper-3);color:var(--ink-soft);font-weight:500}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{
+  background:linear-gradient(180deg,var(--card),var(--paper));
+  border:1px solid var(--line);border-radius:10px;padding:12px 16px 10px;position:relative;
+  box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 1px 0 rgba(255,255,255,.6),0 26px 46px -24px rgba(35,33,28,.55)}
+.card .swatch{position:absolute;top:0;left:0;width:6px;height:100%}
+.card h3{font-family:var(--serif);font-size:17px;letter-spacing:.04em;margin-bottom:2px;padding-left:6px}
+.card .meta{font-size:11px;color:var(--ink-soft);padding-left:6px;margin-bottom:6px}
+.card .meta .mstat{font-family:var(--serif);font-size:12px;font-weight:700;color:var(--ink)}
+.card .bar{height:5px;background:var(--paper-3);border-radius:4px;margin:0 6px;overflow:hidden}
+.card .bar > i{display:block;height:100%;border-radius:4px;background:var(--vermilion)}
+.card.add{display:grid;place-items:center;border-style:dashed;background:transparent;box-shadow:none;min-height:64px}
+.card.add:hover{background:var(--paper-2)}
+.card.add .plus{font-family:var(--serif);font-size:22px;color:var(--vermilion);line-height:1}
+.card.add p{font-family:var(--serif);letter-spacing:.18em;color:var(--ink-soft);margin-top:2px}
+
+/* ---------- today ---------- */
+.today-grid{display:grid;grid-template-columns:1fr;gap:22px}
+.day-block .day-label{font-family:var(--serif);font-size:13px;letter-spacing:.18em;color:var(--ink-soft);
+  margin:0 0 2px;padding:0 2px 7px;display:flex;align-items:center;gap:10px;border-bottom:1.5px solid var(--ink)}
+.day-block.overdue .day-label{color:var(--vermilion);border-bottom-color:var(--vermilion)}
+.day-label .rule{flex:1}
+.day-label .muted{margin-left:auto;font-size:11px;letter-spacing:.08em}
+.task{
+  display:grid;align-items:center;
+  grid-template-columns:18px minmax(0,1fr) 48px minmax(0,1.1fr) 64px;
+  gap:14px;padding:6px 6px 6px 4px;border-bottom:1px solid var(--line);
+  position:relative;transition:background .12s,opacity .2s;
+}
+.task:hover{background:rgba(35,33,28,.035)}
+.task::before{content:"";position:absolute;left:-8px;top:6px;bottom:6px;width:3px;border-radius:3px;background:var(--mat,var(--ink))}
+.task.done{opacity:.42}
+.task.done .t-range{text-decoration:line-through}
+.task .chk{
+  width:18px;height:18px;flex:none;border:2px solid var(--ink-faint);border-radius:5px;cursor:pointer;
+  display:grid;place-items:center;color:var(--paper);transition:.15s;
+}
+.task .chk:hover{border-color:var(--vermilion)}
+.task.done .chk{background:var(--vermilion);border-color:var(--vermilion)}
+.task .chk svg{width:11px;height:11px;opacity:0}
+.task.done .chk svg{opacity:1}
+.task .t-mat{font-family:var(--serif);font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .t-type{font-size:10.5px;letter-spacing:.04em;padding:1.5px 0;border-radius:4px;font-weight:700;text-align:center}
+.t-type.new{background:rgba(47,79,100,.12);color:var(--indigo)}
+.t-type.rev{background:rgba(187,60,40,.11);color:var(--vermilion)}
+.task .t-range{font-family:var(--serif);font-size:15px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .t-count{font-size:13px;font-family:var(--serif);color:var(--ink-soft);text-align:right;white-space:nowrap}
+/* 翌日以降のプレビュー（チェック不可・薄表示） */
+.preview-head{font-family:var(--serif);font-size:12px;letter-spacing:.16em;color:var(--ink-faint);margin:8px 2px -6px;padding-top:6px;border-top:1px dashed var(--line)}
+.day-block.preview{opacity:.58}
+.day-block.preview .day-label{color:var(--ink-faint);border-bottom-color:var(--line)}
+.task.preview{cursor:default}
+.task.preview:hover{background:none}
+.task .chk-ph{width:18px;height:18px;flex:none;border:2px dashed var(--ink-faint);border-radius:5px;opacity:.5}
+.today-done{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:14px;color:var(--ink-soft);padding:8px 6px;border-bottom:1px solid var(--line)}
+.today-done .mk{display:inline-grid;place-items:center;width:24px;height:24px;flex:none;border-radius:50%;background:var(--vermilion);color:var(--paper);font-size:12px;font-weight:700}
+.empty-state{text-align:center;padding:70px 20px;color:var(--ink-soft)}
+.empty-state .mark{font-family:var(--serif);font-size:52px;color:var(--vermilion);opacity:.8}
+.empty-state p{font-family:var(--serif);letter-spacing:.1em;margin-top:6px}
+
+/* ---------- tables ---------- */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid var(--line-soft);padding:7px 10px;text-align:center;white-space:nowrap}
+thead th{
+  background:var(--paper-2);font-family:var(--serif);font-weight:600;letter-spacing:.06em;
+  position:sticky;top:0;z-index:2;border-bottom:2px solid var(--line);
+}
+.matrix th.matname,.matrix td.matname{
+  position:sticky;left:0;z-index:3;background:var(--paper-2);text-align:left;
+  font-family:var(--serif);min-width:140px;max-width:150px;border-right:2px solid var(--line);
+  overflow:hidden;text-overflow:ellipsis;
+}
+.matrix thead th.matname{z-index:5}        /* top-left corner: above both sticky row & column */
+.matrix td.matname{background:var(--card);cursor:pointer;color:var(--indigo);font-weight:600}
+.matrix td.matname:hover{color:var(--vermilion)}
+.matrix .wknd{background:var(--weekend)}
+.matrix td .cell-n{font-family:var(--serif);font-size:15px}
+.matrix td.zero{color:var(--ink-faint)}
+.matrix td.today{box-shadow:inset 0 0 0 2px var(--vermilion)}
+.matrix thead th.today{color:var(--vermilion)}
+
+/* ---------- gantt（全体計画表の週/月ビュー） ---------- */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:transparent;color:var(--ink-soft);font-family:var(--gothic);font-size:12px;padding:6px 14px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line-soft)}
+.seg button.on{background:var(--ink);color:var(--paper);font-weight:600}
+.gantt{--name-w:150px;min-width:100%;font-size:12px}
+.gantt.week{min-width:calc(var(--name-w) + var(--cols)*58px)}
+.gantt.month{min-width:calc(var(--name-w) + var(--cols)*76px)}
+.g-head{display:flex;background:var(--paper-2);border-bottom:2px solid var(--line)}
+.g-head.g-monrow{border-bottom:1px solid var(--line-soft)}
+.g-row{display:flex;border-top:1px solid var(--line-soft)}
+.g-row:first-of-type{border-top:0}
+.g-name{flex:0 0 var(--name-w);width:var(--name-w);box-sizing:border-box;position:sticky;left:0;z-index:4;background:var(--card);
+  padding:12px 10px;font-family:var(--serif);font-weight:600;font-size:13px;color:var(--indigo);cursor:pointer;
+  border-right:2px solid var(--line);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-name:hover{color:var(--vermilion)}
+.g-head .g-name{background:var(--paper-2);cursor:default;z-index:5;color:var(--ink-soft);font-size:11px;padding:8px 10px}
+.g-days{flex:1;display:flex}
+.g-mon{text-align:center;font-family:var(--serif);font-size:11px;font-weight:600;letter-spacing:.06em;
+  padding:5px 0;color:var(--ink);border-left:2px solid var(--line);overflow:hidden;flex-basis:0}
+.g-mon:first-child{border-left:1px solid var(--line-soft)}
+.g-day{text-align:center;font-family:var(--serif);font-size:11px;padding:6px 0;color:var(--ink-soft);
+  border-left:1px solid var(--line-soft);overflow:hidden;white-space:nowrap;flex-basis:0}
+.gantt.month .g-day{font-weight:600;color:var(--ink)}
+.g-day.today{color:var(--vermilion);box-shadow:inset 0 -2px 0 var(--vermilion)}
+.g-day.g-mstart,.g-cell.g-mstart{border-left:2px solid var(--line)}
+.g-track{flex:1;position:relative;display:flex;min-height:46px}
+.g-cell{border-left:1px solid var(--line-soft);flex-basis:0}
+.g-cell.today{background:rgba(187,60,40,.05)}
+.g-now{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--vermilion);opacity:.65;z-index:1;pointer-events:none}
+.g-bar{position:absolute;top:8px;bottom:8px;border-radius:6px;background:var(--mat);z-index:2;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  touch-action:none;cursor:grab;overflow:hidden;user-select:none;-webkit-user-select:none;
+  box-shadow:0 1px 4px rgba(35,33,28,.28)}
+.g-bar.dragging{opacity:.8;cursor:grabbing;z-index:6;box-shadow:0 4px 14px rgba(35,33,28,.35)}
+.g-bar .g-lbl{position:relative;z-index:2;padding:0 15px;font-size:11px;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.g-tail{position:absolute;top:0;bottom:0;right:0;background:var(--card);opacity:.55;z-index:0;pointer-events:none}
+.g-h{position:absolute;top:0;bottom:0;width:13px;z-index:3;touch-action:none;cursor:ew-resize}
+.g-h.l{left:0}
+.g-h.r{right:0}
+.g-h::after{content:"";position:absolute;top:50%;transform:translateY(-50%);width:3px;height:14px;border-radius:2px;background:rgba(255,255,255,.78)}
+.g-h.l::after{left:4px}
+.g-h.r::after{right:4px}
+.g-h::before{content:"";position:absolute;top:-6px;bottom:-6px;left:-8px;right:-8px} /* 24px+ touch hit area */
+
+/* yojitsu table */
+.yt{width:auto;min-width:0}
+.yt th,.yt td{padding:5px 6px}
+.yt th.grp{background:var(--paper-3);font-size:12px}
+.yt th.grp.new{color:var(--indigo)}
+.yt th.grp.rev{color:var(--vermilion)}
+.yt td.date{font-family:var(--serif);text-align:left;min-width:58px;width:58px;position:sticky;left:0;background:var(--card);border-right:2px solid var(--line);z-index:1}
+.yt thead th.date{left:0;z-index:4;background:var(--paper-2);border-right:2px solid var(--line)}  /* top-left corner: stick to both top & left */
+.yt tr.wknd td.date{background:var(--paper-2)}
+.yt tr.wknd{background:var(--weekend)}
+.yt tr.sun{background:var(--sun-bg)}
+.yt tr.sat{background:var(--sat-bg)}
+.yt td.date .wd{color:var(--ink-faint);font-size:11px;font-weight:600}
+.yt tr.sun td.date .wd{color:var(--vermilion)}
+.yt tr.sat td.date .wd{color:var(--indigo)}
+.yt tr.today td.date{box-shadow:inset 3px 0 0 var(--vermilion)}
+.yt td.range{font-family:var(--serif);min-width:54px;cursor:grab}
+.yt td.range[draggable="true"]:active{cursor:grabbing}
+.yt td.range.has{background:var(--cell-fill)}
+.yt td.range.new.has{box-shadow:inset 0 0 0 1px rgba(47,79,100,.25)}
+.yt td.range.rev.has{box-shadow:inset 0 0 0 1px rgba(187,60,40,.2)}
+.yt td.range.drop-ok{outline:2px dashed var(--vermilion);outline-offset:-3px;background:rgba(187,60,40,.08)}
+.yt td.range.dragging{opacity:.35}
+/* ドラッグ中の追従バナー（スマホで指にセルが隠れて見えづらい対策） */
+#dragbanner{position:fixed;z-index:200;left:0;top:0;transform:translate(-50%,0);
+  pointer-events:none;opacity:0;transition:opacity .12s;
+  max-width:78vw;padding:8px 12px;border-radius:12px;
+  background:rgba(35,33,28,.94);color:#fff;font-size:13px;line-height:1.45;
+  box-shadow:0 6px 22px rgba(0,0,0,.35);text-align:center;white-space:nowrap}
+#dragbanner.on{opacity:1}
+#dragbanner .dbsrc{font-weight:700}
+#dragbanner .dbtgt{font-size:12px;margin-top:2px;opacity:.9}
+#dragbanner .dbnote{font-size:11px;opacity:.7}
+#dragbanner[data-state="ok"]{background:rgba(120,160,90,.96)}
+#dragbanner[data-state="ok"] .dbtgt{opacity:1}
+#dragbanner[data-state="no"]{background:rgba(187,60,40,.96)}
+#dragbanner[data-state="no"] .dbtgt{opacity:1}
+.yt td.range.editable{position:relative}
+.yt td.range.editable .editmark{margin-left:4px;font-size:10px;opacity:0;color:var(--vermilion);transition:opacity .15s}
+.yt td.range.editable:hover .editmark{opacity:.85}
+.yt td.range.editable:hover{outline:1px solid rgba(187,60,40,.35);outline-offset:-3px}
+.yt th.num,.yt td.num{padding:5px 2px;min-width:28px;width:28px}
+.yt .daytot{background:rgba(168,132,58,.1)}
+.yt td.daytot{font-family:var(--serif);font-weight:600}
+.yt td.daytot.act{color:var(--vermilion)}
+.yt .cellinput{width:34px;border:1px solid var(--line);background:var(--input-bg);text-align:center;font-family:var(--gothic);font-size:13px;color:var(--ink);border-radius:4px;box-shadow:inset 0 1px 2px rgba(35,33,28,.06);-moz-appearance:textfield;appearance:textfield;cursor:text}
+.yt .cellinput:hover{border-color:var(--vermilion)}
+.yt .cellinput::-webkit-outer-spin-button,.yt .cellinput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.yt .cellinput:focus{outline:none;background:var(--input-bg);box-shadow:inset 0 0 0 1.5px var(--vermilion)}
+.yt td.actual.full{background:rgba(120,160,90,.16)}
+.yt td.actual.over{background:rgba(187,60,40,.12)}
+.yt .colsep{border-left:2px solid var(--line)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+
+/* ---------- form / modal ---------- */
+/* grid-template-columns:100% ＝列幅をビューポートに固定。列を auto のままにすると
+   モーダル内の折り返せない内容（長い教材名の行など）の固有幅に列が広がり、
+   width:min(620px,100%) の 100% が解決されず狭幅端末で右が見切れる。 */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(35,33,28,.42);backdrop-filter:blur(3px);display:grid;grid-template-columns:100%;place-items:start center;overflow-y:auto;padding:46px 18px}
+.modal{
+  background:linear-gradient(180deg,var(--card),var(--paper));width:min(620px,100%);border-radius:14px;
+  border:1px solid var(--line);box-shadow:0 30px 80px -30px rgba(35,33,28,.7);padding:30px 32px 26px;position:relative;
+}
+.modal::before{content:"";position:absolute;top:0;left:32px;right:32px;height:4px;background:var(--vermilion);border-radius:0 0 4px 4px}
+.modal h2{font-family:var(--serif);font-size:25px;letter-spacing:.06em;margin-bottom:4px}
+.modal .lead{color:var(--ink-soft);font-size:13px;margin-bottom:22px}
+/* 設定メニュー（テーマ・言語・使い方ガイド・共通の除外日設定の行リスト） */
+.set-list{margin-top:14px;border-top:1px solid var(--line)}
+.set-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:15px 4px;background:transparent;border:none;border-bottom:1px solid var(--line);
+  cursor:pointer;text-align:left;color:var(--ink);font-family:inherit}
+.set-row:hover{color:var(--vermilion)}
+.set-label{font-size:15px;letter-spacing:.04em}
+.set-val{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft)}
+.set-row:hover .set-val{color:var(--vermilion)}
+.set-chev{font-size:18px;color:var(--ink-faint);line-height:1}
+/* オンボーディング（初回の歓迎ガイド・カード式） */
+.modal.onboard{text-align:center;padding-top:34px}
+.onboard .ob-mark{font-family:var(--serif);font-weight:900;font-size:58px;line-height:1;color:var(--vermilion);
+  display:grid;place-items:center;width:104px;height:104px;margin:2px auto 20px;border-radius:50%;
+  background:radial-gradient(circle at 50% 36%,var(--paper),var(--paper-2));
+  box-shadow:inset 0 0 0 2px var(--line),0 12px 28px -16px var(--vermilion-deep)}
+.onboard .ob-title{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.08em;margin-bottom:14px}
+.onboard .ob-body{color:var(--ink-soft);font-size:14px;line-height:2;letter-spacing:.04em;max-width:30em;margin:0 auto;text-align:left}
+.onboard .ob-body b{color:var(--ink);font-weight:700}
+.onboard .ob-legal{max-width:30em;margin:12px auto 0;text-align:left;font-size:12.5px}
+.onboard .ob-legal a{color:var(--ink-faint);text-decoration:underline;text-underline-offset:3px}
+.onboard .ob-legal a:hover{color:var(--vermilion)}
+.ob-dots{display:flex;gap:9px;justify-content:center;margin:26px 0 22px}
+.ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:transform .2s,background .2s}
+.ob-dots i.on{background:var(--vermilion);transform:scale(1.3)}
+.ob-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ob-actions .right{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+/* ポモドーロタイマー（実行中パネル） */
+.pomo-now{text-align:center;padding:12px 0 6px}
+.pomo-phase{display:inline-block;font-family:var(--serif);font-size:13px;letter-spacing:.28em;padding:3px 12px 3px 17px;border-radius:20px;font-weight:700}
+.pomo-phase.work{background:rgba(47,79,100,.12);color:var(--indigo)}
+.pomo-phase.break{background:rgba(187,60,40,.11);color:var(--vermilion)}
+.pomo-phase.wait{background:var(--paper-3);color:var(--ink-soft)}
+.pomo-clock{font-family:var(--serif);font-weight:900;font-size:54px;line-height:1.2;letter-spacing:.04em;font-variant-numeric:tabular-nums;margin:4px 0 2px}
+.pomo-next{font-size:13px;color:var(--ink-soft)}
+.pomo-end{font-size:12px;color:var(--ink-faint);margin-top:10px}
+.field > label.pomo-chk{display:flex;align-items:center;gap:9px;font-family:var(--gothic);font-size:14px;letter-spacing:0;color:var(--ink);cursor:pointer;margin-bottom:0}
+.pomo-chk input{width:16px;height:16px;accent-color:var(--vermilion)}
+.field{margin-bottom:18px}
+.field > label{display:block;font-family:var(--serif);font-size:13px;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:6px}
+.field input[type=text],.field input[type=number],.field input[type=date],.field input[type=time],.field select{
+  width:100%;font-family:var(--gothic);font-size:15px;color:var(--ink);background:var(--input-bg);
+  border:1.5px solid var(--line);border-radius:7px;padding:9px 12px;transition:border .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--vermilion);box-shadow:0 0 0 3px rgba(187,60,40,.12)}
+.field .hint{font-size:11px;color:var(--ink-faint);margin-top:5px}
+
+/* ---- 教材名の入力候補（プリセット参考書） ---- */
+.sug-wrap{position:relative}
+.sug-box{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:8;background:var(--input-bg);
+  border:1.5px solid var(--line);border-radius:8px;max-height:280px;overflow-y:auto;
+  box-shadow:0 8px 24px rgba(35,33,28,.18)}
+.sug-head{font-family:var(--serif);font-size:11px;letter-spacing:.14em;color:var(--ink-faint);
+  padding:8px 12px 3px;border-top:1px solid var(--line)}
+.sug-box > .sug-head:first-child{border-top:none}
+.sug-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:13px;color:var(--ink)}
+.sug-item:hover{background:var(--paper-2)}
+.sug-item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug-item .lv{flex:none;font-family:var(--serif);font-size:10px;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:4px;padding:1px 6px;letter-spacing:.05em}
+.sug-item .pg{flex:none;font-size:11px;color:var(--ink-faint)}
+.sug-chips{display:flex;flex-wrap:wrap;gap:7px;padding:11px 12px}
+.sug-chips .lead-s{width:100%;font-size:11px;color:var(--ink-faint)}
+.sug-chip{font-family:var(--serif);font-size:13px;letter-spacing:.05em;border:1.5px solid var(--line);
+  border-radius:999px;padding:5px 14px;background:transparent;color:var(--ink);cursor:pointer;transition:.15s}
+.sug-chip:hover{border-color:var(--vermilion);color:var(--vermilion)}
+
+/* ---- 教材セット一括登録ウィザード ---- */
+.rw-list{border:1.5px solid var(--line);border-radius:8px;max-height:300px;overflow-y:auto;padding-bottom:4px}
+.rw-lv{font-family:var(--serif);font-size:11px;letter-spacing:.14em;color:var(--ink-faint);
+  padding:9px 12px 3px;border-top:1px solid var(--line)}
+.rw-list > .rw-lv:first-child{border-top:none}
+.rw-choice{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--vermilion);
+  padding:5px 12px 0;cursor:pointer}
+.rw-choice input{flex:none;margin:0;accent-color:var(--vermilion)}
+.rw-row{display:flex;align-items:center;gap:8px;padding:5px 12px;font-size:13px;color:var(--ink)}
+.rw-row input{flex:none;margin:0;accent-color:var(--vermilion)}
+.rw-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw-row.off .nm{color:var(--ink-faint)}
+.rw-cat{flex:none;font-family:var(--serif);font-size:10px;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:4px;padding:1px 6px;letter-spacing:.05em}
+.rw-par{flex:none;font-size:10px;color:var(--vermilion);border:1px solid var(--vermilion);
+  border-radius:999px;padding:0 6px}
+.rw-dates{flex:none;font-size:11px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.rw-sum{font-size:12px;color:var(--ink-soft);margin-top:8px}
+.sug-empty{padding:10px 12px;font-size:12px;color:var(--ink-faint)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row2 > .field{min-width:0} /* 1fr の min-content 下限を外し狭幅で列がはみ出さない */
+.row3{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.row3 .dash{font-family:var(--serif);font-size:20px;color:var(--ink-soft);padding-bottom:8px;text-align:center}
+
+/* ---- 折りたたみ（除外設定） ---- */
+.xfold{border:1.5px solid var(--line);border-radius:8px;margin-bottom:18px;background:var(--paper-2)}
+.xfold>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:9px;
+  font-family:var(--serif);font-size:13px;letter-spacing:.08em;color:var(--ink-soft);user-select:none}
+.xfold>summary::-webkit-details-marker{display:none}
+.xfold>summary::before{content:"›";font-size:18px;line-height:1;color:var(--ink-faint);transition:transform .2s;display:inline-block}
+.xfold[open]>summary::before{transform:rotate(90deg)}
+.xfold>summary .xfold-sub{font-family:var(--gothic);font-size:11px;letter-spacing:0;color:var(--ink-faint);margin-left:auto}
+.xfold[open]>summary{border-bottom:1px solid var(--line-soft)}
+.xfold-body{padding:14px 14px 0}
+.xfold-body .field:last-child{margin-bottom:14px}
+.unit-seg{display:flex;gap:0;border:1.5px solid var(--line);border-radius:7px;overflow:hidden;width:fit-content}
+.unit-seg label{padding:8px 18px;font-family:var(--serif);font-size:14px;cursor:pointer;color:var(--ink-soft);background:var(--input-bg);transition:.15s}
+.unit-seg input{display:none}
+.unit-seg input:checked + label{background:var(--ink);color:var(--paper)}
+.reviews{display:flex;flex-direction:column;gap:8px}
+.rev-row{display:flex;align-items:center;gap:10px}
+.rev-row .rk{font-family:var(--serif);font-size:13px;color:var(--vermilion);min-width:54px}
+.rev-row input{width:90px}
+.rev-row .unit-d{font-size:12px;color:var(--ink-soft)}
+.rev-row .del{margin-left:auto;border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:18px;line-height:1}
+.rev-row .del:hover{color:var(--vermilion)}
+.add-rev{align-self:flex-start;margin-top:4px}
+.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.modal-actions .right{display:flex;gap:10px;margin-left:auto}
+.err{color:var(--vermilion);font-size:12px;margin-top:8px;min-height:14px}
+.wd-seg{display:flex;gap:6px;flex-wrap:wrap}
+.wd-btn{font-family:var(--serif);font-size:14px;width:38px;height:36px;border:1.5px solid var(--line);border-radius:7px;background:var(--input-bg);color:var(--ink-soft);cursor:pointer;transition:.15s}
+.wd-btn:hover{border-color:var(--vermilion)}
+.wd-btn.on{background:var(--vermilion);border-color:var(--vermilion);color:#fff}
+.xrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.chips:empty{display:none}
+.xchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--paper-3);border:1px solid var(--line);border-radius:20px;padding:4px 6px 4px 11px;color:var(--ink)}
+.xchip button{border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
+.xchip button:hover{color:var(--vermilion)}
+
+/* detail header */
+/* 操作ボタン列はパンくずと同じ最上段の右に固定＝教材名の長短で右に出たり
+   下に落ちたりしない（一貫レイアウト） */
+.detail-head{margin-bottom:20px}
+.detail-head .detail-top{display:flex;align-items:center;justify-content:space-between;
+  gap:8px 18px;flex-wrap:wrap;margin-bottom:8px}
+.detail-head .crumb{font-family:var(--serif);font-size:13px;color:var(--ink-soft);cursor:pointer;letter-spacing:.08em;display:inline-flex;gap:6px;align-items:center}
+.detail-head .crumb:hover{color:var(--vermilion)}
+.detail-head h2{font-family:var(--serif);font-size:30px;letter-spacing:.06em;display:flex;align-items:center;gap:14px}
+.detail-head h2 .swatch{width:10px;height:30px;border-radius:2px}
+.detail-meta{display:flex;gap:22px;margin-top:10px;flex-wrap:wrap}
+.detail-meta .m .n{font-family:var(--serif);font-size:20px;font-weight:700}
+.detail-meta .m .l{font-size:10px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+@media(max-width:680px){
+  .brand h1{font-size:26px}.app{padding:0 16px 100px}
+  .task{grid-template-columns:18px minmax(0,1fr) 42px minmax(0,1fr) 52px;gap:10px}
+  .task .t-range{font-size:14px}.task .t-count{font-size:12px}
+  .row2{gap:10px}
+}
+@media(max-width:480px){
+  /* 狭幅では分野バッジを省き教材名の可読幅を確保（並行・日付は残す） */
+  .rw-cat{display:none}
+  .rw-dates{font-size:10px}
+}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="mast">
+    <div class="brand">
+      <div class="seal">学習<br/>計画</div>
+      <div>
+        <h1>学習計画手帳</h1>
+        <div class="sub">Study Almanac<span class="ver" id="appVer"></span></div>
+      </div>
+    </div>
+    <div class="dateline">
+      <button id="menuBtn" class="menu-btn" title="メニュー" aria-label="メニュー">☰</button>
+      <div class="big" id="todayBig">—</div>
+      <div class="small" id="todayEn">—</div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-view="today" class="active">これから<span class="en">Agenda</span></button>
+    <button data-view="plans">計画一覧<span class="en">Plans</span></button>
+    <button data-view="matrix">全体計画表<span class="en">Overview</span></button>
+  </nav>
+
+  <main id="view"></main>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   Storage layer — abstracted so it can be swapped for a DB/REST backend.
+   Every persistence call goes through `DB`; nothing else touches storage.
+   ========================================================================= */
+const DB = (() => {
+  const KEY = "studyplan.v1";
+  let cache = null;
+  function load(){
+    if(cache) return cache;
+    try{ cache = JSON.parse(localStorage.getItem(KEY)) || {materials:[],entries:[]}; }
+    catch(e){ cache = {materials:[],entries:[]}; }
+    if(!cache.materials) cache.materials=[];
+    if(!cache.entries) cache.entries=[];
+    if(!cache.settings) cache.settings={};
+    if(!Array.isArray(cache.settings.excludeDates)) cache.settings.excludeDates=[];
+    if(!Array.isArray(cache.settings.excludeWeekdays)) cache.settings.excludeWeekdays=[];
+    // 教材リスト（CSVから読み込む参考書データ）。アプリは初期データを持たない。
+    if(!cache.library || !Array.isArray(cache.library.books)) cache.library={books:[], importedAt:null};
+    // 初回利用日を記録（grandfather=後で無料上限を厳しくする際、既存ユーザーを日付で据え置くため）。一度きり・以後不変。
+    if(!cache.settings.installedAt){ cache.settings.installedAt = todayStr(); persist(); }
+    return cache;
+  }
+  function persist(){ localStorage.setItem(KEY, JSON.stringify(cache)); }
+  return {
+    materials(){ return load().materials; },
+    entries(){ return load().entries; },
+    material(id){ return load().materials.find(m=>m.id===id); },
+    entriesFor(id){ return load().entries.filter(e=>e.materialId===id); },
+    settings(){ return load().settings; },
+    installedAt(){ return load().settings.installedAt; },
+    library(){ return load().library; },
+    libraryBooks(){ return load().library.books; },
+    saveLibrary(books){
+      const db = load();
+      db.library = {books: books||[], importedAt: new Date().toISOString()};
+      persist();
+    },
+    clearLibrary(){
+      const db = load();
+      db.library = {books:[], importedAt:null};
+      persist();
+    },
+    saveSettings(s){
+      const db = load();
+      db.settings = {
+        excludeDates: s.excludeDates||[], excludeWeekdays: s.excludeWeekdays||[],
+        installedAt: db.settings.installedAt || todayStr()   // 既存の初回利用日は保持
+      };
+      persist();
+    },
+    saveMaterial(mat, entries){
+      const db = load();
+      const i = db.materials.findIndex(m=>m.id===mat.id);
+      if(i>=0) db.materials[i]=mat; else db.materials.push(mat);
+      db.entries = db.entries.filter(e=>e.materialId!==mat.id).concat(entries);
+      persist();
+    },
+    deleteMaterial(id){
+      const db = load();
+      db.materials = db.materials.filter(m=>m.id!==id);
+      db.entries = db.entries.filter(e=>e.materialId!==id);
+      persist();
+    },
+    updateEntry(id, patch){
+      const e = load().entries.find(x=>x.id===id);
+      if(e){ Object.assign(e, patch); persist(); }
+      return e;
+    },
+    exportData(){ return JSON.parse(JSON.stringify(load())); },
+    replaceAll(data){
+      const prevInstalled = (cache && cache.settings && cache.settings.installedAt) || null;
+      const prevLibrary = (cache && cache.library) || null;
+      cache = {
+        materials: data.materials||[], entries: data.entries||[],
+        settings: {
+          excludeDates: (data.settings&&data.settings.excludeDates)||[],
+          excludeWeekdays: (data.settings&&data.settings.excludeWeekdays)||[],
+          // インポート元の初回利用日を優先（古いバックアップに無ければ現状値→今日）。ユーザー歴を正しく引き継ぐ。
+          installedAt: (data.settings&&data.settings.installedAt) || prevInstalled || todayStr()
+        },
+        // 教材リストはバックアップに入っていればそれを、無ければ今の端末の分を残す
+        // （計画の復元で教材リストまで消さない）。
+        library: (data.library && Array.isArray(data.library.books))
+          ? data.library : (prevLibrary || {books:[], importedAt:null})
+      };
+      persist();
+    },
+    save(){ persist(); }
+  };
+})();
+
+/* =========================================================================
+   多言語対応（i18n）— 日本語／繁体字(tw)／簡体字(cn)
+   - 「日本語の文字列そのもの」をキーにした辞書。日本語は辞書を引かず原文の
+     まま＝日本語表示は完全無変更。訳が無いキーも日本語にフォールバックする。
+   - 教材プリセット（書名・読み・教科チップ）は日本の受験参考書の固有名詞
+     なので翻訳しない（仕様判断）。ブランド名（学習計画手帳／Study Almanac）
+     と英語サブラベル（Today 等）も言語共通のデザイン要素として据え置き。
+   - 選択言語は localStorage "studyplan.lang"（テーマと同じ端末ローカルの
+     UI 設定＝export/import の対象外）。初回は端末言語から自動判定。
+   ========================================================================= */
+/* navigator.language から初期言語を判定する（純粋関数・テスト対象）。
+   zh-Hant / zh-TW / zh-HK / zh-MO → 繁体字、その他の zh → 簡体字、他は日本語。 */
+function detectLang(nl){
+  nl = String(nl||"").toLowerCase();
+  if(!nl.startsWith("zh")) return "ja";
+  if(nl.includes("hans")) return "cn";
+  if(nl.includes("hant") || /-(tw|hk|mo)(-|$)/.test(nl)) return "tw";
+  return "cn";
+}
+let LANG = (function(){
+  const saved = localStorage.getItem("studyplan.lang");
+  return (saved==="ja"||saved==="tw"||saved==="cn") ? saved : detectLang(navigator.language);
+})();
+
+/* 辞書: 日本語キー → [繁体字, 簡体字]。I18N.tw / I18N.cn に展開して使う。 */
+const I18N_PAIRS = {
+  /* ---- ナビ・共通 ---- */
+  "今日": ["今日","今日"],
+  "計画一覧": ["計畫清單","计划列表"],
+  "全体計画表": ["整體計畫表","整体计划表"],
+  "共通の除外日設定": ["共用排除日期設定","通用排除日期设置"],
+  "ポモドーロタイマー": ["番茄鐘","番茄钟"],
+  "使い方ガイド": ["使用說明","使用指南"],
+  "メニュー": ["選單","菜单"],
+  "設定": ["設定","设置"],
+  "テーマ": ["主題","主题"],
+  "明るい": ["淺色","浅色"],
+  "暗い": ["深色","深色"],
+  "テーマを切り替え": ["切換主題","切换主题"],
+  "☾ 暗く": ["☾ 深色","☾ 深色"],
+  "☀ 明るく": ["☀ 淺色","☀ 浅色"],
+  "言語を切り替え": ["切換語言","切换语言"],
+  "言語": ["語言","语言"],
+  "表示言語を選んでください。": ["請選擇顯示語言。","请选择显示语言。"],
+  "キャンセル": ["取消","取消"],
+  "保存する": ["儲存","保存"],
+  "閉じる": ["關閉","关闭"],
+  /* ---- 単位・区分 ---- */
+  "ページ": ["頁","页"],
+  "問": ["題","题"],
+  "件": ["項","项"],
+  "新規": ["新學","新学"],
+  "復": ["複","复"],
+  "復習": ["複習","复习"],
+  /* ---- 今日ビュー ---- */
+  "これから": ["接下來","接下来"],
+  "今日の学習": ["今日的學習","今日学习"],
+  "この先の予定": ["接下來的計畫","接下来的计划"],
+  "今日の学習は完了しました。": ["今天的學習已完成。","今天的学习已完成。"],
+  "明日": ["明天","明天"],
+  "やり残し": ["逾期未完成","逾期未完成"],
+  "本日分": ["今日進度","今日进度"],
+  "本日およびそれ以前にやり残した学習はありません。": ["今天以及之前的學習都已完成。","今天以及之前的学习都已完成。"],
+  "よく出来ました。明日の計画は「全体計画表」から確認できます。": ["做得很好。明天的計畫可在「整體計畫表」查看。","做得很好。明天的计划可在「整体计划表」查看。"],
+  /* ---- 空状態・計画一覧 ---- */
+  "まだ教材が登録されていません。": ["尚未登錄任何教材。","尚未添加任何教材。"],
+  "最初の学習計画を立てましょう。": ["來建立第一個學習計畫吧。","来制定第一个学习计划吧。"],
+  "＋ 教材を追加": ["＋ 新增教材","＋ 添加教材"],
+  "サンプルを作成": ["建立範例","创建示例"],
+  "⤒ バックアップから復元": ["⤒ 從備份還原","⤒ 从备份恢复"],
+  "学習計画一覧": ["學習計畫清單","学习计划列表"],
+  "⤓ エクスポート": ["⤓ 匯出","⤓ 导出"],
+  "⤒ インポート": ["⤒ 匯入","⤒ 导入"],
+  "復習{n}回": ["複習{n}次","复习{n}次"],
+  "総{u}数": ["總{u}數","总{u}数"],
+  "タスク": ["任務","任务"],
+  "達成": ["達成","达成"],
+  "教材を追加": ["新增教材","添加教材"],
+  /* ---- 全体計画表 ---- */
+  "教材名をクリックすると予実表を開きます": ["點教材名稱即可開啟預實表","点击教材名称即可打开预实表"],
+  "計画がありません。": ["沒有計畫。","没有计划。"],
+  "教材 ＼ 日付": ["教材 ＼ 日期","教材 ＼ 日期"],
+  "合計": ["合計","合计"],
+  "数字はその日に学習する予定の合計数（新規＋復習）です。": ["數字為當天預定學習的總量（新學＋複習）。","数字为当天预定学习的总量（新学＋复习）。"],
+  /* ---- 全体計画表（週/月ガント v43） ---- */
+  "日": ["日","日"],
+  "週": ["週","周"],
+  "月": ["月","月"],
+  "{y}年{m}月": ["{y}年{m}月","{y}年{m}月"],
+  "{m}月": ["{m}月","{m}月"],
+  "第{n}週": ["第{n}週","第{n}周"],
+  "バーをドラッグで今日以降の予定を移動、端をドラッグで期間を変更できます。教材名をタップすると予実表を開きます。":
+    ["拖曳長條可移動今天以後的計畫，拖曳兩端可變更期間。點教材名稱即可開啟預實表。",
+     "拖动长条可移动今天以后的计划，拖动两端可更改期间。点击教材名称即可打开预实表。"],
+  "{n}日 移動": ["移動 {n} 天","移动 {n} 天"],
+  "開始: {d}": ["開始: {d}","开始: {d}"],
+  "終了: {d}": ["結束: {d}","结束: {d}"],
+  "今日より前には動かせません": ["無法移到今天之前","无法移到今天之前"],
+  "期間を変更し、今日以降の未消化分の計画を作り直します。実績と過去の予定はそのまま残ります。よろしいですか？":
+    ["將變更期間，並重新安排今天以後尚未完成的部分。實績與過去的計畫將原樣保留。確定嗎？",
+     "将更改期间，并重新安排今天以后尚未完成的部分。实绩与过去的计划将原样保留。确定吗？"],
+  /* ---- 予実表（詳細） ---- */
+  "‹ 計画一覧へ戻る": ["‹ 返回計畫清單","‹ 返回计划列表"],
+  "期間": ["期間","期间"],
+  "範囲({u})": ["範圍({u})","范围({u})"],
+  "復習回数": ["複習次數","复习次数"],
+  "進捗": ["進度","进度"],
+  "編集": ["編輯","编辑"],
+  "ずらす": ["挪動","挪动"],
+  "再生成": ["重新產生","重新生成"],
+  "削除": ["刪除","删除"],
+  "日付": ["日期","日期"],
+  "日計": ["日計","日计"],
+  "予": ["預","预"],
+  "実": ["實","实"],
+  "範囲": ["範圍","范围"],
+  "{n}日後": ["{n}天後","{n}天后"],
+  "クリックで範囲・問数を編集": ["點擊編輯範圍與題數","点击编辑范围与题数"],
+  "新規学習": ["新學內容","新学内容"],
+  "実績が予定到達": ["實績達到預定","实绩达到预定"],
+  "📦 新規の学習範囲をドラッグ＝新規と復習をまとめて移動（復習のタイミングを保つ／他の新規がある日へ落とすと2つを入れ替え／除外日には置けません）": ["📦 拖曳新學的範圍＝新學與複習一起移動（保持複習的時間點／拖到已有其他新學的日子則兩者互換／不能放到排除日）","📦 拖动新学的范围＝新学与复习一起移动（保持复习的时间点／拖到已有其他新学的日子则两者互换／不能放到排除日）"],
+  "↕ 復習の範囲をドラッグ＝その復習だけ別日へ移動": ["↕ 拖曳複習的範圍＝只移動該次複習","↕ 拖动复习的范围＝只移动该次复习"],
+  "✎ 新規の学習範囲をクリックすると問数を編集できます（以降が連動）": ["✎ 點擊新學的範圍可編輯題數（後續連動調整）","✎ 点击新学的范围可编辑题数（后续联动调整）"],
+  "📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）": ["📅 用上方的「挪動」可將某天之後的計畫整批前後移動（複習也會跟著動）","📅 用上方的「挪动」可将某天之后的计划整批前后移动（复习也会跟着动）"],
+  "実績の数字はクリックして直接編集できます": ["實績數字可點擊直接編輯","实绩数字可点击直接编辑"],
+  "実績合計": ["實績合計","实绩合计"],
+  "予定合計": ["預定合計","预定合计"],
+  "計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？": ["將重新產生計畫。手動輸入的預定與實績將被重設。確定嗎？","将重新生成计划。手动输入的预定与实绩将被重置。确定吗？"],
+  "「{name}」を削除します。よろしいですか？": ["將刪除「{name}」。確定嗎？","将删除「{name}」。确定吗？"],
+  /* ---- ドラッグ追従バナー ---- */
+  "復習も一緒に動きます": ["複習也會一起移動","复习也会一起移动"],
+  "置く日をなぞってください": ["請滑到要放的日期","请滑到要放的日期"],
+  "→ {d}：ここには置けません": ["→ {d}：不能放在這裡","→ {d}：不能放在这里"],
+  "→ {d} と入れ替える": ["→ 與 {d} 互換","→ 与 {d} 互换"],
+  "→ {d} に置く": ["→ 放到 {d}","→ 放到 {d}"],
+  /* ---- 範囲・問数の編集 ---- */
+  "範囲・問数の編集": ["編輯範圍與題數","编辑范围与题数"],
+  "{date} の新規学習を編集します。総{u}数は変えず、<b>以降の予定（範囲・復習）が自動で連動</b>します。入力済みの実績はそのまま残ります。": ["編輯 {date} 的新學內容。總{u}數不變，<b>之後的預定（範圍・複習）會自動連動</b>。已輸入的實績會保留。","编辑 {date} 的新学内容。总{u}数不变，<b>之后的预定（范围・复习）会自动联动</b>。已输入的实绩会保留。"],
+  "現在の範囲": ["目前範圍","当前范围"],
+  "この日の予定{u}数": ["這一天的預定{u}數","这一天的预定{u}数"],
+  "※ 増やすと後ろの予定を前倒しで取り込み、減らすと残りは後ろの日へ送られます（最終日が増減）。日数は増えません。": ["※ 增加時會把後面的預定提前納入，減少時剩餘部分會移到後面的日子（由最後一天增減）。天數不會增加。","※ 增加时会把后面的预定提前纳入，减少时剩余部分会移到后面的日子（由最后一天增减）。天数不会增加。"],
+  /* ---- 一括ずらし ---- */
+  "予定をまとめてずらす": ["整批挪動計畫","批量挪动计划"],
+  "起点の日以降の予定（新規＋復習）を、指定した日数だけまとめて前後にずらします。復習は元のタイミングを保って追従し、<b>問数・実績はそのまま</b>です。<b>今日より前（実績のある過去）は動きません。</b>": ["將起點日之後的計畫（新學＋複習）整批往前或往後移動指定的天數。複習會保持原本的間隔跟著移動，<b>題數與實績保持不變</b>。<b>今天以前（已有實績的過去）不會移動。</b>","将起点日之后的计划（新学＋复习）整批往前或往后移动指定的天数。复习会保持原本的间隔跟着移动，<b>题数与实绩保持不变</b>。<b>今天以前（已有实绩的过去）不会移动。</b>"],
+  "起点の日（この日以降をずらす）": ["起點日（挪動此日之後）","起点日（挪动此日之后）"],
+  "ずらす量": ["挪動天數","挪动天数"],
+  "日": ["天","天"],
+  "後ろへ（先送り）": ["往後（延後）","往后（推迟）"],
+  "前へ（前倒し）": ["往前（提前）","往前（提前）"],
+  "※ 移動先が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。": ["※ 移動後落在排除日的計畫會順延到下一個空日。提前的幅度以最前面的計畫不早於今天為限。","※ 移动后落在排除日的计划会顺延到下一个空日。提前的幅度以最前面的计划不早于今天为限。"],
+  "前倒しできる余地がありません（先頭の予定が既に今日です）。": ["沒有可提前的空間（最前面的計畫已在今天）。","没有可提前的空间（最前面的计划已在今天）。"],
+  "ずらす対象の予定がありません。起点の日を確認してください。": ["沒有可挪動的計畫。請確認起點日。","没有可挪动的计划。请确认起点日。"],
+  "前倒しは今日までに制限し、{n}日だけ前倒ししました。": ["提前幅度已限制到今天，只提前了{n}天。","提前幅度已限制到今天，只提前了{n}天。"],
+  /* ---- 除外日 ---- */
+  "除外する曜日": ["排除的星期","排除的星期"],
+  "チェックした曜日には新規学習を入れません（土日には平日より多く配分されることがあります）。": ["勾選的星期不安排新學內容（週六日可能比平日分配得更多）。","勾选的星期不安排新学内容（周六日可能比平日分配得更多）。"],
+  "除外する日付": ["排除的日期","排除的日期"],
+  "＋ 追加": ["＋ 新增","＋ 添加"],
+  "旅行・予定などで学習しない特定の日を計画から除きます。": ["將旅行、有安排等不學習的特定日子從計畫中排除。","将旅行、有安排等不学习的特定日子从计划中排除。"],
+  "共通の除外日": ["共用排除日期","通用排除日期"],
+  "すべての教材の計画立案で除外する曜日・日付です。教材ごとの除外は各教材の編集画面で設定できます。": ["所有教材排定計畫時共同排除的星期與日期。各教材單獨的排除可在其編輯畫面設定。","所有教材制定计划时共同排除的星期与日期。各教材单独的排除可在其编辑画面设置。"],
+  "※ 変更後、既存の計画に反映するには各教材の「再生成」を実行してください。": ["※ 變更後，要反映到既有計畫請對各教材執行「重新產生」。","※ 变更后，要反映到既有计划请对各教材执行「重新生成」。"],
+  /* ---- 教材フォーム ---- */
+  "教材を編集": ["編輯教材","编辑教材"],
+  "条件から日毎の学習計画を自動で立案します。": ["依條件自動排定每日學習計畫。","依条件自动制定每日学习计划。"],
+  "教材名": ["教材名稱","教材名称"],
+  "例）英単語帳・問題集の名前": ["例：單字書・題庫的名稱","例：单词书・题库的名称"],
+  "定番参考書は入力すると候補が出ます（「化学」など教科名でも探せます）。選ぶとページ数も入ります。": ["輸入常見參考書名會顯示候選（也可用「化学」等科目名搜尋）。選擇後會自動填入頁數。","输入常见参考书名会显示候选（也可用「化学」等科目名搜索）。选择后会自动填入页数。"],
+  "学習単位": ["學習單位","学习单位"],
+  "開始日": ["開始日","开始日"],
+  "終了日": ["結束日","结束日"],
+  "学習範囲": ["學習範圍","学习范围"],
+  "学習する最初と最後の番号（ページ／問番号）": ["要學習的起始與結束編號（頁碼／題號）","要学习的起始与结束编号（页码／题号）"],
+  "除外の設定": ["排除設定","排除设置"],
+  "曜日・日付・ページを計画から除く": ["從計畫排除星期／日期／頁題","从计划排除星期／日期／页题"],
+  "除外ページ・問題": ["排除的頁／題","排除的页／题"],
+  "例）5, 12, 20-24": ["例：5, 12, 20-24","例：5, 12, 20-24"],
+  "計画から除く番号。カンマ区切り・範囲指定(20-24)が使えます。": ["從計畫中排除的編號。可用逗號分隔或範圍指定(20-24)。","从计划中排除的编号。可用逗号分隔或范围指定(20-24)。"],
+  "復習設定": ["複習設定","复习设置"],
+  "＋ 復習を追加": ["＋ 新增複習","＋ 添加复习"],
+  "各復習を新規学習の何日後に行うか。重複はできません。": ["設定各次複習在新學後第幾天進行。天數不可重複。","设置各次复习在新学后第几天进行。天数不可重复。"],
+  "日後": ["天後","天后"],
+  "更新する": ["更新","更新"],
+  "計画を立てる": ["建立計畫","生成计划"],
+  "教材名を入力してください。": ["請輸入教材名稱。","请输入教材名称。"],
+  "開始日と終了日を入力してください。": ["請輸入開始日與結束日。","请输入开始日与结束日。"],
+  "終了日は開始日以降にしてください。": ["結束日必須在開始日之後。","结束日必须在开始日之后。"],
+  "学習範囲が正しくありません。": ["學習範圍不正確。","学习范围不正确。"],
+  "復習タイミングが重複しています。重複しない日数を指定してください。": ["複習時間點重複。請指定不重複的天數。","复习时间点重复。请指定不重复的天数。"],
+  "除外指定により学習範囲が空になっています。": ["因排除設定，學習範圍已為空。","因排除设置，学习范围已为空。"],
+  "計画を作り直します。手入力した予定・実績はリセットされます。よろしいですか？": ["將重新建立計畫。手動輸入的預定與實績將被重設。確定嗎？","将重新生成计划。手动输入的预定与实绩将被重置。确定吗？"],
+  "教材リストから選ぶ（教科をタップ）": ["從教材清單選擇（點科目）","从教材清单选择（点科目）"],
+  /* ---- 教材リスト（CSV読み込み） ---- */
+  "教材リスト": ["教材清單","教材清单"],
+  "教材リストを読み込む": ["載入教材清單","导入教材清单"],
+  "参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。": ["載入參考書清單（CSV檔）後，即可使用套組新增與教材名稱的輸入建議。","导入参考书清单（CSV文件）后，即可使用按套装添加与教材名称的输入建议。"],
+  "現在の教材リスト: {n}冊（{d} 読込）": ["目前的教材清單: {n}本（{d} 載入）","当前教材清单: {n}本（{d} 导入）"],
+  "教材リストはまだ読み込まれていません。": ["尚未載入教材清單。","尚未导入教材清单。"],
+  "CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。": ["CSV欄位: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填為 subject / name / count / unit）。編碼為UTF-8。","CSV列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填为 subject / name / count / unit）。编码为UTF-8。"],
+  "リストを消去": ["清除清單","清除清单"],
+  "CSVファイルを選ぶ": ["選擇CSV檔","选择CSV文件"],
+  "教材リストを消去します。登録済みの計画には影響しません。よろしいですか？": ["將清除教材清單。不影響已登錄的計畫。確定嗎？","将清除教材清单。不影响已登记的计划。确定吗？"],
+  "読み込める行がありませんでした。": ["沒有可載入的資料列。","没有可导入的数据行。"],
+  "{e}行に問題があります（読み飛ばします）。\n\n{d}\n\n正しい {n}冊 を読み込みますか？": ["有{e}列資料有問題（將略過）。\n\n{d}\n\n要載入正確的 {n}本 嗎？","有{e}行数据有问题（将跳过）。\n\n{d}\n\n要导入正确的 {n}本 吗？"],
+  "教材リストを読み込みました。（{n}冊）": ["已載入教材清單。（{n}本）","已导入教材清单。（{n}本）"],
+  "ファイルが空です。": ["檔案是空的。","文件为空。"],
+  "必要な列がありません: {c}": ["缺少必要欄位: {c}","缺少必要列: {c}"],
+  "{n}行目: 教科(subject)がありません": ["第{n}列: 缺少科目(subject)","第{n}行: 缺少科目(subject)"],
+  "{n}行目: 書名(name)がありません": ["第{n}列: 缺少書名(name)","第{n}行: 缺少书名(name)"],
+  "{n}行目: 分量(count)は1以上の数にしてください": ["第{n}列: 分量(count)須為1以上的數字","第{n}行: 分量(count)须为1以上的数字"],
+  "{n}行目: unitは page か problem です": ["第{n}列: unit須為 page 或 problem","第{n}行: unit须为 page 或 problem"],
+  "{n}行目: 書名が重複しています（{b}）": ["第{n}列: 書名重複（{b}）","第{n}行: 书名重复（{b}）"],
+  "サンプル教材（90問）": ["範例教材（90題）","示例教材（90题）"],
+  /* ---- オンボーディング ---- */
+  "学習計画手帳へようこそ": ["歡迎使用學習計畫手帳","欢迎使用学习计划手册"],
+  "紙の参考書・問題集を<b>「ページ／問の範囲」</b>で計画するアプリです。新しく学ぶ分に加えて、<b>復習①〜⑤</b>を間隔をあけて自動でスケジュールします。": ["這是把紙本參考書、題庫以<b>「頁／題的範圍」</b>來排定計畫的 App。除了新學的部分，還會按間隔自動排入<b>複習①〜⑤</b>。","这是把纸质参考书、习题集以<b>「页／题的范围」</b>来制定计划的应用。除了新学的部分，还会按间隔自动排入<b>复习①〜⑤</b>。"],
+  "まず教材を追加": ["先新增教材","先添加教材"],
+  "<b>「＋ 教材を追加」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。": ["用<b>「＋ 新增教材」</b>輸入教材名稱、範圍、期間，以及想排除的星期或日期，每日學習計畫就會<b>自動排定</b>。","用<b>「＋ 添加教材」</b>输入教材名称、范围、期间，以及想排除的星期或日期，每日学习计划就会<b>自动生成</b>。"],
+  "予実表で予定と実績を管理": ["用預實表管理預定與實績","用预实表管理预定与实绩"],
+  "教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。": ["打開教材即是<b>預實表</b>，可總覽新學與複習的預定和實績。範圍格子<b>點擊可編輯題數</b>、<b>拖曳可移動日期</b>，用上方的<b>「挪動」</b>可將某天之後的計畫整批前後移動。","打开教材即是<b>预实表</b>，可总览新学与复习的预定和实绩。范围格子<b>点击可编辑题数</b>、<b>拖动可移动日期</b>，用上方的<b>「挪动」</b>可将某天之后的计划整批前后移动。"],
+  "「今日」タブで今日の分だけ": ["「今日」分頁只看今天的份","「今日」标签只看今天的份"],
+  "今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。": ["只列出今天要做的學習。<b>打勾即記為實績</b>，並反映到進度。","只列出今天要做的学习。<b>打勾即记为实绩</b>，并反映到进度。"],
+  "保存とバックアップ": ["儲存與備份","保存与备份"],
+  "データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ 復元」</b>してください。": ["資料只儲存在<b>這台裝置內</b>（不會傳送到外部）。更換或新增裝置時，請用<b>「⤓ 匯出」</b>備份，再到新裝置<b>「⤒ 還原」</b>。","数据只保存在<b>这台设备内</b>（不会发送到外部）。更换或新增设备时，请用<b>「⤓ 导出」</b>备份，再到新设备<b>「⤒ 恢复」</b>。"],
+  "スキップ": ["略過","跳过"],
+  "← 戻る": ["← 上一步","← 上一步"],
+  "次へ →": ["下一步 →","下一步 →"],
+  "サンプルを見る": ["看範例","看示例"],
+  "プライバシーポリシー・免責事項": ["隱私權政策・免責聲明","隐私政策・免责声明"],
+  /* ---- バックアップ ---- */
+  "エクスポートする教材がありません。": ["沒有可匯出的教材。","没有可导出的教材。"],
+  "バックアップを読み込みます。\n教材 {mc}件 ／ 計画 {ec}件\n\n現在のデータはすべて置き換えられます。よろしいですか？": ["將讀取備份。\n教材 {mc}項 ／ 計畫 {ec}項\n\n目前的資料將全部被取代。確定嗎？","将读取备份。\n教材 {mc}项 ／ 计划 {ec}项\n\n当前的数据将全部被替换。确定吗？"],
+  "インポートが完了しました。（教材 {mc}件）": ["匯入完成。（教材 {mc}項）","导入完成。（教材 {mc}项）"],
+  "インポートに失敗しました。正しいバックアップファイルか確認してください。": ["匯入失敗。請確認是否為正確的備份檔。","导入失败。请确认是否为正确的备份文件。"],
+  "教材／計画データが見つかりません": ["找不到教材／計畫資料","找不到教材／计划数据"],
+  /* ---- ポモドーロ ---- */
+  "時計に揃えて、毎時 <b>0分・30分に学習開始</b>、<b>25分・55分に休憩開始</b>のチャイムが鳴ります（25分学習＋5分休憩）。アプリを開いている間だけ動きます。": ["對齊時鐘，每小時<b>0分、30分響學習開始</b>、<b>25分、55分響休息開始</b>的提示音（學習25分＋休息5分）。僅在開啟 App 期間運作。","对齐时钟，每小时<b>0分、30分响学习开始</b>、<b>25分、55分响休息开始</b>的提示音（学习25分＋休息5分）。仅在打开应用期间运行。"],
+  "開始": ["開始","开始"],
+  "今すぐ": ["立即","立即"],
+  "時刻を指定": ["指定時刻","指定时刻"],
+  "指定した時刻以降のチャイムから鳴り始めます。": ["從指定時刻之後的提示音開始響。","从指定时刻之后的提示音开始响。"],
+  "終了時刻": ["結束時刻","结束时刻"],
+  "終了時刻になると終了チャイムが鳴って止まります。開始より前の時刻は翌日として扱います。": ["到結束時刻會響結束提示音並停止。早於開始的時刻視為隔天。","到结束时刻会响结束提示音并停止。早于开始的时刻视为次日。"],
+  "実行中は画面をスリープさせない": ["進行中不讓螢幕休眠","进行中不让屏幕休眠"],
+  "画面が消えるとチャイムが鳴らないことがあるため、実行中は画面を点けたままにします。": ["螢幕熄滅時提示音可能不響，因此進行中保持螢幕開啟。","屏幕熄灭时提示音可能不响，因此进行中保持屏幕开启。"],
+  "開始する": ["開始","开始"],
+  "終了時刻を入力してください。": ["請輸入結束時刻。","请输入结束时刻。"],
+  "開始時刻を入力してください。": ["請輸入開始時刻。","请输入开始时刻。"],
+  "毎時 0分・30分に学習開始、25分・55分に休憩開始のチャイムが鳴ります。": ["每小時0分、30分響學習開始，25分、55分響休息開始的提示音。","每小时0分、30分响学习开始，25分、55分响休息开始的提示音。"],
+  "（翌日）": ["（隔天）","（次日）"],
+  "停止する": ["停止","停止"],
+  "開始待ち": ["等待開始","等待开始"],
+  "休憩中": ["休息中","休息中"],
+  "学習中": ["學習中","学习中"],
+  "{t} に{k}のチャイム": ["{t} 響{k}提示音","{t} 响{k}提示音"],
+  "休憩開始": ["休息開始","休息开始"],
+  "学習開始": ["學習開始","学习开始"],
+  "{t} に終了チャイム": ["{t} 響結束提示音","{t} 响结束提示音"],
+  "ポモドーロ実行中（タップで詳細）": ["番茄鐘進行中（點擊查看）","番茄钟进行中（点按查看）"],
+
+  /* ---- 教材セット一括登録 ---- */
+  "セットで追加": ["套組新增","按套装添加"],
+  "教材セットを追加": ["新增教材套組","添加教材套装"],
+  "定番参考書のセットから、期間に合わせて全教材の計画を一括で立てます。": ["從經典參考書套組，依期間一次建立全部教材的計畫。","从经典参考书套装，按期间一次建立全部教材的计划。"],
+  "教科": ["科目","科目"],
+  "開始レベル": ["起始程度","起始水平"],
+  "ゴールレベル": ["目標程度","目标水平"],
+  "基礎固めの教材も含める": ["包含打基礎教材","包含打基础教材"],
+  "含める教材と期間の割り当て": ["包含的教材與期間分配","包含的教材与期间分配"],
+  "1冊を選択": ["選擇1本","选择1本"],
+  "必要なら追加（任意）": ["視需要加入（可選）","按需添加（可选）"],
+  "並行": ["並行","并行"],
+  "単語": ["單字","单词"],
+  "熟語": ["片語","短语"],
+  "文法": ["文法","语法"],
+  "解釈": ["解釋","解释"],
+  "長文": ["長文","长文"],
+  "英作文": ["英文寫作","英语写作"],
+  "要約": ["摘要","摘要"],
+  "リスニング": ["聽力","听力"],
+  "講義": ["講義","讲义"],
+  "問題集": ["題庫","题库"],
+  "知識": ["知識","知识"],
+  "単語帳などは他の教材と並行して進める配分です。期間に収まらない復習回は教材ごとに自動で省きます。": ["單字書等會與其他教材並行安排。放不進期間的複習次數會依教材自動省略。","单词书等会与其他教材并行安排。放不进期间的复习次数会按教材自动省略。"],
+  "合計 {n} 冊": ["共 {n} 本","共 {n} 本"],
+  "{d}日": ["{d}天","{d}天"],
+  "{n}冊で計画を立てる": ["以{n}本建立計畫","以{n}本建立计划"],
+  "ゴールレベルは開始レベル以上にしてください。": ["目標程度需不低於起始程度。","目标水平需不低于起始水平。"],
+  "期間が短すぎます。教材の冊数以上の日数が必要です。": ["期間太短。天數需不少於教材本數。","期间太短。天数需不少于教材本数。"],
+  "登録する教材がありません。": ["沒有要登錄的教材。","没有要登录的教材。"]
+};
+const I18N = { tw:{}, cn:{} };
+Object.keys(I18N_PAIRS).forEach(k=>{ I18N.tw[k]=I18N_PAIRS[k][0]; I18N.cn[k]=I18N_PAIRS[k][1]; });
+
+/* 翻訳を引く。日本語(ja)や訳の無いキーは原文（日本語）のまま返す。 */
+function t(s){ const d = I18N[LANG]; return (d && d[s]) || s; }
+/* プレースホルダ付き翻訳: tf("復習{n}回",{n:3}) → "復習3回"／"複習3次"。
+   語順が言語で変わる文はこちらを使う（連結だと中国語の語順が壊れるため）。 */
+function tf(s, params){
+  return t(s).replace(/\{(\w+)\}/g, (mm,k)=> (params && k in params) ? params[k] : mm);
+}
+
+/* =========================================================================
+   Date helpers (local-time, no UTC drift)
+   ========================================================================= */
+/* 曜日1文字は言語別（中国語は 日一二三四五六）。WD は applyLang で差し替わる。 */
+const WD_LANG = {
+  ja:["日","月","火","水","木","金","土"],
+  tw:["日","一","二","三","四","五","六"],
+  cn:["日","一","二","三","四","五","六"]
+};
+let WD = WD_LANG[LANG] || WD_LANG.ja;
+/* 各言語の自称（翻訳せず常にこの表記）。設定・言語モーダルで共用。 */
+const LANG_LABEL = { ja:"日本語", tw:"繁體中文", cn:"简体中文" };
+const pad = n => String(n).padStart(2,"0");
+function parseD(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function fmtD(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function diffDays(a,b){ return Math.round((parseD(b)-parseD(a))/86400000); }
+function isWeekend(d){ const w=d.getDay(); return w===0||w===6; }
+function todayStr(){ return fmtD(new Date()); }
+function mdLabel(s){ const d=parseD(s); return (d.getMonth()+1)+"/"+d.getDate(); }
+function fullLabel(s){ const d=parseD(s); return (d.getMonth()+1)+"月"+d.getDate()+"日 ("+WD[d.getDay()]+")"; }
+function weekStart(dstr){ const d=parseD(dstr); return fmtD(addDays(d,-d.getDay())); } // 日曜始まり
+function nextMonthEnd(dstr){ const d=parseD(dstr); return fmtD(new Date(d.getFullYear(), d.getMonth()+2, 0)); } // 翌月の末日
+/* Columns of the gantt timeline covering minDate..maxDate entirely (the whole
+   plan is always on screen — the mode only sets the column granularity).
+   mode "week": one column per calendar week (Sunday start), label 第n週 where
+   n is the ordinal of that Sunday within its month; mode "month": one column
+   per calendar month, label M月. Each column: {start,end,days,label,month}. */
+function ganttCols(minDate, maxDate, mode){
+  const cols = [];
+  if(mode==="month"){
+    let d = parseD(minDate); d = new Date(d.getFullYear(), d.getMonth(), 1);
+    const stop = parseD(maxDate);
+    while(d <= stop){
+      const end = new Date(d.getFullYear(), d.getMonth()+1, 0);
+      cols.push({ start:fmtD(d), end:fmtD(end), days:end.getDate(),
+                  label:tf("{m}月",{m:d.getMonth()+1}), month:fmtD(d).slice(0,7) });
+      d = new Date(d.getFullYear(), d.getMonth()+1, 1);
+    }
+  }else{
+    let s = parseD(weekStart(minDate));
+    const stop = parseD(maxDate);
+    while(s <= stop){
+      const sd = fmtD(s);
+      cols.push({ start:sd, end:fmtD(addDays(s,6)), days:7,
+                  label:tf("第{n}週",{n:Math.floor((s.getDate()-1)/7)+1}), month:sd.slice(0,7) });
+      s = addDays(s,7);
+    }
+  }
+  return cols;
+}
+
+/* =========================================================================
+   Plan generation
+   ========================================================================= */
+const PALETTE = ["#bb3c28","#2f4f64","#a8843a","#5d7a4f","#7a4f6d","#3f6e74","#9c5a2c","#4a5a8a"];
+
+function parseExclusions(str){
+  const set = new Set();
+  if(!str) return set;
+  str.split(/[\s,、，]+/).forEach(tok=>{
+    if(!tok) return;
+    const m = tok.match(/^(\d+)\s*[-~〜]\s*(\d+)$/);
+    if(m){ const a=+m[1],b=+m[2]; for(let i=Math.min(a,b);i<=Math.max(a,b);i++) set.add(i); }
+    else if(/^\d+$/.test(tok)) set.add(+tok);
+  });
+  return set;
+}
+function buildItems(mat){
+  const ex = parseExclusions(mat.excluded);
+  const items=[];
+  for(let n=mat.rangeStart;n<=mat.rangeEnd;n++) if(!ex.has(n)) items.push(n);
+  return items;
+}
+function rangeLabel(items){
+  if(!items.length) return "—";
+  const parts=[]; let s=items[0],p=items[0];
+  for(let i=1;i<items.length;i++){
+    if(items[i]===p+1){ p=items[i]; }
+    else{ parts.push(s===p?`${s}`:`${s}〜${p}`); s=p=items[i]; }
+  }
+  parts.push(s===p?`${s}`:`${s}〜${p}`);
+  return parts.join(", ");
+}
+function unitLabel(u){ return u==="page"?t("ページ"):t("問"); }
+function parseLabelItems(label){
+  if(!label || label==="—") return [];
+  const out=[];
+  label.split(/[,、]/).forEach(part=>{
+    part=part.trim(); if(!part) return;
+    const m = part.match(/^(\d+)\s*[〜~\-]\s*(\d+)$/);
+    if(m){ for(let i=+m[1];i<=+m[2];i++) out.push(i); }
+    else if(/^\d+$/.test(part)) out.push(+part);
+  });
+  return out;
+}
+
+/* Returns a predicate (date-string -> bool) that is true on excluded days,
+   combining global settings with the material's own exclusions. */
+function buildDayExcluder(mat){
+  const g = DB.settings();
+  const dates = new Set([...(g.excludeDates||[]), ...((mat&&mat.excludeDates)||[])]);
+  const wds   = new Set([...(g.excludeWeekdays||[]), ...((mat&&mat.excludeWeekdays)||[])]);
+  return dstr => dates.has(dstr) || wds.has(parseD(dstr).getDay());
+}
+
+/* Generates the full set of study entries for a material. Pure function. */
+function generatePlan(mat){
+  return distributeItems(mat, buildItems(mat), mat.startDate, mat.endDate,
+    buildDayExcluder(mat), new Set(), 0);
+}
+
+/* Core distributor shared by generatePlan and replanPeriod. Places `items`
+   over startDate..endDate (reserving the tail for the final chunk's reviews),
+   skipping isExcluded days with the load spread over the remaining days
+   (weekend-first remainder). `occupied` seeds the one-entry-per-(date×group)
+   collision set — days whose "new" cell is already taken carry no new study —
+   and is mutated as entries are placed. Chunk numbering starts at chunkStart.
+   Returns the newly created entries only. */
+function distributeItems(mat, items, startDate, endDate, isExcluded, occupied, chunkStart){
+  const N = items.length;
+  const start = parseD(startDate);
+  const totalDays = diffDays(startDate, endDate)+1;
+  if(N===0 || totalDays<=0) return [];
+
+  // Reserve the tail of the period for the final chunk's reviews so that
+  // reviews also finish by the end date: new study spans only the first
+  // (totalDays - maxReviewOffset) days.
+  const maxOffset = (mat.reviews&&mat.reviews.length)?Math.max(...mat.reviews):0;
+  const D = Math.max(1, totalDays - maxOffset);
+
+  // Day indices (within the new-study window) that may carry new study.
+  // Excluded days (holidays / weekdays the user opted out of) and days whose
+  // "new" cell is already occupied (kept entries during a replan) are skipped
+  // and their load is redistributed over the remaining days. If everything is
+  // excluded, fall back to using all days so a plan is still produced.
+  let avail = [];
+  for(let i=0;i<D;i++){ const ds=fmtD(addDays(start,i)); if(!isExcluded(ds) && !occupied.has(ds+"|new")) avail.push(i); }
+  if(!avail.length){ for(let i=0;i<D;i++) avail.push(i); }
+  const M = avail.length;
+
+  // Level new-study load per available day; remainder onto weekends first.
+  const base = Math.floor(N/M);
+  let rem = N - base*M;
+  const counts = {};
+  avail.forEach(i=>counts[i]=base);
+  const weekend=[], weekday=[];
+  avail.forEach(i=>{ (isWeekend(addDays(start,i))?weekend:weekday).push(i); });
+  const order = weekend.concat(weekday);
+  let oi=0;
+  while(rem>0){ counts[order[oi % order.length]]++; oi++; rem--; }
+
+  // The 予実表 grid has exactly one cell per (date, group), where group is
+  // "new" or "r<reviewIndex>". When reviews are pushed off excluded days, two
+  // reviews of the SAME index (from different chunks) can land on the same day
+  // and collide — the grid then shows only one but the day-total counts both,
+  // so the per-day planned sum looks wrong. Track occupied (date|group) cells
+  // and push a review forward until it lands on a day that is neither excluded
+  // nor already taken by the same group, keeping one entry per cell.
+  const entries=[]; let pos=0, chunk=chunkStart;
+  for(const i of avail){
+    const c = counts[i];
+    if(c<=0) continue;
+    const slice = items.slice(pos, pos+c); pos+=c;
+    if(!slice.length) continue;
+    // In the all-excluded fallback a day may already hold a kept new study —
+    // push forward so the one-entry-per-(date×group) invariant survives.
+    let day = addDays(start,i);
+    for(let guard=0; occupied.has(fmtD(day)+"|new") && guard<2000; guard++) day = addDays(day,1);
+    const label = rangeLabel(slice);
+    occupied.add(fmtD(day)+"|new");
+    entries.push({
+      id:`${mat.id}|c${chunk}|new`, materialId:mat.id, chunkId:chunk,
+      type:"new", reviewIndex:0, date:fmtD(day),
+      label, items:slice.slice(), planCount:slice.length, actualCount:null, done:false
+    });
+    (mat.reviews||[]).forEach((off, ri)=>{
+      // Place the review at its offset, then push it forward off any excluded
+      // day or already-occupied same-group cell to the next free allowed day.
+      const gkey = "r"+(ri+1);
+      let rdate = addDays(day, off);
+      for(let guard=0; (isExcluded(fmtD(rdate))||occupied.has(fmtD(rdate)+"|"+gkey)) && guard<2000; guard++) rdate = addDays(rdate, 1);
+      occupied.add(fmtD(rdate)+"|"+gkey);
+      entries.push({
+        id:`${mat.id}|c${chunk}|r${ri}`, materialId:mat.id, chunkId:chunk,
+        type:"review", reviewIndex:ri+1, date:fmtD(rdate),
+        label, items:slice.slice(), planCount:slice.length, actualCount:null, done:false
+      });
+    });
+    chunk++;
+  }
+  return entries;
+}
+/* Recompute a material's plan for a new period (bar-edge resize on the gantt).
+   Entries already banked — done, or dated before `today` — are kept verbatim
+   (actuals preserved); every entry of a chunk whose NEW study is banked is
+   also kept (its items were already consumed), and kept entries act as
+   occupied cells. Everything else is discarded and the not-yet-consumed items
+   are redistributed over max(newStart,today)..newEnd with generatePlan's
+   rules, chunk numbering continuing after the kept chunks. Pure (isExcluded
+   and today are injected). Returns the full replacement entries array. */
+function replanPeriod(mat, entries, newStart, newEnd, isExcluded, today){
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const banked = e => e.done || e.date < today;
+  const keptChunk = new Set(
+    entries.filter(e=>e.type==="new" && banked(e)).map(e=>e.chunkId));
+  const kept = entries.filter(e=> keptChunk.has(e.chunkId) || banked(e));
+
+  // Items consumed by kept NEW studies never reappear in the redistribution.
+  const consumed = new Set();
+  kept.forEach(e=>{ if(e.type==="new") (e.items||[]).forEach(n=>consumed.add(n)); });
+  const remaining = buildItems(mat).filter(n=>!consumed.has(n));
+  if(!remaining.length) return kept.slice();
+
+  const occupied = new Set(kept.map(e=>e.date+"|"+gkey(e)));
+  const distStart = newStart > today ? newStart : today;   // never plan into the past
+  const distEnd = newEnd > distStart ? newEnd : distStart; // degenerate: stack on one day
+  const nextChunk = kept.reduce((mx,e)=>Math.max(mx,e.chunkId+1), 0);
+  return kept.concat(
+    distributeItems(mat, remaining, distStart, distEnd, isExcluded, occupied, nextChunk));
+}
+
+const CIRCLED = ["","①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩"];
+function reviewName(i){ return t("復習")+(CIRCLED[i]||i); }
+
+/* =========================================================================
+   教材リスト（CSVから読み込む）
+   - アプリは参考書データを一切内蔵しない。ユーザーが用意したCSVを
+     「教材リストを読み込む」で取り込み、DB.library に保存して使う。
+   - 列: subject,level,step,cat,pick,par,ss,name,kana,count,unit
+     必須の列は subject,level,name,count,unit（level は空でもよい）。
+   - 行の並び順＝表示順。教科ごとに易→難、レベル内は取り組む順に並べる前提。
+     step が空の行はセット（一括登録）に入らず、教材追加時のサジェストにだけ出る。
+   - count は総ページ数（単語帳・一問一答は語数/問数で unit:"problem"）。
+     選択時に 学習範囲 1〜count の初期値になる（あとから自由に変更できる）。
+   ========================================================================= */
+/* 教科名の読み（検索用）。教科名は一般名詞なのでアプリ側で持つ。
+   ここに無い教科は教科名そのものを読みとして扱う。 */
+const SUBJECT_KANA = {
+  "英語":"えいご","数学":"すうがく","現代文":"げんだいぶん","古文":"こぶん",
+  "漢文":"かんぶん","化学":"かがく","物理":"ぶつり","生物":"せいぶつ",
+  "日本史":"にほんし","世界史":"せかいし","地理":"ちり"
+};
+const LIB_REQUIRED = ["subject","level","name","count","unit"];
+
+/* 今読み込まれている教材リスト。 */
+function LIB(){ return DB.libraryBooks(); }
+
+/* CSV(RFC4180)を 行×列 に分解する。純粋関数。
+   引用符の中のカンマ・改行・二重引用符("")を正しく扱う。先頭のBOMは捨てる。 */
+function parseCSV(text){
+  const s = String(text||"").replace(/^\uFEFF/, "");
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){
+      if(c!=='"') f+=c;
+      else if(s[i+1]==='"'){ f+='"'; i++; }   // "" ＝エスケープされた引用符
+      else q=false;
+    }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(f); f=""; }
+    else if(c==="\n"){ row.push(f); f=""; rows.push(row); row=[]; }
+    else if(c!=="\r") f+=c;                   // CRLF の CR は捨てる
+  }
+  if(f!=="" || row.length){ row.push(f); rows.push(row); }
+  return rows.filter(r=>r.some(v=>v!==""));   // 空行は捨てる
+}
+
+/* CSVテキストを教材リストに変換する。純粋関数。
+   返り値 {books, errors}。errors があっても正しい行は books に入る
+   ＝1行の書き間違いでファイル全体が読めなくなるのを避ける。 */
+function parseLibraryCSV(text){
+  const rows = parseCSV(text);
+  if(!rows.length) return {books:[], errors:[t("ファイルが空です。")]};
+  const head = rows[0].map(h=>h.trim().toLowerCase());
+  const miss = LIB_REQUIRED.filter(c=>head.indexOf(c)<0);
+  if(miss.length) return {books:[], errors:[tf("必要な列がありません: {c}",{c:miss.join(", ")})]};
+  const at = (r,c)=>{ const i=head.indexOf(c); return i<0 ? "" : String(r[i]==null?"":r[i]).trim(); };
+  const books=[], errors=[], seen=new Set();
+  rows.slice(1).forEach((r,i)=>{
+    const ln = i+2;                            // ヘッダの次＝CSV上の行番号
+    const name = at(r,"name"), subject = at(r,"subject");
+    const count = Number(at(r,"count")), unit = at(r,"unit");
+    if(!subject){ errors.push(tf("{n}行目: 教科(subject)がありません",{n:ln})); return; }
+    if(!name){ errors.push(tf("{n}行目: 書名(name)がありません",{n:ln})); return; }
+    if(!(count>0)){ errors.push(tf("{n}行目: 分量(count)は1以上の数にしてください",{n:ln})); return; }
+    if(unit!=="page" && unit!=="problem"){ errors.push(tf("{n}行目: unitは page か problem です",{n:ln})); return; }
+    if(seen.has(name)){ errors.push(tf("{n}行目: 書名が重複しています（{b}）",{n:ln,b:name})); return; }
+    seen.add(name);
+    const step = Number(at(r,"step"));
+    const flag = c => { const v=at(r,c).toLowerCase(); return v==="1"||v==="true"; };
+    books.push({
+      subject, level: at(r,"level"),
+      step: step>0 ? step : null,
+      cat: at(r,"cat"), pick: at(r,"pick"),
+      par: flag("par"), ss: flag("ss"),
+      name, kana: at(r,"kana") || name,
+      count, unit
+    });
+  });
+  return {books, errors};
+}
+
+/* 教材リストから教科の一覧を作る。純粋関数。行順＝表示順。 */
+function libSubjects(books){
+  const out=[], seen=new Set();
+  (books||[]).forEach(b=>{
+    if(b.subject && !seen.has(b.subject)){
+      seen.add(b.subject);
+      out.push({name:b.subject, kana:SUBJECT_KANA[b.subject]||b.subject});
+    }
+  });
+  return out;
+}
+
+/* レベルの並び順（易→難）を教材リストから導く。純粋関数。
+   各教科の中ではレベルが取り組む順に並んでいる前提で、教科をまたいでも
+   相対順序が壊れないように統合する（ある教科に無いレベルがあってもよい）。 */
+function libLevels(books){
+  const bySub = new Map();
+  (books||[]).forEach(b=>{
+    if(!b.level) return;
+    if(!bySub.has(b.subject)) bySub.set(b.subject, []);
+    const seq = bySub.get(b.subject);
+    if(!seq.includes(b.level)) seq.push(b.level);
+  });
+  const seqs=[]; bySub.forEach(seq=>seqs.push(seq.slice()));
+  const out=[];
+  for(;;){
+    const heads = seqs.filter(s=>s.length).map(s=>s[0]);
+    if(!heads.length) break;
+    // どの教科でも「後ろに控えていない」レベル＝次に置ける
+    let pick = heads.find(h=>!seqs.some(s=>s.indexOf(h)>0));
+    if(pick===undefined) pick = heads[0];   // 教科間で順序が矛盾するCSV: 出現順で妥協
+    out.push(pick);
+    seqs.forEach(s=>{ if(s[0]===pick) s.shift(); });
+  }
+  return out;
+}
+
+/* 検索用の正規化: カタカナ→ひらがな、全角英数→半角、小文字化、空白・中点除去。
+   カタカナ・ひらがな・全角英字のどの表記でも同じ本に当たるようにする。純粋関数。 */
+function presetNorm(s){
+  return String(s||"")
+    .replace(/[ァ-ヶ]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+    .toLowerCase()
+    .replace(/[\s　・･]/g,"");
+}
+
+/* 入力文字列に対する候補列挙。純粋関数。
+   - 教科名（または読み）が入力で始まる → その教科の全プリセットが候補
+     （例:「か」→ 化学の参考書ルート一式）
+   - それ以外に、書名または読みに入力を含む本も候補
+     （1文字だけの入力は部分一致だと大半の本に当たってしまうので前方一致に限定）
+   - 表示順は presets の配列順のまま（＝ルート順）。書名の前方一致を先頭に寄せる。 */
+function presetMatch(q, presets, subjects){
+  const nq = presetNorm(q);
+  if(!nq) return [];
+  const ps = presets||LIB();
+  const subs = new Set(
+    (subjects||libSubjects(ps))
+      .filter(s=>presetNorm(s.name).startsWith(nq)||presetNorm(s.kana).startsWith(nq))
+      .map(s=>s.name));
+  const bookHit = p => nq.length>=2
+    ? (presetNorm(p.name).includes(nq) || presetNorm(p.kana).includes(nq))
+    : (presetNorm(p.name).startsWith(nq) || presetNorm(p.kana).startsWith(nq));
+  const hit = ps.filter(p=> subs.has(p.subject) || bookHit(p));
+  // 書名の前方一致（教科ヒットでないもの）を先に、残りは配列順のまま
+  const starts = hit.filter(p=>!subs.has(p.subject)&&
+    (presetNorm(p.name).startsWith(nq)||presetNorm(p.kana).startsWith(nq)));
+  const rest = hit.filter(p=>!starts.includes(p));
+  return starts.concat(rest);
+}
+
+/* =========================================================================
+   教材セット（一括登録）
+   ========================================================================= */
+/* 教材リストからセットを組み立てる。純粋関数。書誌データは持たず、
+   同じ (教科, レベル, step) の行が1つのステップ＝選択肢のまとまりになる。
+   step が空の行はセットに入らない（サジェスト専用の本）。
+   step: {cat:分野, books:[書名...], pick, par, ss}
+   - pick "one" = 1冊を選ぶ（既定は先頭） / "any" = 必要なら追加（既定は選択なし）
+     / 空 = 全冊を含める
+   - par = 単語帳・熟語帳・文法語法演習など、他の教材と並行して進めるもの
+   - ss  = 基礎固め（スモールステップ）教材。「基礎固めを含める」オフで除外
+   返り値: {教科: [{level, steps:[...]}]}（レベルは易→難、ステップはCSVのstep順） */
+function libRoutes(books){
+  const routes = {};
+  (books||[]).forEach(b=>{
+    if(!b.step || !b.level) return;
+    const lvs = routes[b.subject] || (routes[b.subject] = []);
+    let lv = lvs.find(x=>x.level===b.level);
+    if(!lv){ lv = {level:b.level, steps:[], _by:new Map()}; lvs.push(lv); }
+    let st = lv._by.get(b.step);
+    if(!st){
+      st = {cat:b.cat, pick:b.pick, par:b.par, ss:b.ss, books:[], _no:b.step};
+      lv._by.set(b.step, st); lv.steps.push(st);
+    }
+    st.books.push(b.name);
+  });
+  const order = libLevels(books);
+  Object.keys(routes).forEach(sub=>{
+    routes[sub].sort((a,b)=>order.indexOf(a.level)-order.indexOf(b.level));
+    routes[sub].forEach(lv=>{
+      lv.steps.sort((a,b)=>a._no-b._no);
+      delete lv._by;
+      lv.steps.forEach(st=>delete st._no);
+    });
+  });
+  return routes;
+}
+
+/* 教材リストから書名で1冊引く。純粋関数。 */
+function presetByName(name, presets){
+  return (presets||LIB()).find(p=>p.name===name) || null;
+}
+
+/* セットに含める教材を取り組む順に解決する。純粋関数。
+   route: libRoutes()[教科]、opts: {fromLevel, toLevel, includeSS, picks}
+   レベルの並びは route 自身の順序（易→難）から取る。
+   picks は {"<level>|<step番号>": [選んだ書名,...]}。無指定の step は pick の既定
+   （one=先頭 / any=なし / 省略=全冊）。返り値: [{name, par, level, cat, key}] */
+function routePlanBooks(route, opts){
+  const o = opts||{};
+  const LV = route.map(lv=>lv.level);
+  const from = Math.max(0, LV.indexOf(o.fromLevel||LV[0]));
+  const to = LV.indexOf(o.toLevel||LV[LV.length-1]);
+  const out=[];
+  route.forEach(lv=>{
+    const li = LV.indexOf(lv.level);
+    if(li<from || li>to) return;
+    lv.steps.forEach((st,si)=>{
+      if(st.ss && o.includeSS===false) return;
+      const key = lv.level+"|"+si;
+      let names;
+      if(o.picks && o.picks[key]) names = st.books.filter(n=>o.picks[key].includes(n));
+      else if(st.pick==="one") names = [st.books[0]];
+      else if(st.pick==="any") names = [];
+      else names = st.books.slice();
+      names.forEach(n=>out.push({name:n, par:!!st.par, level:lv.level, cat:st.cat, key}));
+    });
+  });
+  return out;
+}
+
+/* 期間を分量に比例して配る。純粋関数。
+   books: [{name,count,unit,par}]（取り組む順）。par（単語帳など）はメインとは
+   別レーンにし、どちらのレーンも全期間 start..end を直列で使う＝単語帳は他の
+   教材と常に並行する。問(problem)は 1問=0.2ページ換算の目安（単語帳の語数と
+   ページ数の実勢比から）。返り値は入力順の [{name,startDate,endDate,days}]。
+   いずれかのレーンで冊数より日数が少なければ null。 */
+const ROUTE_PROBLEM_WEIGHT = 0.2;
+function routeEffort(b){ return b.count * (b.unit==="problem"?ROUTE_PROBLEM_WEIGHT:1); }
+function allocateRoute(books, startDate, endDate){
+  const totalDays = diffDays(startDate, endDate)+1;
+  if(!(totalDays>0) || !books.length) return null;
+  const res = new Map();
+  for(const lane of [books.filter(b=>!b.par), books.filter(b=>b.par)]){
+    if(!lane.length) continue;
+    if(lane.length > totalDays) return null;
+    const total = lane.reduce((s,b)=>s+routeEffort(b),0) || 1;
+    let cum=0, prev=0;
+    lane.forEach((b,i)=>{
+      cum += routeEffort(b);
+      // 比例配分の丸めで 0日の教材が出ないよう、前後から 1日ずつ最低保証する
+      let bound = (i===lane.length-1) ? totalDays : Math.round(totalDays*cum/total);
+      bound = Math.max(prev+1, Math.min(bound, totalDays-(lane.length-1-i)));
+      res.set(b, { name:b.name, days:bound-prev,
+        startDate:fmtD(addDays(parseD(startDate),prev)),
+        endDate:fmtD(addDays(parseD(startDate),bound-1)) });
+      prev = bound;
+    });
+  }
+  return books.map(b=>res.get(b));
+}
+
+/* 期間に収まらない復習回を省く: 期間の半分を超えるオフセットはその教材では
+   実施しない（復習の末尾予約が新規学習を初日に圧縮するのを防ぐ）。純粋関数。 */
+function fitReviews(revs, totalDays){
+  return (revs||[]).filter(o=>o<=Math.floor(totalDays/2));
+}
+
+/* One-time data repair for plans generated before the collision fix.
+   Old generatePlan could place two reviews of the SAME index (different chunks)
+   on the same day, which the 予実表 grid (one cell per date×group) can't show,
+   making the per-day planned total look wrong. This pushes the duplicates
+   forward to the next free, non-excluded day — WITHOUT regenerating, so any
+   manually entered actuals are preserved. Idempotent; returns #entries moved. */
+function repairCollisions(){
+  let moved = 0;
+  DB.materials().forEach(m=>{
+    const isExcluded = buildDayExcluder(m);
+    const byGroup = {};
+    DB.entriesFor(m.id).forEach(e=>{
+      const g = e.type==="new" ? "new" : ("r"+e.reviewIndex);
+      (byGroup[g] = byGroup[g] || []).push(e);
+    });
+    Object.keys(byGroup).forEach(g=>{
+      // Stable order: earlier chunk keeps its slot, later ones move forward.
+      const list = byGroup[g].sort((a,b)=> (a.chunkId-b.chunkId) || a.date.localeCompare(b.date));
+      const occupied = new Set();
+      list.forEach(e=>{
+        if(g==="new"){ occupied.add(e.date); return; } // new study never moves
+        let d = e.date, guard = 0;
+        while((occupied.has(d) || isExcluded(d)) && guard<2000){ d = fmtD(addDays(parseD(d),1)); guard++; }
+        if(d!==e.date){ DB.updateEntry(e.id, {date:d}); moved++; }
+        occupied.add(d);
+      });
+    });
+  });
+  if(moved) DB.save();
+  return moved;
+}
+
+/* Pure helper for editChunkCount. Given the ordered list of per-chunk item
+   counts, set chunk k to `newCount` while keeping the total N fixed: chunks
+   before k are untouched; chunks after k keep their old counts but reflow to
+   absorb the difference — the last surviving chunk grows when k shrinks, and
+   later chunks are consumed (dropped) when k grows. Returns the new counts
+   (its length may be shorter than the input = trailing chunks removed). */
+function reflowCounts(counts, k, newCount, N){
+  const head = counts.slice(0, k);
+  const used = head.reduce((s,c)=>s+c, 0);
+  newCount = Math.max(0, Math.round(newCount)||0);
+  newCount = Math.min(newCount, N - used);          // can't exceed what's left
+  if(newCount < 1) newCount = Math.min(1, N - used); // keep ≥1 problem if any room
+  const out = head.concat([newCount]);
+  let R = N - used - newCount;                       // items left for chunks after k
+  const later = counts.slice(k + 1);
+  for(let j=0; j<later.length && R>0; j++){
+    const take = Math.min(later[j], R);
+    out.push(take); R -= take;
+  }
+  if(R > 0){                                         // leftover items (k shrank)
+    if(out.length > k + 1) out[out.length - 1] += R; // last surviving later chunk grows
+    else out[k] += R;                                // no later chunks: this one grows
+  }
+  return out;
+}
+
+/* Edit the planned size (item count) of one chunk, preserving the material's
+   total. Subsequent chunks reflow (content shifts; the last absorbs the
+   difference; chunks emptied out are removed) and every affected chunk's
+   reviews re-sync their range/label/count. Dates and entered actuals are kept
+   in place (position-based) — unlike 再生成 which discards them. Reads/writes
+   DB. Returns true if anything changed. */
+function editChunkCount(materialId, chunkId, newCount){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const items = buildItems(mat);
+  const N = items.length;
+  const es = DB.entriesFor(materialId);
+  const ids = [...new Set(es.map(e=>e.chunkId))].sort((a,b)=>a-b);
+  const k = ids.indexOf(chunkId);
+  if(k < 0 || N === 0) return false;
+
+  const byChunk = {};
+  ids.forEach(id=> byChunk[id] = es.filter(e=>e.chunkId===id));
+  const counts = ids.map(id=>{
+    const nw = byChunk[id].find(e=>e.type==="new");
+    return nw ? nw.planCount : (byChunk[id][0] ? byChunk[id][0].planCount : 0);
+  });
+
+  const newCounts = reflowCounts(counts, k, newCount, N);
+
+  let pos = 0, changed = false;
+  const kept = [];
+  for(let i=0; i<ids.length; i++){
+    const group = byChunk[ids[i]];
+    if(i >= newCounts.length || newCounts[i] <= 0){ changed = true; continue; } // chunk dropped
+    const slice = items.slice(pos, pos + newCounts[i]); pos += slice.length;
+    const label = rangeLabel(slice);
+    group.forEach(e=>{
+      if(e.label !== label || e.planCount !== slice.length) changed = true;
+      e.items = slice.slice();
+      e.label = label;
+      e.planCount = slice.length;
+      e.done = e.actualCount != null && e.actualCount >= e.planCount;
+      kept.push(e);
+    });
+  }
+  if(changed) DB.saveMaterial(mat, kept);
+  return changed;
+}
+
+/* Pure helper for moveChunk. Move the whole chunk `chunkId` (its 新規 + every
+   復習) so the NEW study lands EXACTLY on targetDate; each review keeps its
+   current offset from the new study (the chunk shifts as a block). The new study
+   is placed directly on the drop target — it never silently jumps elsewhere — so
+   invalid targets are REJECTED (returns []) rather than relocated: an excluded
+   day carries no study, and another chunk's new must not share the day (the grid
+   holds one new per day). Reviews are auto-derived, so any review landing on an
+   excluded day or a cell already taken by ANOTHER chunk's same group is pushed
+   forward to the next free allowed day (one entry per (date, group)). Returns the
+   list of {id, date} for entries whose date changed (empty if nothing moves). */
+function planChunkMove(entries, chunkId, targetDate, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const moving = entries.filter(e=>e.chunkId===chunkId);
+  const nw = moving.find(e=>e.type==="new");
+  if(!nw) return [];
+  if(targetDate===nw.date) return [];                       // no move
+  // Reject invalid drop targets for the new study (stay put rather than relocate).
+  if(isExcluded(targetDate)) return [];
+  if(entries.some(e=>e.chunkId!==chunkId && e.type==="new" && e.date===targetDate)) return [];
+  const delta = diffDays(nw.date, targetDate);
+  // Cells already taken by entries that are NOT moving (one entry per date×group).
+  const occupied = new Set();
+  entries.forEach(e=>{ if(e.chunkId!==chunkId) occupied.add(e.date+"|"+gkey(e)); });
+  occupied.add(targetDate+"|new");                          // new lands exactly here
+  const updates = [{id:nw.id, date:targetDate}];
+  // Reviews follow (same delta), pushed off excluded/occupied days to the next free.
+  moving.filter(e=>e.type==="review").sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
+    const g = gkey(e);
+    let d = fmtD(addDays(parseD(e.date), delta));
+    for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<2000; guard++)
+      d = fmtD(addDays(parseD(d), 1));
+    occupied.add(d+"|"+g);
+    if(d !== e.date) updates.push({id:e.id, date:d});
+  });
+  return updates;
+}
+
+/* Move a whole chunk by dragging its 新規 cell to targetDate (see planChunkMove).
+   Reviews follow keeping their offset; only dates change — labels/counts/actuals
+   are untouched. Reads/writes DB. Returns true if anything moved. */
+function moveChunk(materialId, chunkId, targetDate){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const updates = planChunkMove(DB.entriesFor(materialId), chunkId, targetDate, buildDayExcluder(mat));
+  if(!updates.length) return false;
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return true;
+}
+
+/* Pure helper for swapChunks. Swap chunks `chunkA` and `chunkB` so each NEW study
+   lands on the OTHER chunk's day; every 復習 follows its own chunk keeping its
+   offset (both chunks shift as blocks). Both targets already hold a new study, so
+   neither is an excluded day — the new studies simply exchange dates. Reviews that
+   collide with an excluded day, a cell taken by a NON-swapping chunk's same group,
+   or the other moving chunk's review are pushed forward to the next free allowed
+   day (one entry per date×group). Returns {id,date} for entries whose date changed
+   (empty for a no-op). Symmetric: swapping (A,B) equals swapping (B,A). */
+function planChunkSwap(entries, chunkA, chunkB, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  if(chunkA===chunkB) return [];
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const newA = entries.find(e=>e.chunkId===chunkA && e.type==="new");
+  const newB = entries.find(e=>e.chunkId===chunkB && e.type==="new");
+  if(!newA || !newB || newA.date===newB.date) return [];
+  const delta = {};
+  delta[chunkA] = diffDays(newA.date, newB.date);   // A → B's day
+  delta[chunkB] = diffDays(newB.date, newA.date);   // B → A's day
+  // Cells already taken by entries that are NOT swapping (one entry per date×group).
+  const occupied = new Set();
+  entries.forEach(e=>{ if(e.chunkId!==chunkA && e.chunkId!==chunkB) occupied.add(e.date+"|"+gkey(e)); });
+  const updates = [];
+  occupied.add(newB.date+"|new"); updates.push({id:newA.id, date:newB.date});
+  occupied.add(newA.date+"|new"); updates.push({id:newB.id, date:newA.date});
+  // Both chunks' reviews follow (each by its chunk's delta), earliest target first,
+  // pushed off excluded/occupied days to the next free.
+  entries.filter(e=>(e.chunkId===chunkA||e.chunkId===chunkB) && e.type==="review")
+    .map(e=>({e, t:fmtD(addDays(parseD(e.date), delta[e.chunkId]))}))
+    .sort((x,y)=>x.t.localeCompare(y.t))
+    .forEach(({e,t})=>{
+      const g=gkey(e); let d=t;
+      for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<2000; guard++)
+        d = fmtD(addDays(parseD(d), 1));
+      occupied.add(d+"|"+g);
+      if(d !== e.date) updates.push({id:e.id, date:d});
+    });
+  return updates;
+}
+
+/* Swap two whole chunks by dragging one 新規 cell onto another's day (see
+   planChunkSwap). Only dates change; labels/counts/actuals are untouched.
+   Reads/writes DB. Returns true if anything moved. */
+function swapChunks(materialId, chunkA, chunkB){
+  const mat = DB.material(materialId);
+  if(!mat) return false;
+  const updates = planChunkSwap(DB.entriesFor(materialId), chunkA, chunkB, buildDayExcluder(mat));
+  if(!updates.length) return false;
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return true;
+}
+
+/* Pure helper for bulkShift. Shift EVERY chunk whose 新規 falls on/after fromDate
+   by deltaDays (positive = later, negative = earlier); each 復習 keeps its offset
+   from its own new study (chunks move as blocks). Chunks whose 新規 is before
+   fromDate stay put entirely (their dates also act as obstacles). Entries are
+   placed in order (earliest original new date first); any new study or review
+   landing on an excluded day or a cell already taken (one entry per date×group)
+   is pushed forward to the next free allowed day. Returns {id,date} for entries
+   whose date changed (empty for a no-op). Backward clamping is the caller's job
+   (see clampShift) — this function applies deltaDays as given. */
+function planBulkShift(entries, fromDate, deltaDays, isExcluded){
+  isExcluded = isExcluded || (()=>false);
+  if(!deltaDays) return [];
+  const gkey = e => e.type==="new" ? "new" : ("r"+e.reviewIndex);
+  const isMoving = new Set(
+    entries.filter(e=>e.type==="new" && e.date>=fromDate).map(e=>e.chunkId));
+  if(!isMoving.size) return [];
+  // Cells already taken by entries that are NOT moving (one entry per date×group).
+  const occupied = new Set();
+  const byChunk = {};
+  entries.forEach(e=>{
+    if(isMoving.has(e.chunkId)) (byChunk[e.chunkId]=byChunk[e.chunkId]||[]).push(e);
+    else occupied.add(e.date+"|"+gkey(e));
+  });
+  const updates = [];
+  const place = (e, target)=>{
+    const g = gkey(e); let d = target;
+    for(let guard=0; (isExcluded(d) || occupied.has(d+"|"+g)) && guard<4000; guard++)
+      d = fmtD(addDays(parseD(d), 1));
+    occupied.add(d+"|"+g);
+    if(d !== e.date) updates.push({id:e.id, date:d});
+    return d;
+  };
+  // Process chunks in order of their original new date so earlier chunks settle first.
+  [...isMoving].sort((a,b)=>{
+    const na=byChunk[a].find(e=>e.type==="new"), nb=byChunk[b].find(e=>e.type==="new");
+    return na.date.localeCompare(nb.date);
+  }).forEach(cid=>{
+    const grp = byChunk[cid];
+    const nw = grp.find(e=>e.type==="new");
+    const placedNew = place(nw, fmtD(addDays(parseD(nw.date), deltaDays)));
+    // Reviews keep their offset from the (possibly pushed) new study.
+    grp.filter(e=>e.type==="review").sort((a,b)=>a.date.localeCompare(b.date)).forEach(rv=>{
+      place(rv, fmtD(addDays(parseD(placedNew), diffDays(nw.date, rv.date))));
+    });
+  });
+  return updates;
+}
+
+/* Effective shift for a bulk move, respecting a floor date. A forward shift
+   (deltaDays>=0) is never limited. A backward shift is clamped so the earliest
+   moving 新規 (on/after fromDate) does not land before floorDate. Pure. */
+function clampShift(entries, fromDate, deltaDays, floorDate){
+  if(deltaDays>=0) return deltaDays;
+  const news = entries.filter(e=>e.type==="new" && e.date>=fromDate);
+  if(!news.length) return deltaDays;
+  const earliest = news.reduce((a,e)=> e.date<a ? e.date : a, news[0].date);
+  const headroom = Math.max(0, diffDays(floorDate, earliest));  // days we may move back
+  return Math.max(deltaDays, -headroom);
+}
+
+/* Shift all chunks from fromDate onward by deltaDays (see planBulkShift). The
+   backward direction is clamped so nothing moves before today. Only dates change;
+   labels/counts/actuals are untouched. Reads/writes DB. Returns
+   {moved, clamped, effectiveDelta}. */
+function bulkShift(materialId, fromDate, deltaDays){
+  const mat = DB.material(materialId);
+  if(!mat) return {moved:false, clamped:false, effectiveDelta:0};
+  const entries = DB.entriesFor(materialId);
+  const eff = clampShift(entries, fromDate, deltaDays, todayStr());
+  const clamped = eff !== deltaDays;
+  if(!eff) return {moved:false, clamped, effectiveDelta:0};
+  const updates = planBulkShift(entries, fromDate, eff, buildDayExcluder(mat));
+  updates.forEach(u=>DB.updateEntry(u.id, {date:u.date}));
+  return {moved:updates.length>0, clamped, effectiveDelta:eff};
+}
+
+/* =========================================================================
+   App state + rendering
+   ========================================================================= */
+const state = { view:"today", selected:null };
+const viewEl = document.getElementById("view");
+
+function setDateline(){
+  const d=new Date();
+  document.getElementById("todayBig").innerHTML = `<span>${d.getFullYear()}年</span> <span>${d.getMonth()+1}月${d.getDate()}日</span> <span>(${WD[d.getDay()]})</span>`;
+  const en = d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+  document.getElementById("todayEn").textContent = en;
+}
+
+document.getElementById("tabs").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b || !b.dataset.view) return;
+  state.view=b.dataset.view; state.selected=null;
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));
+  render();
+});
+
+function render(){
+  setDateline();
+  if(state.selected) return renderDetail(state.selected);
+  if(state.view==="today") return renderToday();
+  if(state.view==="plans") return renderPlans();
+  if(state.view==="matrix") return renderMatrix();
+}
+
+/* ---------- TODAY ---------- */
+function renderToday(){
+  const today = todayStr();
+  const tomorrow = fmtD(addDays(new Date(),1));
+  const horizon = fmtD(addDays(new Date(),6)); // 今日を含め先7日
+  const mats = Object.fromEntries(DB.materials().map(m=>[m.id,m]));
+  const pending = DB.entries().filter(e=>!e.done && e.date<=today);
+  const overdue = pending.filter(e=>e.date<today).sort((a,b)=>a.date.localeCompare(b.date));
+  const now = pending.filter(e=>e.date===today);
+  const future = DB.entries()
+    .filter(e=>!e.done && e.date>today && e.date<=horizon)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+
+  let html = `<div class="fade"><div class="section-head"><h2>${t("これから")}</h2>
+    <span class="muted">${fullLabel(today)}</span></div>`;
+
+  if(!DB.materials().length){
+    html += emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return;
+  }
+  if(!pending.length && !future.length){
+    html += `<div class="empty-state"><div class="mark">了</div>
+      <p>${t("本日およびそれ以前にやり残した学習はありません。")}</p>
+      <p class="muted">${t("よく出来ました。明日の計画は「全体計画表」から確認できます。")}</p></div></div>`;
+    viewEl.innerHTML=html; return;
+  }
+  // 教材名などの共通セル（チェック欄はcheckable/previewで差し替え）
+  const cells = e => {
+    const m=mats[e.materialId]; if(!m) return null;
+    const typeCls = e.type==="new"?"new":"rev";
+    const typeTxt = e.type==="new"?t("新規"):t("復")+(CIRCLED[e.reviewIndex]||e.reviewIndex);
+    return `<span class="t-mat">${esc(m.name)}</span>
+        <span class="t-type ${typeCls}">${typeTxt}</span>
+        <span class="t-range">${e.label}</span>
+        <span class="t-count">${e.planCount}<span style="font-family:var(--gothic);font-size:10px;color:var(--ink-faint)">${unitLabel(m.unit)}</span></span>`;
+  };
+  // チェック可能なブロック（今日・やり残し）
+  const block = (title, list, cls) => {
+    if(!list.length) return "";
+    let s=`<div class="day-block ${cls}"><div class="day-label">${title}<span class="rule"></span><span class="muted">${list.length}${t("件")}</span></div>`;
+    list.forEach(e=>{
+      const m=mats[e.materialId]; if(!m) return;
+      s+=`<div class="task" data-id="${e.id}" style="--mat:${m.color}">
+        <div class="chk" data-act="toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        ${cells(e)}
+      </div>`;
+    });
+    return s+`</div>`;
+  };
+  // プレビューブロック（翌日以降・チェック不可・日付ごと）
+  const previewBlock = date => {
+    const list = future.filter(e=>e.date===date);
+    if(!list.length) return "";
+    const d = parseD(date);
+    const label = (date===tomorrow ? t("明日")+" " : "") + mdLabel(date) + " (" + WD[d.getDay()] + ")";
+    let s=`<div class="day-block preview"><div class="day-label">${label}<span class="rule"></span><span class="muted">${list.length}${t("件")}</span></div>`;
+    list.forEach(e=>{
+      const m=mats[e.materialId]; if(!m) return;
+      s+=`<div class="task preview" style="--mat:${m.color}"><div class="chk-ph"></div>${cells(e)}</div>`;
+    });
+    return s+`</div>`;
+  };
+
+  html += `<div class="today-grid">`;
+  if(pending.length){
+    html += block(t("やり残し"), overdue, "overdue");
+    html += block(t("本日分"), now, "");
+  } else {
+    html += `<div class="today-done"><span class="mk">了</span>${t("今日の学習は完了しました。")}</div>`;
+  }
+  if(future.length){
+    html += `<div class="preview-head">${t("この先の予定")}</div>`;
+    [...new Set(future.map(e=>e.date))].sort().forEach(date=>{ html += previewBlock(date); });
+  }
+  html += `</div></div>`;
+  viewEl.innerHTML = html;
+
+  // チェック（実績化）はプレビュー以外のみ
+  viewEl.querySelectorAll(".day-block:not(.preview) .task").forEach(t=>{
+    t.querySelector(".chk").addEventListener("click", ()=>{
+      const e = DB.entries().find(x=>x.id===t.dataset.id);
+      const done = !e.done;
+      DB.updateEntry(e.id, {done, actualCount: done ? e.planCount : null});
+      renderToday();
+    });
+  });
+}
+
+/* ---------- PLANS ---------- */
+function emptyPlans(){
+  return `<div class="empty-state"><div class="mark"><svg width="62" height="62" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5C10.7 4.6 8.8 4 6.5 4c-1 0-2 .1-2.5.3v13.4c.6-.2 1.5-.3 2.5-.3 2.3 0 4.2.6 5.5 1.6"/><path d="M12 5.5C13.3 4.6 15.2 4 17.5 4c1 0 2 .1 2.5.3v13.4c-.6-.2-1.5-.3-2.5-.3-2.3 0-4.2.6-5.5 1.6z"/><path d="M12 5.5V19"/></svg></div>
+    <p>${t("まだ教材が登録されていません。")}</p>
+    <p class="muted">${t("最初の学習計画を立てましょう。")}</p>
+    <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
+      <button class="btn ghost" data-act="routeset">${t("セットで追加")}</button>
+      <button class="btn ghost" data-act="sample">${t("サンプルを作成")}</button>
+      <button class="btn ghost" data-act="import">${t("⤒ バックアップから復元")}</button>
+    </div></div>`;
+}
+function bindEmpty(){
+  // The "教材を追加" and "インポート" actions appear both in the header and in
+  // the empty-state body, so bind ALL matches (querySelectorAll), not just the first.
+  viewEl.querySelectorAll('[data-act="new"]').forEach(n=>n.onclick=()=>openForm());
+  viewEl.querySelectorAll('[data-act="import"]').forEach(im=>im.onclick=importData);
+  const s=viewEl.querySelector('[data-act="sample"]'); if(s) s.onclick=createSample;
+  const r=viewEl.querySelector('[data-act="routeset"]'); if(r) r.onclick=openRouteWizard;
+}
+function renderPlans(){
+  const mats = DB.materials();
+  let html = `<div class="fade"><div class="section-head"><h2>${t("学習計画一覧")}</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost sm" data-act="export">${t("⤓ エクスポート")}</button>
+      <button class="btn ghost sm" data-act="import">${t("⤒ インポート")}</button>
+      <button class="btn ghost sm" data-act="library">${t("教材リスト")}</button>
+      <button class="btn ghost sm" data-act="routeset">${t("セットで追加")}</button>
+      <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
+    </div></div>`;
+  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
+
+  html += `<div class="cards">`;
+  mats.forEach(m=>{
+    const es = DB.entriesFor(m.id);
+    const total = es.reduce((s,e)=>s+e.planCount,0);
+    const doneSum = es.reduce((s,e)=>s+(e.done?e.planCount:0),0);
+    const pct = total? Math.round(doneSum/total*100):0;
+    const reviews = (m.reviews||[]).length;
+    html += `<div class="card" data-id="${m.id}">
+      <span class="swatch" style="background:${m.color}"></span>
+      <h3>${esc(m.name)}</h3>
+      <div class="meta">${mdLabel(m.startDate)} 〜 ${mdLabel(m.endDate)} ・ ${m.rangeStart}〜${m.rangeEnd}${unitLabel(m.unit)} ・ ${tf("復習{n}回",{n:reviews})} ・ <b class="mstat">${doneSum}/${total}</b> ・ <b class="mstat">${pct}%</b></div>
+      <div class="bar"><i style="width:${pct}%;background:${m.color}"></i></div>
+    </div>`;
+  });
+  html += `<div class="card add" data-act="new"><div style="text-align:center"><div class="plus">＋</div><p>${t("教材を追加")}</p></div></div>`;
+  html += `</div></div>`;
+  viewEl.innerHTML = html;
+
+  viewEl.querySelectorAll(".card[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  viewEl.querySelectorAll('[data-act="new"]').forEach(b=>b.onclick=()=>openForm());
+  const exB=viewEl.querySelector('[data-act="export"]'); if(exB) exB.onclick=exportData;
+  const imB=viewEl.querySelector('[data-act="import"]'); if(imB) imB.onclick=importData;
+  const lbB=viewEl.querySelector('[data-act="library"]'); if(lbB) lbB.onclick=openLibraryImport;
+  const rsB=viewEl.querySelector('[data-act="routeset"]'); if(rsB) rsB.onclick=openRouteWizard;
+}
+
+/* ---------- MATRIX (overview) ---------- */
+const MATRIX_MODE_KEY = "studyplan.matrixMode"; // "day"|"week"|"month" — 端末ローカル設定（lang/theme と同方式）
+function matrixMode(){
+  const m = localStorage.getItem(MATRIX_MODE_KEY);
+  return (m==="week"||m==="month") ? m : "day";
+}
+function matrixHead(mode){
+  return `<div class="fade"><div class="section-head"><h2>${t("全体計画表")}</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <div class="seg" id="mxseg">
+        <button data-mode="day" class="${mode==='day'?'on':''}">${t("日")}</button>
+        <button data-mode="week" class="${mode==='week'?'on':''}">${t("週")}</button>
+        <button data-mode="month" class="${mode==='month'?'on':''}">${t("月")}</button>
+      </div>
+      <button class="btn accent" data-act="new">${t("＋ 教材を追加")}</button>
+    </div></div>`;
+}
+function bindMatrixHead(){
+  const nb = viewEl.querySelector('.section-head [data-act="new"]');
+  if(nb) nb.onclick = ()=>openForm();
+  viewEl.querySelectorAll("#mxseg button").forEach(b=>b.onclick=()=>{
+    localStorage.setItem(MATRIX_MODE_KEY, b.dataset.mode); render();
+  });
+}
+function renderMatrix(){
+  const mats = DB.materials();
+  const mode = matrixMode();
+  let html = matrixHead(mode);
+  if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
+  if(mode!=="day") return renderGantt(html, mode);
+
+  const all = DB.entries();
+  if(!all.length){ html+=`<p class="muted">${t("計画がありません。")}</p></div>`; viewEl.innerHTML=html; bindMatrixHead(); return; }
+  let min=all[0].date, max=all[0].date;
+  all.forEach(e=>{ if(e.date<min)min=e.date; if(e.date>max)max=e.date; });
+  const days=[]; for(let i=0;i<=diffDays(min,max);i++) days.push(fmtD(addDays(parseD(min),i)));
+  const today = todayStr();
+
+  // sum per material per date
+  const sum = {};
+  all.forEach(e=>{ (sum[e.materialId]=sum[e.materialId]||{})[e.date]=(sum[e.materialId][e.date]||0)+e.planCount; });
+
+  let tb = `<div class="table-wrap"><table class="matrix"><thead><tr><th class="matname">${t("教材 ＼ 日付")}</th>`;
+  days.forEach(d=>{
+    const wd=parseD(d).getDay();
+    tb+=`<th class="${isWeekend(parseD(d))?'wknd':''} ${d===today?'today':''}">${mdLabel(d)}<br/><span class="muted" style="font-size:10px">${WD[wd]}</span></th>`;
+  });
+  tb+=`</tr></thead><tbody>`;
+  mats.forEach(m=>{
+    tb+=`<tr><td class="matname" data-id="${m.id}"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</td>`;
+    days.forEach(d=>{
+      const v=(sum[m.id]||{})[d]||0;
+      const cls=[isWeekend(parseD(d))?'wknd':'', d===today?'today':'', v?'':'zero'].join(' ');
+      tb+=`<td class="${cls}">${v?`<span class="cell-n">${v}</span>`:'·'}</td>`;
+    });
+    tb+=`</tr>`;
+  });
+  // total row
+  tb+=`<tr><td class="matname" style="font-weight:700">${t("合計")}</td>`;
+  days.forEach(d=>{
+    let v=0; mats.forEach(m=>v+=(sum[m.id]||{})[d]||0);
+    tb+=`<td class="${isWeekend(parseD(d))?'wknd':''} ${d===today?'today':''} ${v?'':'zero'}">${v?`<span class="cell-n">${v}</span>`:'·'}</td>`;
+  });
+  tb+=`</tr></tbody></table></div>`;
+  html += tb + `<p class="muted" style="margin-top:12px">${t("数字はその日に学習する予定の合計数（新規＋復習）です。")} ${t("教材名をクリックすると予実表を開きます")}</p></div>`;
+  viewEl.innerHTML = html;
+  bindMatrixHead();
+  viewEl.querySelectorAll("td.matname[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  // Scroll the matrix so today's column sits just right of the sticky 教材名 column
+  // (past columns are kept — scroll left to see them). Non-destructive default view.
+  const wrap = viewEl.querySelector(".table-wrap");
+  const todayTh = viewEl.querySelector(".matrix thead th.today");
+  if(wrap && todayTh){
+    const corner = viewEl.querySelector(".matrix thead th.matname");
+    const off = corner ? corner.offsetWidth : 0;
+    wrap.scrollLeft += todayTh.getBoundingClientRect().left - wrap.getBoundingClientRect().left - off;
+  }
+}
+
+/* ---------- GANTT (全体計画表の週/月ビュー) ---------- */
+function renderGantt(head, mode){
+  const mats = DB.materials();
+  const all = DB.entries();
+  const today = todayStr();
+  if(!all.length){
+    viewEl.innerHTML = head + `<p class="muted">${t("計画がありません。")}</p></div>`;
+    bindMatrixHead(); return;
+  }
+
+  // タイムライン＝全計画期間（今日を含める）＋翌月末までの余白
+  // （終了日を先へ延ばすリサイズ・後ろへの移動がその場でできるように）。
+  let mn=all[0].date, mx=all[0].date;
+  all.forEach(e=>{ if(e.date<mn)mn=e.date; if(e.date>mx)mx=e.date; });
+  if(today<mn) mn=today; if(today>mx) mx=today;
+  const cols = ganttCols(mn, nextMonthEnd(mx), mode);
+  const tlStart = cols[0].start, tlEnd = cols[cols.length-1].end;
+  const totalDays = diffDays(tlStart, tlEnd)+1;
+  const pct = n => (n/totalDays*100).toFixed(3)+"%";
+
+  // 見出し: 週モードは月の行＋第n週の行、月モードは「7月|8月|…」の1行。
+  // 幅は日数比（月は28〜31日で不揃いのため flex-grow に日数を使う）。
+  const y1=parseD(tlStart), y2=parseD(tlEnd);
+  const spanLbl = tf("{y}年{m}月",{y:y1.getFullYear(),m:y1.getMonth()+1}) +
+    (tlStart.slice(0,7)===tlEnd.slice(0,7) ? "" : " 〜 "+tf("{y}年{m}月",{y:y2.getFullYear(),m:y2.getMonth()+1}));
+  const colCls = c => (c.start<=today && today<=c.end) ? "today" : "";
+  let monRow = "";
+  if(mode==="week"){
+    const groups = [];
+    cols.forEach(c=>{
+      const g = groups[groups.length-1];
+      if(g && g.month===c.month) g.days += c.days;
+      else groups.push({month:c.month, days:c.days});
+    });
+    monRow = `<div class="g-head g-monrow"><div class="g-name"></div><div class="g-days">` +
+      groups.map(g=>`<div class="g-mon" style="flex-grow:${g.days}">${tf("{m}月",{m:+g.month.slice(5)})}</div>`).join("") +
+      `</div></div>`;
+  }
+  const colRow = `<div class="g-head"><div class="g-name">${spanLbl.length<=14?spanLbl:""}</div><div class="g-days">` +
+    cols.map((c,i)=>{
+      const mstart = i>0 && cols[i-1].month!==c.month;
+      return `<div class="g-day ${colCls(c)} ${mstart?'g-mstart':''}" style="flex-grow:${c.days}">${c.label}</div>`;
+    }).join("") + `</div></div>`;
+
+  // 行: 背景セル（週/月区切り）＋今日の縦線＋教材バー（日数比で絶対配置）
+  const cellsHtml = cols.map((c,i)=>{
+    const mstart = i>0 && cols[i-1].month!==c.month;
+    return `<div class="g-cell ${colCls(c)} ${mstart?'g-mstart':''}" style="flex-grow:${c.days}"></div>`;
+  }).join("");
+  const nowLine = `<span class="g-now" style="left:${pct(diffDays(tlStart,today)+0.5)}"></span>`;
+
+  const byMat = {};
+  all.forEach(e=>{ (byMat[e.materialId]=byMat[e.materialId]||[]).push(e); });
+
+  let html = head + `<p class="muted" style="margin:-6px 0 10px">${spanLbl}</p>
+    <div class="table-wrap gantt-wrap"><div class="gantt ${mode}" style="--cols:${cols.length}">` + monRow + colRow;
+
+  mats.forEach(m=>{
+    const es = byMat[m.id]||[];
+    let barHtml = "";
+    if(es.length){
+      let bMin=es[0].date, bMax=es[0].date, newMax=null;
+      let a=Infinity, b=-Infinity;
+      es.forEach(e=>{
+        if(e.date<bMin)bMin=e.date; if(e.date>bMax)bMax=e.date;
+        if(e.type==="new"){
+          if(newMax==null||e.date>newMax) newMax=e.date;
+          e.items.forEach(n=>{ if(n<a)a=n; if(n>b)b=n; });
+        }
+      });
+      const span = diffDays(bMin, bMax)+1;
+      // 復習テール（最終新規日より後ろ）は薄く表示
+      const tail = (newMax!=null && newMax<bMax)
+        ? `<span class="g-tail" style="left:${((diffDays(bMin,newMax)+1)/span*100).toFixed(3)}%"></span>` : "";
+      const lbl = b>=a ? (a===b? a : a+"〜"+b)+" "+unitLabel(m.unit) : t("復習");
+      barHtml = `<div class="g-bar" data-id="${m.id}" data-min="${bMin}" data-max="${bMax}"
+        style="--mat:${m.color};left:${pct(diffDays(tlStart,bMin))};width:${pct(span)}">
+        ${tail}<span class="g-h l"></span><span class="g-lbl">${lbl}</span><span class="g-h r"></span></div>`;
+    }
+    html += `<div class="g-row"><div class="g-name" data-id="${m.id}" title="${esc(m.name)}"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</div>
+      <div class="g-track">${cellsHtml}${nowLine}${barHtml}</div></div>`;
+  });
+  html += `</div></div>
+    <p class="muted" style="margin-top:12px">${t("バーをドラッグで今日以降の予定を移動、端をドラッグで期間を変更できます。教材名をタップすると予実表を開きます。")}</p></div>`;
+  viewEl.innerHTML = html;
+
+  bindMatrixHead();
+  viewEl.querySelectorAll(".g-name[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  viewEl.querySelectorAll(".g-bar[data-id]").forEach(bar=>{
+    bar.addEventListener("pointerdown", ev=>{ ganttDrag.down(bar, ev, totalDays); ev.preventDefault(); });
+  });
+  // はみ出す場合は今日の列が記名列のすぐ右に来るようスクロール（数値テーブルと同ロジック）
+  const wrap = viewEl.querySelector(".gantt-wrap");
+  const tc = viewEl.querySelector(".g-head .g-day.today");
+  const corner = viewEl.querySelector(".g-head .g-name");
+  if(wrap && tc)
+    wrap.scrollLeft += tc.getBoundingClientRect().left - wrap.getBoundingClientRect().left - (corner?corner.offsetWidth:0);
+}
+
+/* Pointer-driven drag for gantt bars. Whole-bar drag shifts today-onward plans
+   (bulkShift, backward clamped to today); edge drag resizes the period and
+   replans the unconsumed items (replanPeriod). Pointer Events (not HTML5 DnD)
+   so mouse and touch behave the same and the resize handles work; move/up
+   listeners live on window so a lost capture (or a synthetic pointerId in
+   tests, where setPointerCapture throws) never strands a drag. A press that
+   moves less than 5px is a tap and opens the material's 予実表. */
+const ganttDrag = (()=>{
+  let st = null;   // active drag state
+  function down(bar, ev, totalDays){
+    if(st || ev.isPrimary===false) return;
+    const h = ev.target.closest ? ev.target.closest(".g-h") : null;
+    const track = bar.parentElement;
+    const mat = DB.material(bar.dataset.id);
+    if(!mat) return;
+    st = {
+      bar, id: bar.dataset.id, mat,
+      op: h ? (h.classList.contains("l") ? "resize-l" : "resize-r") : "move",
+      x0: ev.clientX, colW: track.getBoundingClientRect().width/totalDays,  // 1日ぶんの幅（スナップ単位）
+      min: bar.dataset.min, max: bar.dataset.max,
+      left: bar.offsetLeft, width: bar.offsetWidth,
+      es: DB.entriesFor(bar.dataset.id),
+      delta: 0, dragging: false
+    };
+    try{ bar.setPointerCapture(ev.pointerId); }catch(_){ }
+  }
+  function move(ev){
+    if(!st) return;
+    const dx = ev.clientX - st.x0;
+    if(!st.dragging){
+      if(Math.abs(dx) < 5) return;
+      st.dragging = true;
+      st.bar.classList.add("dragging");
+      dragBanner.show(`<div class="dbsrc">${esc(st.mat.name)}</div><div class="dbtgt"></div>`);
+    }
+    dragBanner.move(ev.clientX, ev.clientY);
+    const raw = Math.round(dx/st.colW);
+    if(st.op==="move"){
+      const eff = clampShift(st.es, todayStr(), raw, todayStr());
+      st.delta = eff;
+      st.bar.style.transform = `translateX(${eff*st.colW}px)`;
+      const sign = eff>0 ? "+" : "";
+      if(eff===0 && raw<0) dragBanner.target(t("今日より前には動かせません"), false);
+      else dragBanner.target(tf("{n}日 移動",{n:sign+eff}), eff!==raw ? false : (eff!==0 ? true : null));
+    }else if(st.op==="resize-r"){
+      // 終了端: 今日・開始日・エントリ先頭より前には縮められない
+      let floor = todayStr();
+      if(st.mat.startDate>floor) floor = st.mat.startDate;
+      if(st.min>floor) floor = st.min;
+      const eff = Math.max(raw, diffDays(st.max, floor));
+      st.delta = eff;
+      st.bar.style.width = Math.max(st.colW*.6, st.width + eff*st.colW) + "px";
+      dragBanner.target(tf("終了: {d}",{d:mdLabel(fmtD(addDays(parseD(st.max), eff)))}), eff!==0 ? true : null);
+    }else{
+      // 開始端: 終了日・エントリ末尾を越えては縮められない
+      let ceil = st.mat.endDate<st.max ? st.mat.endDate : st.max;
+      const eff = Math.min(raw, diffDays(st.min, ceil));
+      st.delta = eff;
+      st.bar.style.left = (st.left + eff*st.colW) + "px";
+      st.bar.style.width = Math.max(st.colW*.6, st.width - eff*st.colW) + "px";
+      dragBanner.target(tf("開始: {d}",{d:mdLabel(fmtD(addDays(parseD(st.min), eff)))}), eff!==0 ? true : null);
+    }
+  }
+  function up(){
+    if(!st) return;
+    const s = st; st = null;
+    dragBanner.hide();
+    if(!s.dragging){ state.selected = s.id; render(); return; }   // tap → 予実表
+    if(s.op==="move"){
+      if(s.delta){
+        const r = bulkShift(s.id, todayStr(), s.delta);
+        if(r.clamped) alert(tf("前倒しは今日までに制限し、{n}日だけ前倒ししました。",{n:Math.abs(r.effectiveDelta)}));
+      }
+      render(); return;
+    }
+    // resize: 実績・過去はそのまま、未消化分だけを新期間に配り直す
+    if(s.delta && confirm(t("期間を変更し、今日以降の未消化分の計画を作り直します。実績と過去の予定はそのまま残ります。よろしいですか？"))){
+      const mat = s.mat;
+      if(s.op==="resize-l") mat.startDate = fmtD(addDays(parseD(s.min), s.delta));
+      else mat.endDate = fmtD(addDays(parseD(s.max), s.delta));
+      DB.saveMaterial(mat, replanPeriod(mat, DB.entriesFor(mat.id), mat.startDate, mat.endDate,
+        buildDayExcluder(mat), todayStr()));
+    }
+    render();
+  }
+  function cancel(){
+    if(!st) return;
+    const s = st; st = null;
+    dragBanner.hide();
+    s.bar.classList.remove("dragging");
+    s.bar.style.transform = ""; s.bar.style.left = ""; s.bar.style.width = "";
+  }
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", up);
+  window.addEventListener("pointercancel", cancel);
+  return { down };
+})();
+
+/* Follow-banner shown while dragging a 予実表 cell. On phones the dragged cell
+   sits under the finger, so this pinned pill (offset above the pointer) tells
+   you what you're moving and which day it will land on. Created once; a single
+   document-level dragover keeps it pinned to the pointer. pointer-events:none
+   so it never interferes with the drag. */
+const dragBanner = (()=>{
+  let el=null, active=false;
+  function ensure(){
+    if(el) return el;
+    el=document.createElement("div"); el.id="dragbanner";
+    document.body.appendChild(el);
+    document.addEventListener("dragover", ev=>{ if(active) move(ev.clientX, ev.clientY); });
+    document.addEventListener("drop", hide);
+    document.addEventListener("dragend", hide);
+    return el;
+  }
+  function move(x,y){
+    if(!x && !y) return;            // some browsers report 0,0 on the final event
+    const e=ensure();
+    const left=Math.min(Math.max(x, 70), window.innerWidth-70);
+    e.style.left=left+"px";
+    e.style.top=Math.max(8, y-64)+"px";
+  }
+  function show(srcHtml){ const e=ensure(); active=true; e.removeAttribute("data-state"); e.innerHTML=srcHtml; e.classList.add("on"); }
+  function target(html, ok){ if(!active||!el) return; const t=el.querySelector(".dbtgt"); if(t) t.innerHTML=html;
+    if(ok==null) el.removeAttribute("data-state"); else el.dataset.state=ok?"ok":"no"; }
+  function hide(){ active=false; if(el) el.classList.remove("on"); }
+  return {show, target, hide, move};
+})();
+
+/* ---------- DETAIL (予実表) ---------- */
+function renderDetail(id){
+  const m = DB.material(id);
+  if(!m){ state.selected=null; return render(); }
+  const es = DB.entriesFor(id);
+  const reviews = (m.reviews||[]);
+  const total = es.reduce((s,e)=>s+e.planCount,0);
+  const doneSum = es.reduce((s,e)=>s+(e.done?e.planCount:0),0);
+  const pct = total? Math.round(doneSum/total*100):0;
+  const actualSum = es.reduce((s,e)=>s+(e.actualCount||0),0);
+
+  // date span (continuous) so plans can be dragged onto empty days
+  let min=es.length?es[0].date:m.startDate, max=es.length?es[0].date:m.endDate;
+  es.forEach(e=>{ if(e.date<min)min=e.date; if(e.date>max)max=e.date; });
+  if(m.startDate<min)min=m.startDate; if(m.endDate>max && es.length===0)max=m.endDate;
+  const days=[]; for(let i=0;i<=diffDays(min,max);i++) days.push(fmtD(addDays(parseD(min),i)));
+  const today=todayStr();
+
+  // index entries by date+group, and accumulate per-day totals
+  const byCell={}, dayTot={};
+  es.forEach(e=>{
+    const g = e.type==="new"?"new":("r"+e.reviewIndex);
+    (byCell[e.date]=byCell[e.date]||{})[g]=e;
+    const t = dayTot[e.date]=dayTot[e.date]||{plan:0,actual:0,hasActual:false,has:false};
+    t.plan+=e.planCount; t.has=true;
+    if(e.actualCount!=null){ t.actual+=e.actualCount; t.hasActual=true; }
+  });
+
+  let html = `<div class="fade"><div class="detail-head">
+    <div class="detail-top">
+      <div class="crumb" data-act="back">${t("‹ 計画一覧へ戻る")}</div>
+      <div class="detail-actions">
+        <button class="btn ghost sm" data-act="edit">${t("編集")}</button>
+        <button class="btn ghost sm" data-act="shift">${t("ずらす")}</button>
+        <button class="btn ghost sm" data-act="regen">${t("再生成")}</button>
+        <button class="btn ghost sm" data-act="del" style="color:var(--vermilion)">${t("削除")}</button>
+      </div>
+    </div>
+    <h2><span class="swatch" style="background:${m.color}"></span>${esc(m.name)}</h2>
+    <div class="detail-meta">
+      <div class="m"><div class="n">${mdLabel(m.startDate)}–${mdLabel(m.endDate)}</div><div class="l">${t("期間")}</div></div>
+      <div class="m"><div class="n">${m.rangeStart}〜${m.rangeEnd}</div><div class="l">${tf("範囲({u})",{u:unitLabel(m.unit)})}</div></div>
+      <div class="m"><div class="n">${reviews.length}</div><div class="l">${t("復習回数")}</div></div>
+      <div class="m"><div class="n">${total}</div><div class="l">${tf("総{u}数",{u:unitLabel(m.unit)})}</div></div>
+      <div class="m"><div class="n" id="progN" style="font-size:18px">${doneSum}/${total}<span style="font-size:12px"> (${pct}%)</span></div><div class="l">${t("進捗")}</div></div>
+    </div>
+  </div>`;
+
+  // table
+  const groups = [{key:"new",label:t("新規"),cls:"new"}].concat(reviews.map((off,i)=>({key:"r"+(i+1),label:reviewName(i+1)+`<br><span class="muted" style="font-size:10px">${tf("{n}日後",{n:off})}</span>`,cls:"rev"})));
+  let tb = `<div class="table-wrap"><table class="yt"><thead><tr><th rowspan="2" class="date" style="vertical-align:middle">${t("日付")}</th>`;
+  tb+=`<th colspan="2" class="grp daytot">${t("日計")}</th>`;
+  groups.forEach(g=>{ tb+=`<th colspan="3" class="grp ${g.cls} colsep">${g.label}</th>`; });
+  tb+=`</tr><tr>`;
+  tb+=`<th class="num daytot" style="font-size:11px">${t("予")}</th><th class="num daytot" style="font-size:11px">${t("実")}</th>`;
+  groups.forEach(g=>{ tb+=`<th class="colsep" style="font-size:11px">${t("範囲")}</th><th class="num" style="font-size:11px">${t("予")}</th><th class="num" style="font-size:11px">${t("実")}</th>`; });
+  tb+=`</tr></thead><tbody>`;
+
+  days.forEach(d=>{
+    const wd=parseD(d).getDay();
+    const wkndCls = wd===0?'wknd sun':(wd===6?'wknd sat':'');
+    const dt = dayTot[d];
+    tb+=`<tr data-date="${d}" class="${wkndCls} ${d===today?'today':''}">
+      <td class="date">${mdLabel(d)} <span class="wd">${WD[wd]}</span></td>
+      <td class="num daytot plan">${dt?dt.plan:''}</td>
+      <td class="num daytot act">${dt&&dt.hasActual?dt.actual:''}</td>`;
+    groups.forEach((g,gi)=>{
+      const e = (byCell[d]||{})[g.key];
+      const sep = 'colsep';
+      if(e){
+        const aCls = e.actualCount==null?'':(e.actualCount>=e.planCount?'full':(e.actualCount>e.planCount?'over':''));
+        const editable = g.key==="new" ? ' editable' : '';
+        tb+=`<td class="range ${g.cls} has ${sep}${editable}" draggable="true" data-id="${e.id}" data-date="${d}" data-group="${g.key}" data-chunk="${e.chunkId}"${editable?` title="${t("クリックで範囲・問数を編集")}"`:''}>${e.label}${editable?'<span class="editmark">✎</span>':''}</td>`;
+        tb+=`<td class="num">${e.planCount}</td>`;
+        tb+=`<td class="actual num ${aCls}"><input class="cellinput" data-id="${e.id}" data-f="actualCount" type="number" min="0" value="${e.actualCount==null?'':e.actualCount}"></td>`;
+      }else{
+        tb+=`<td class="range ${g.cls} ${sep}" data-date="${d}" data-group="${g.key}"></td><td class="num"></td><td class="num"></td>`;
+      }
+    });
+    tb+=`</tr>`;
+  });
+  tb+=`</tbody></table></div>`;
+  html += tb;
+  html += `<div class="legend">
+    <span><i style="background:rgba(47,79,100,.5)"></i>${t("新規学習")}</span>
+    <span><i style="background:rgba(187,60,40,.5)"></i>${t("復習")}</span>
+    <span><i style="background:rgba(120,160,90,.45)"></i>${t("実績が予定到達")}</span>
+    <span>${t("📦 新規の学習範囲をドラッグ＝新規と復習をまとめて移動（復習のタイミングを保つ／他の新規がある日へ落とすと2つを入れ替え／除外日には置けません）")}</span>
+    <span>${t("↕ 復習の範囲をドラッグ＝その復習だけ別日へ移動")}</span>
+    <span>${t("✎ 新規の学習範囲をクリックすると問数を編集できます（以降が連動）")}</span>
+    <span>${t("📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）")}</span>
+    <span>${t("実績の数字はクリックして直接編集できます")}</span>
+  </div>`;
+  html += `<div style="margin-top:14px" class="muted">${t("実績合計")} <span id="actualSumN">${actualSum}</span> / ${t("予定合計")} ${total} ${unitLabel(m.unit)}</div></div>`;
+  viewEl.innerHTML = html;
+
+  // actions
+  viewEl.querySelector('[data-act="back"]').onclick=()=>{ state.selected=null; render(); };
+  viewEl.querySelector('[data-act="edit"]').onclick=()=>openForm(m);
+  viewEl.querySelector('[data-act="shift"]').onclick=()=>openBulkShift(m.id);
+  viewEl.querySelector('[data-act="regen"]').onclick=()=>{
+    if(confirm(t("計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？"))){
+      DB.saveMaterial(m, generatePlan(m)); render();
+    }
+  };
+  viewEl.querySelector('[data-act="del"]').onclick=()=>{
+    if(confirm(tf("「{name}」を削除します。よろしいですか？",{name:m.name}))){ DB.deleteMaterial(m.id); state.selected=null; state.view="plans"; render(); }
+  };
+
+  // inline edit — patch in place (no full re-render) so scroll position & focus are kept
+  viewEl.querySelectorAll(".cellinput").forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const e=DB.entries().find(x=>x.id===inp.dataset.id);
+      if(!e) return;
+      const v = inp.value===""?null:Math.max(0, Math.round(+inp.value)||0);
+      DB.updateEntry(inp.dataset.id, {actualCount:v, done: v!=null && v>=e.planCount});
+      inp.value = v==null?'':v; // normalize displayed value
+
+      // 1) this actual cell's color state
+      const td=inp.closest("td.actual");
+      if(td){
+        td.classList.remove('full','over');
+        if(v!=null && v>=e.planCount) td.classList.add('full');
+      }
+
+      // 2) recompute totals from fresh data
+      const es2=DB.entriesFor(id);
+      const dayActual={};
+      es2.forEach(x=>{ const t=dayActual[x.date]=dayActual[x.date]||{a:0,has:false}; if(x.actualCount!=null){t.a+=x.actualCount;t.has=true;} });
+
+      // day-total 実 cell of this row
+      const tr=inp.closest("tr");
+      if(tr&&tr.dataset.date){
+        const dcell=tr.querySelector("td.daytot.act");
+        const t=dayActual[tr.dataset.date];
+        if(dcell) dcell.textContent=(t&&t.has)?t.a:'';
+      }
+
+      // 3) header progress + footer 実績合計
+      const total2=es2.reduce((s,x)=>s+x.planCount,0);
+      const doneSum2=es2.reduce((s,x)=>s+(x.done?x.planCount:0),0);
+      const pct2=total2?Math.round(doneSum2/total2*100):0;
+      const actualSum2=es2.reduce((s,x)=>s+(x.actualCount||0),0);
+      const pn=viewEl.querySelector("#progN"); if(pn) pn.innerHTML=`${doneSum2}/${total2}<span style="font-size:12px"> (${pct2}%)</span>`;
+      const asn=viewEl.querySelector("#actualSumN"); if(asn) asn.textContent=actualSum2;
+    });
+  });
+
+  // drag & drop to move a plan to another day (same column group).
+  // Dragging a 新規 cell moves the WHOLE chunk (its reviews follow, keeping
+  // offsets); dragging a 復習 cell nudges just that one review.
+  let dragId=null, dragGroup=null, dragChunk=null;
+  viewEl.querySelectorAll('td.range[draggable="true"]').forEach(cell=>{
+    cell.addEventListener("dragstart", ev=>{
+      dragId=cell.dataset.id; dragGroup=cell.dataset.group;
+      dragChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+      cell.classList.add("dragging"); ev.dataTransfer.effectAllowed="move";
+      // show the follow-banner (the dragged cell hides under the finger on phones)
+      const lab=cell.textContent.replace("✎","").trim();
+      const isNew=dragGroup==="new";
+      const gname=isNew?t("新規"):reviewName(+dragGroup.slice(1));
+      const icon=isNew?"📦":"↕";
+      const note=isNew?`<div class="dbnote">${t("復習も一緒に動きます")}</div>`:"";
+      dragBanner.show(`<div class="dbsrc">${icon} ${gname}　${lab}</div><div class="dbtgt">${t("置く日をなぞってください")}</div>${note}`);
+      dragBanner.move(ev.clientX, ev.clientY);
+    });
+    cell.addEventListener("dragend", ()=>{ cell.classList.remove("dragging"); dragBanner.hide(); });
+  });
+  // A 新規 cell can only be dropped on an allowed, free new-study day: excluded
+  // days carry no study and a day already holding a new study is taken. Invalid
+  // targets get no drop-ok highlight and won't accept the drop (no-drop cursor),
+  // so the chunk never silently jumps elsewhere.
+  const isExcludedDay = buildDayExcluder(m);
+  viewEl.querySelectorAll('td.range[data-date]').forEach(cell=>{
+    cell.addEventListener("dragover", ev=>{
+      if(!(dragGroup && cell.dataset.group===dragGroup && cell.dataset.date)) return;
+      const td=cell.dataset.date;
+      const lbl=`${mdLabel(td)}（${WD[parseD(td).getDay()]}）`;
+      if(dragGroup==="new"){
+        if(isExcludedDay(td)){
+          dragBanner.target(tf("→ {d}：ここには置けません",{d:lbl}), false); // no preventDefault → drop rejected
+          return;
+        }
+        // A day already holding ANOTHER chunk's new study → swap the two chunks.
+        const tChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+        if(cell.classList.contains('has')){
+          if(tChunk===dragChunk) return;       // own cell: no-op, no highlight
+          ev.preventDefault(); cell.classList.add("drop-ok");
+          dragBanner.target(tf("→ {d} と入れ替える",{d:lbl}), true);
+          return;
+        }
+      }
+      ev.preventDefault(); cell.classList.add("drop-ok");
+      dragBanner.target(tf("→ {d} に置く",{d:lbl}), true);
+    });
+    cell.addEventListener("dragleave", ()=>{ cell.classList.remove("drop-ok"); dragBanner.target(t("置く日をなぞってください"), null); });
+    cell.addEventListener("drop", ev=>{
+      ev.preventDefault(); cell.classList.remove("drop-ok");
+      if(!dragId || cell.dataset.group!==dragGroup) return;
+      const targetDate=cell.dataset.date;
+      if(dragGroup==="new" && dragChunk!=null){
+        const tChunk = cell.dataset.chunk!=null ? +cell.dataset.chunk : null;
+        if(cell.classList.contains('has') && tChunk!=null && tChunk!==dragChunk){
+          // target day holds another chunk's new study → swap the two chunks
+          swapChunks(id, dragChunk, tChunk);
+        }else{
+          // move the whole chunk: new study to targetDate, reviews follow (offset)
+          moveChunk(id, dragChunk, targetDate);
+        }
+      }else{
+        const existing=cell.dataset.id; // entry already in target cell?
+        if(existing && existing!==dragId){
+          // swap the two dates
+          const a=DB.entries().find(x=>x.id===dragId);
+          const b=DB.entries().find(x=>x.id===existing);
+          const ad=a.date; DB.updateEntry(a.id,{date:b.date}); DB.updateEntry(b.id,{date:ad});
+        }else{
+          DB.updateEntry(dragId, {date:targetDate});
+        }
+      }
+      dragId=null; dragGroup=null; dragChunk=null;
+      renderDetail(id);
+    });
+  });
+
+  // click a 新規学習 range cell to edit its planned size (range/count)
+  let suppressClick=false;
+  viewEl.querySelectorAll('td.range.editable').forEach(cell=>{
+    cell.addEventListener("dragstart", ()=>{ suppressClick=true; });
+    cell.addEventListener("click", ()=>{
+      if(suppressClick){ suppressClick=false; return; } // ignore click fired by a drag
+      openChunkEdit(id, +cell.dataset.chunk);
+    });
+  });
+}
+
+/* Modal to edit one chunk's planned size. Total is preserved; later chunks
+   reflow and reviews re-sync (see editChunkCount). Actuals/dates are kept. */
+function openChunkEdit(materialId, chunkId){
+  const m = DB.material(materialId);
+  if(!m) return;
+  const es = DB.entriesFor(materialId);
+  const nw = es.find(e=>e.chunkId===chunkId && e.type==="new");
+  if(!nw) return;
+  const u = unitLabel(m.unit);
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${t("範囲・問数の編集")}</h2>
+    <div class="lead">${tf("{date} の新規学習を編集します。総{u}数は変えず、<b>以降の予定（範囲・復習）が自動で連動</b>します。入力済みの実績はそのまま残ります。",{date:fullLabel(nw.date),u})}</div>
+    <div style="margin-bottom:14px"><span class="muted">${t("現在の範囲")}</span>　<b>${nw.label}</b>（${nw.planCount}${u}）</div>
+    <label style="display:block;font-size:13px;margin-bottom:6px">${tf("この日の予定{u}数",{u})}</label>
+    <input id="ce-count" type="number" min="1" value="${nw.planCount}" style="width:120px">
+    <div class="lead" style="margin-top:8px">${t("※ 増やすと後ろの予定を前倒しで取り込み、減らすと残りは後ろの日へ送られます（最終日が増減）。日数は増えません。")}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="ce-cancel">${t("キャンセル")}</button>
+      <div class="right"><button class="btn accent" id="ce-save">${t("保存する")}</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#ce-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  const inp=ov.querySelector("#ce-count");
+  inp.focus(); inp.select();
+  ov.querySelector("#ce-save").onclick=()=>{
+    const v=Math.max(1, Math.round(+inp.value)||0);
+    editChunkCount(materialId, chunkId, v);
+    close();
+    renderDetail(materialId);
+  };
+}
+
+/* Bulk-shift dialog: move every chunk from a chosen date onward by ±N days
+   (see bulkShift). The 起点 is forced to today-or-later so past entries (with
+   recorded actuals) never move, and a backward shift is clamped so nothing lands
+   before today. Reviews follow their chunk; counts/actuals are untouched. */
+function openBulkShift(materialId){
+  const m = DB.material(materialId);
+  if(!m) return;
+  const today = todayStr();
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${t("予定をまとめてずらす")}</h2>
+    <div class="lead">${t("起点の日以降の予定（新規＋復習）を、指定した日数だけまとめて前後にずらします。復習は元のタイミングを保って追従し、<b>問数・実績はそのまま</b>です。<b>今日より前（実績のある過去）は動きません。</b>")}</div>
+    <label style="display:block;font-size:13px;margin:12px 0 6px">${t("起点の日（この日以降をずらす）")}</label>
+    <input id="bs-from" type="date" value="${today}" min="${today}">
+    <label style="display:block;font-size:13px;margin:14px 0 6px">${t("ずらす量")}</label>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input id="bs-days" type="number" min="1" value="1" style="width:90px"> ${t("日")}
+      <select id="bs-dir">
+        <option value="back">${t("後ろへ（先送り）")}</option>
+        <option value="fwd">${t("前へ（前倒し）")}</option>
+      </select>
+    </div>
+    <div class="lead" style="margin-top:10px">${t("※ 移動先が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。")}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="bs-cancel">${t("キャンセル")}</button>
+      <div class="right"><button class="btn accent" id="bs-save">${t("ずらす")}</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#bs-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelector("#bs-save").onclick=()=>{
+    let from = ov.querySelector("#bs-from").value || today;
+    if(from < today) from = today;                 // never touch the past
+    const n = Math.max(1, Math.round(+ov.querySelector("#bs-days").value)||0);
+    const delta = ov.querySelector("#bs-dir").value==="back" ? n : -n;
+    const r = bulkShift(materialId, from, delta);
+    close();
+    if(!r.moved){
+      alert(r.clamped
+        ? t("前倒しできる余地がありません（先頭の予定が既に今日です）。")
+        : t("ずらす対象の予定がありません。起点の日を確認してください。"));
+      return;
+    }
+    if(r.clamped) alert(tf("前倒しは今日までに制限し、{n}日だけ前倒ししました。",{n:Math.abs(r.effectiveDelta)}));
+    renderDetail(materialId);
+  };
+}
+
+/* =========================================================================
+   Material form (create / edit)
+   ========================================================================= */
+/* Renders weekday + date exclusion controls into `container`, mutating the
+   given `model` ({excludeDates:[], excludeWeekdays:[]}) in place. Reused by the
+   material form (per-material) and the global exclusion dialog. */
+function exclusionControls(container, model){
+  function draw(){
+    container.innerHTML=`
+      <div class="field"><label>${t("除外する曜日")}</label>
+        <div class="wd-seg" data-x="wd"></div>
+        <div class="hint">${t("チェックした曜日には新規学習を入れません（土日には平日より多く配分されることがあります）。")}</div></div>
+      <div class="field"><label>${t("除外する日付")}</label>
+        <div class="xrow"><input type="date" data-x="date">
+          <button type="button" class="btn ghost sm" data-x="add">${t("＋ 追加")}</button></div>
+        <div class="chips" data-x="chips"></div>
+        <div class="hint">${t("旅行・予定などで学習しない特定の日を計画から除きます。")}</div></div>`;
+    const wd=container.querySelector('[data-x="wd"]');
+    WD.forEach((w,i)=>{
+      const b=document.createElement("button");
+      b.type="button"; b.className="wd-btn"+(model.excludeWeekdays.includes(i)?" on":"");
+      b.textContent=w;
+      b.onclick=()=>{ const k=model.excludeWeekdays.indexOf(i); if(k>=0)model.excludeWeekdays.splice(k,1); else model.excludeWeekdays.push(i); draw(); };
+      wd.appendChild(b);
+    });
+    const chips=container.querySelector('[data-x="chips"]');
+    model.excludeDates.slice().sort().forEach(ds=>{
+      const c=document.createElement("span"); c.className="xchip";
+      c.innerHTML=`${fullLabel(ds)} <button type="button" title="${t("削除")}">×</button>`;
+      c.querySelector("button").onclick=()=>{ const k=model.excludeDates.indexOf(ds); if(k>=0)model.excludeDates.splice(k,1); draw(); };
+      chips.appendChild(c);
+    });
+    container.querySelector('[data-x="add"]').onclick=()=>{
+      const inp=container.querySelector('[data-x="date"]'); const v=inp.value;
+      if(v && !model.excludeDates.includes(v)){ model.excludeDates.push(v); draw(); }
+    };
+  }
+  draw();
+}
+
+/* Global (all-material) exclusion-day settings dialog. */
+function openGlobalExclude(){
+  const cur=DB.settings();
+  const model={ excludeDates:(cur.excludeDates||[]).slice(), excludeWeekdays:(cur.excludeWeekdays||[]).slice() };
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${t("共通の除外日")}</h2>
+    <div class="lead">${t("すべての教材の計画立案で除外する曜日・日付です。教材ごとの除外は各教材の編集画面で設定できます。")}</div>
+    <div id="g-ex"></div>
+    <div class="lead" style="margin-top:4px">${t("※ 変更後、既存の計画に反映するには各教材の「再生成」を実行してください。")}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="g-cancel">${t("キャンセル")}</button>
+      <div class="right"><button class="btn accent" id="g-save">${t("保存する")}</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  exclusionControls(ov.querySelector("#g-ex"), model);
+  const close=()=>ov.remove();
+  ov.querySelector("#g-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelector("#g-save").onclick=()=>{ DB.saveSettings(model); close(); };
+}
+
+/* 教材セットの一括登録ウィザード。教材リスト（CSV）のセットをレベル範囲・
+   期間・選択肢で絞り、allocateRoute で期間を割り当てて教材を一括生成する。 */
+function openRouteWizard(){
+  const routes = libRoutes(LIB());
+  const subjects = Object.keys(routes);
+  // 教材リスト未読込（またはセット情報なし）→ まず読み込みを案内
+  if(!subjects.length){ openLibraryImport(); return; }
+  let route = routes[subjects[0]];
+  let LV = route.map(lv=>lv.level);
+  const st = { subject:subjects[0], fromLevel:LV[0], toLevel:LV[LV.length-1],
+               includeSS:true, picks:{}, off:{}, excluded:{} };
+
+  const lvOpts = sel => LV.map(l=>`<option value="${esc(l)}" ${l===sel?"selected":""}>${esc(l)}</option>`).join("");
+  const subOpts = sel => subjects.map(s=>`<option value="${esc(s)}" ${s===sel?"selected":""}>${esc(s)}</option>`).join("");
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${t("教材セットを追加")}</h2>
+    <div class="lead">${t("定番参考書のセットから、期間に合わせて全教材の計画を一括で立てます。")}</div>
+    <div class="row2">
+      <div class="field"><label>${t("教科")}</label><select id="rw-sub">${subOpts(st.subject)}</select></div>
+      <div class="field"><label>${t("ゴールレベル")}</label><select id="rw-to">${lvOpts(st.toLevel)}</select></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>${t("開始日")}</label><input type="date" id="rw-start" value="${todayStr()}"></div>
+      <div class="field"><label>${t("終了日")}</label><input type="date" id="rw-end" value="${fmtD(addDays(new Date(),364))}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>${t("開始レベル")}</label><select id="rw-from">${lvOpts(st.fromLevel)}</select></div>
+      <div class="field"><label style="visibility:hidden">.</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:9px 0">
+          <input type="checkbox" id="rw-ss" checked style="accent-color:var(--vermilion)">${t("基礎固めの教材も含める")}</label></div>
+    </div>
+    <div class="field"><label>${t("含める教材と期間の割り当て")}</label>
+      <div class="rw-list" id="rw-list"></div>
+      <div class="rw-sum" id="rw-sum"></div>
+      <div class="hint">${t("単語帳などは他の教材と並行して進める配分です。期間に収まらない復習回は教材ごとに自動で省きます。")}</div></div>
+    <div class="err" id="rw-err"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="rw-cancel">${t("キャンセル")}</button>
+      <div class="right"><button class="btn accent" id="rw-save"></button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+
+  const $ = s => ov.querySelector(s);
+  // step の現在の選択。one=グループのチェックがオフなら空・オンなら radio の選択
+  // （既定は先頭）、any=追加した分、全冊step=個別チェックを外した分を除く。
+  const chosen = stp =>
+    stp.pick==="one" ? (st.off[stp.key] ? [] : (st.picks[stp.key] || [stp.books[0]]))
+    : stp.pick==="any" ? (st.picks[stp.key] || [])
+    : stp.books.filter(n=>!st.excluded[n]);
+  function effPicks(){
+    const picks = {};
+    route.forEach(lv=>lv.steps.forEach((sp,si)=>{
+      const key = lv.level+"|"+si;
+      picks[key] = chosen({key, pick:sp.pick, books:sp.books});
+    }));
+    return picks;
+  }
+  function currentBooks(){
+    return routePlanBooks(route, {fromLevel:st.fromLevel, toLevel:st.toLevel,
+        includeSS:st.includeSS, picks:effPicks()}).map(b=>{
+      const p = presetByName(b.name);
+      return { name:b.name, count:p.count, unit:p.unit, par:b.par };
+    });
+  }
+  function draw(){
+    const err = $("#rw-err"); err.textContent="";
+    const from = LV.indexOf(st.fromLevel), to = LV.indexOf(st.toLevel);
+    const books = from<=to ? currentBooks() : [];
+    const alloc = books.length ? allocateRoute(books, st.start, st.end) : null;
+    const dates = {}; (alloc||[]).forEach(a=>{ if(a) dates[a.name]=a; });
+    if(from>to) err.textContent = t("ゴールレベルは開始レベル以上にしてください。");
+    else if(books.length && !alloc) err.textContent = t("期間が短すぎます。教材の冊数以上の日数が必要です。");
+
+    let html="";
+    route.forEach(lv=>{
+      const li = LV.indexOf(lv.level);
+      if(li<from || li>to) return;
+      html += `<div class="rw-lv">${esc(lv.level)}</div>`;
+      lv.steps.forEach((sp,si)=>{
+        if(sp.ss && !st.includeSS) return;
+        const key = lv.level+"|"+si;
+        const sel = chosen({key, pick:sp.pick, books:sp.books});
+        if(sp.pick==="one")
+          html += `<label class="rw-choice"><input type="checkbox" data-type="g" data-key="${esc(key)}" ${st.off[key]?"":"checked"}>${t("1冊を選択")}</label>`;
+        else if(sp.pick==="any")
+          html += `<div class="rw-choice">${t("必要なら追加（任意）")}</div>`;
+        sp.books.forEach(n=>{
+          const on = sel.includes(n);
+          const d = dates[n];
+          // グループオフ中も radio の選択は保持して見せる（再オンで復元）
+          const radioSel = sp.pick==="one" && (st.picks[key]||[sp.books[0]]).includes(n);
+          const ctl = sp.pick==="one"
+            ? `<input type="radio" name="rw-g-${esc(key)}" data-type="one" data-key="${esc(key)}" data-name="${esc(n)}" ${radioSel?"checked":""} ${st.off[key]?"disabled":""}>`
+            : sp.pick==="any"
+            ? `<input type="checkbox" data-type="any" data-key="${esc(key)}" data-name="${esc(n)}" ${on?"checked":""}>`
+            : `<input type="checkbox" data-type="book" data-key="${esc(key)}" data-name="${esc(n)}" ${on?"checked":""}>`;
+          html += `<label class="rw-row ${on?"":"off"}">${ctl}
+            <span class="nm">${esc(n)}</span>
+            ${sp.par?`<span class="rw-par">${t("並行")}</span>`:""}
+            <span class="rw-cat">${t(sp.cat)}</span>
+            <span class="rw-dates">${d ? esc(mdLabel(d.startDate)+"〜"+mdLabel(d.endDate))+"・"+tf("{d}日",{d:d.days}) : ""}</span>
+          </label>`;
+        });
+      });
+    });
+    $("#rw-list").innerHTML = html;
+    $("#rw-sum").textContent = tf("合計 {n} 冊",{n:books.length});
+    $("#rw-save").textContent = tf("{n}冊で計画を立てる",{n:books.length});
+    $("#rw-save").disabled = !books.length || !alloc;
+
+    $("#rw-list").querySelectorAll("input").forEach(inp=>inp.onchange=()=>{
+      const key = inp.dataset.key, name = inp.dataset.name, tp = inp.dataset.type;
+      if(tp==="g"){ if(inp.checked) delete st.off[key]; else st.off[key]=true; }
+      else if(tp==="one"){ st.picks[key] = [name]; }
+      else if(tp==="any"){
+        const cur = new Set(st.picks[key]||[]);
+        inp.checked ? cur.add(name) : cur.delete(name);
+        st.picks[key] = [...cur];
+      }else{ // book: 全冊 step の個別チェック
+        if(inp.checked) delete st.excluded[name]; else st.excluded[name]=true;
+      }
+      draw();
+    });
+  }
+  st.start = $("#rw-start").value; st.end = $("#rw-end").value;
+  ["#rw-sub","#rw-from","#rw-to","#rw-start","#rw-end","#rw-ss"].forEach(s=>{
+    $(s).onchange = ()=>{
+      if($("#rw-sub").value !== st.subject){
+        // 教科が変わったら選択状態は引き継げない（キーは教科ごと）＝既定に戻す。
+        // レベル構成も教科ごとに違うので選択肢を作り直す。
+        st.subject = $("#rw-sub").value; route = routes[st.subject];
+        LV = route.map(lv=>lv.level);
+        st.picks={}; st.off={}; st.excluded={};
+        st.fromLevel = LV[0]; st.toLevel = LV[LV.length-1];
+        $("#rw-from").innerHTML = lvOpts(st.fromLevel);
+        $("#rw-to").innerHTML = lvOpts(st.toLevel);
+      }
+      st.fromLevel=$("#rw-from").value; st.toLevel=$("#rw-to").value;
+      st.includeSS=$("#rw-ss").checked;
+      st.start=$("#rw-start").value; st.end=$("#rw-end").value;
+      draw();
+    };
+  });
+  draw();
+
+  const close=()=>ov.remove();
+  $("#rw-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+
+  $("#rw-save").onclick=()=>{
+    const err=$("#rw-err"); err.textContent="";
+    if(LV.indexOf(st.fromLevel)>LV.indexOf(st.toLevel))
+      return err.textContent=t("ゴールレベルは開始レベル以上にしてください。");
+    if(!st.start||!st.end) return err.textContent=t("開始日と終了日を入力してください。");
+    if(st.end<st.start) return err.textContent=t("終了日は開始日以降にしてください。");
+    const books = currentBooks();
+    if(!books.length) return err.textContent=t("登録する教材がありません。");
+    const alloc = allocateRoute(books, st.start, st.end);
+    if(!alloc) return err.textContent=t("期間が短すぎます。教材の冊数以上の日数が必要です。");
+    const base = Date.now(), n0 = DB.materials().length;
+    books.forEach((b,i)=>{
+      const a = alloc[i];
+      const mat = {
+        id:"m"+(base+i).toString(36)+Math.floor(Math.random()*1e4).toString(36),
+        color: PALETTE[(n0+i) % PALETTE.length],
+        name:b.name, unit:b.unit, startDate:a.startDate, endDate:a.endDate,
+        rangeStart:1, rangeEnd:b.count, excluded:"",
+        reviews: fitReviews([1,3,7,28,56], a.days),
+        excludeDates:[], excludeWeekdays:[], createdAt: Date.now()
+      };
+      DB.saveMaterial(mat, generatePlan(mat));
+    });
+    close();
+    state.selected=null; state.view="plans"; render();
+  };
+}
+
+function openForm(mat){
+  const editing=!!mat;
+  const m = mat || {
+    name:"", unit:"problem", startDate:todayStr(),
+    endDate:fmtD(addDays(new Date(),29)), rangeStart:1, rangeEnd:90,
+    excluded:"", reviews:[1,3,7,28,56]
+  };
+  const exModel = { excludeDates:(m.excludeDates||[]).slice(), excludeWeekdays:(m.excludeWeekdays||[]).slice() };
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal">
+    <h2>${editing?t("教材を編集"):t("教材を追加")}</h2>
+    <div class="lead">${t("条件から日毎の学習計画を自動で立案します。")}</div>
+    <div class="field"><label>${t("教材名")}</label>
+      <div class="sug-wrap">
+        <input type="text" id="f-name" value="${esc(m.name)}" placeholder="${t("例）英単語帳・問題集の名前")}" autocomplete="off">
+        <div class="sug-box" id="f-sug" style="display:none"></div>
+      </div>
+      <div class="hint">${t("定番参考書は入力すると候補が出ます（「化学」など教科名でも探せます）。選ぶとページ数も入ります。")}</div></div>
+    <div class="field"><label>${t("学習単位")}</label>
+      <div class="unit-seg">
+        <input type="radio" name="unit" id="u-page" value="page" ${m.unit==="page"?"checked":""}><label for="u-page">${t("ページ")}</label>
+        <input type="radio" name="unit" id="u-prob" value="problem" ${m.unit==="problem"?"checked":""}><label for="u-prob">${t("問")}</label>
+      </div></div>
+    <div class="row2">
+      <div class="field"><label>${t("開始日")}</label><input type="date" id="f-start" value="${m.startDate}"></div>
+      <div class="field"><label>${t("終了日")}</label><input type="date" id="f-end" value="${m.endDate}"></div>
+    </div>
+    <div class="field"><label>${t("学習範囲")}</label>
+      <div class="row3">
+        <input type="number" id="f-rs" value="${m.rangeStart}" min="1">
+        <span class="dash">〜</span>
+        <input type="number" id="f-re" value="${m.rangeEnd}" min="1">
+      </div><div class="hint">${t("学習する最初と最後の番号（ページ／問番号）")}</div></div>
+    <details class="xfold" ${(editing && (m.excluded || exModel.excludeDates.length || exModel.excludeWeekdays.length))?"open":""}>
+      <summary>${t("除外の設定")}<span class="xfold-sub">${t("曜日・日付・ページを計画から除く")}</span></summary>
+      <div class="xfold-body">
+        <div class="field"><label>${t("除外ページ・問題")}</label>
+          <input type="text" id="f-ex" value="${esc(m.excluded||"")}" placeholder="${t("例）5, 12, 20-24")}">
+          <div class="hint">${t("計画から除く番号。カンマ区切り・範囲指定(20-24)が使えます。")}</div></div>
+        <div id="f-dayex"></div>
+      </div>
+    </details>
+    <div class="field"><label>${t("復習設定")}</label>
+      <div class="reviews" id="f-reviews"></div>
+      <button type="button" class="btn ghost sm add-rev" id="f-addrev">${t("＋ 復習を追加")}</button>
+      <div class="hint">${t("各復習を新規学習の何日後に行うか。重複はできません。")}</div></div>
+    <div class="err" id="f-err"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="f-cancel">${t("キャンセル")}</button>
+      <div class="right"><button class="btn accent" id="f-save">${editing?t("更新する"):t("計画を立てる")}</button></div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  exclusionControls(ov.querySelector("#f-dayex"), exModel);
+
+  let revs = m.reviews.slice();
+  const revWrap = ov.querySelector("#f-reviews");
+  function drawRevs(){
+    revWrap.innerHTML="";
+    revs.forEach((v,i)=>{
+      const row=document.createElement("div"); row.className="rev-row";
+      row.innerHTML=`<span class="rk">${reviewName(i+1)}</span>
+        <input type="number" min="1" value="${v}" data-i="${i}"><span class="unit-d">${t("日後")}</span>
+        <button class="del" data-i="${i}" title="${t("削除")}">×</button>`;
+      revWrap.appendChild(row);
+    });
+    revWrap.querySelectorAll("input").forEach(inp=>inp.onchange=()=>{ revs[+inp.dataset.i]=Math.max(1,Math.round(+inp.value)||1); });
+    revWrap.querySelectorAll(".del").forEach(b=>b.onclick=()=>{ revs.splice(+b.dataset.i,1); drawRevs(); });
+  }
+  drawRevs();
+  ov.querySelector("#f-addrev").onclick=()=>{ const last=revs[revs.length-1]||0; revs.push(last+ (revs.length?Math.max(1,last):1)); drawRevs(); };
+
+  // ---- 教材名の入力候補（教材リスト） ----
+  // 入力が空＝教科チップ（タップでその教科のルート一式）、入力あり＝presetMatch の結果。
+  // 表示順は教材リストの行順（教科→レベル→取り組む順）を保つ。
+  // 教材リスト未読込のときは候補を出さない（手入力はそのまま可能）。
+  const nameInp = ov.querySelector("#f-name");
+  const sugBox = ov.querySelector("#f-sug");
+  let sugSubject = null;   // チップで選んだ教科（入力が空の間だけ有効）
+
+  function hideSug(){ sugBox.style.display="none"; sugBox.innerHTML=""; sugBox._list=null; }
+  function applyPreset(p){
+    nameInp.value = p.name;
+    ov.querySelector(p.unit==="page" ? "#u-page" : "#u-prob").checked = true;
+    ov.querySelector("#f-rs").value = 1;
+    ov.querySelector("#f-re").value = p.count;
+    hideSug();
+  }
+  function renderSug(){
+    const lib = LIB();
+    if(!lib.length){ hideSug(); return; }
+    const q = nameInp.value.trim();
+    let list;
+    if(q){ list = presetMatch(q, lib); }
+    else if(sugSubject){ list = lib.filter(p=>p.subject===sugSubject); }
+    else{
+      sugBox.innerHTML = `<div class="sug-chips"><span class="lead-s">${t("教材リストから選ぶ（教科をタップ）")}</span>`
+        + libSubjects(lib).map(s=>`<button type="button" class="sug-chip" data-s="${esc(s.name)}">${esc(s.name)}</button>`).join("")
+        + `</div>`;
+      sugBox.style.display="block"; sugBox._list=null;
+      return;
+    }
+    if(!list.length){ hideSug(); return; }
+    let html="", lastHead="";
+    list.forEach((p,i)=>{
+      if(p.subject!==lastHead){ html += `<div class="sug-head">${esc(p.subject)}</div>`; lastHead=p.subject; }
+      html += `<div class="sug-item" data-i="${i}"><span class="nm">${esc(p.name)}</span>`
+        + `<span class="lv">${esc(p.level)}</span>`
+        + `<span class="pg">${p.count}${unitLabel(p.unit)}</span></div>`;
+    });
+    sugBox.innerHTML = html; sugBox.style.display="block"; sugBox._list = list;
+  }
+  nameInp.addEventListener("input", ()=>{ sugSubject=null; renderSug(); });
+  nameInp.addEventListener("focus", renderSug);
+  // 候補内のタップでは input の blur を起こさない（blur→hide より先に click を通す）
+  sugBox.addEventListener("pointerdown", e=>e.preventDefault());
+  sugBox.addEventListener("click", e=>{
+    const chip = e.target.closest(".sug-chip");
+    if(chip){ sugSubject = chip.dataset.s; renderSug(); return; }
+    const it = e.target.closest(".sug-item");
+    if(it && sugBox._list) applyPreset(sugBox._list[+it.dataset.i]);
+  });
+  nameInp.addEventListener("blur", ()=>setTimeout(()=>{ if(document.activeElement!==nameInp) hideSug(); },150));
+
+  const close=()=>ov.remove();
+  ov.querySelector("#f-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+
+  ov.querySelector("#f-save").onclick=()=>{
+    const err=ov.querySelector("#f-err"); err.textContent="";
+    const name=ov.querySelector("#f-name").value.trim();
+    const unit=ov.querySelector('input[name=unit]:checked').value;
+    const startDate=ov.querySelector("#f-start").value;
+    const endDate=ov.querySelector("#f-end").value;
+    const rangeStart=Math.round(+ov.querySelector("#f-rs").value);
+    const rangeEnd=Math.round(+ov.querySelector("#f-re").value);
+    const excluded=ov.querySelector("#f-ex").value.trim();
+
+    if(!name) return err.textContent=t("教材名を入力してください。");
+    if(!startDate||!endDate) return err.textContent=t("開始日と終了日を入力してください。");
+    if(endDate<startDate) return err.textContent=t("終了日は開始日以降にしてください。");
+    if(!(rangeStart>=1)||!(rangeEnd>=rangeStart)) return err.textContent=t("学習範囲が正しくありません。");
+    const sorted=revs.slice().sort((a,b)=>a-b);
+    if(new Set(sorted).size!==sorted.length) return err.textContent=t("復習タイミングが重複しています。重複しない日数を指定してください。");
+    revs=sorted;
+    const items=buildItems({rangeStart,rangeEnd,excluded});
+    if(!items.length) return err.textContent=t("除外指定により学習範囲が空になっています。");
+
+    const newMat={
+      id: m.id || ("m"+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36)),
+      color: m.color || PALETTE[DB.materials().length % PALETTE.length],
+      name, unit, startDate, endDate, rangeStart, rangeEnd, excluded, reviews:revs,
+      excludeDates: exModel.excludeDates.slice(), excludeWeekdays: exModel.excludeWeekdays.slice(),
+      createdAt: m.createdAt || Date.now()
+    };
+    // Only rebuild the plan (which wipes手編集/実績) when a field that actually
+    // shapes the plan changed. A cosmetic edit (e.g. just renaming) keeps the
+    // existing entries. To re-apply 共通除外日 or discard manual edits, use 再生成.
+    // 期間（開始/終了日）だけの変更はガントのリサイズと同じ扱い＝実績・過去は
+    // そのまま残し、未消化分だけを新期間へ配り直す（replanPeriod）。
+    const shapeFields = mm => [mm.rangeStart, mm.rangeEnd, mm.excluded||"",
+      (mm.reviews||[]).slice().sort((a,b)=>a-b).join(","),
+      (mm.excludeDates||[]).slice().sort().join(","),
+      (mm.excludeWeekdays||[]).slice().sort((a,b)=>a-b).join(",")].join("|");
+    const shapeChanged = !editing || shapeFields(m)!==shapeFields(newMat);
+    const periodChanged = editing && (m.startDate!==newMat.startDate || m.endDate!==newMat.endDate);
+    if(shapeChanged){
+      if(editing && !confirm(t("計画を作り直します。手入力した予定・実績はリセットされます。よろしいですか？"))) return;
+      DB.saveMaterial(newMat, generatePlan(newMat));
+    }else if(periodChanged){
+      if(!confirm(t("期間を変更し、今日以降の未消化分の計画を作り直します。実績と過去の予定はそのまま残ります。よろしいですか？"))) return;
+      DB.saveMaterial(newMat, replanPeriod(newMat, DB.entriesFor(m.id),
+        newMat.startDate, newMat.endDate, buildDayExcluder(newMat), todayStr()));
+    }else{
+      DB.saveMaterial(newMat, DB.entriesFor(m.id)); // 計画に影響しない変更＝既存の予定・実績を維持
+    }
+    close();
+    // 追加/編集後は詳細（予実表）を開く。戻り先タブは今いる場所を維持
+    // （全体計画表から追加→閉じると全体計画表へ）。「これから」だけは計画一覧へ。
+    state.selected=newMat.id; if(state.view==="today") state.view="plans"; render();
+  };
+}
+
+/* sample data matching the spec example */
+function createSample(){
+  const mat={
+    id:"m"+Date.now().toString(36), color:PALETTE[0],
+    name:t("サンプル教材（90問）"), unit:"problem",
+    startDate:todayStr(), endDate:fmtD(addDays(new Date(),29)),
+    rangeStart:1, rangeEnd:90, excluded:"", reviews:[1,3], createdAt:Date.now()
+  };
+  DB.saveMaterial(mat, generatePlan(mat));
+  state.selected=mat.id; render();
+}
+
+/* ---- 初回オンボーディング（歓迎ガイド・カード式） ----
+   ストア公開で初見ユーザーが触る前提の「冷たいインストール」対策。
+   既存ロジックには一切触れず、他のモーダルと同じ .overlay として作るので、
+   戻るボタンの履歴同期（uiLayerCount／MutationObserver）とも自然に整合する。
+   初回表示の判定は localStorage フラグ studyplan.onboarded で管理＝テーマと同じ
+   「端末ローカルの UI 設定」なので export/import の対象外（=新端末では再表示）。 */
+const ONBOARD_STEPS = [
+  { mark:"学", title:"学習計画手帳へようこそ",
+    body:"紙の参考書・問題集を<b>「ページ／問の範囲」</b>で計画するアプリです。新しく学ぶ分に加えて、<b>復習①〜⑤</b>を間隔をあけて自動でスケジュールします。" },
+  { mark:"＋", title:"まず教材を追加",
+    body:"<b>「＋ 教材を追加」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。" },
+  { mark:"予", title:"予実表で予定と実績を管理",
+    body:"教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。" },
+  { mark:"今", title:"「今日」タブで今日の分だけ",
+    body:"今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。" },
+  { mark:"控", title:"保存とバックアップ",
+    body:"データは<b>この端末の中だけ</b>に保存します（外部へ送信しません）。機種変更や端末を増やすときは<b>「⤓ エクスポート」</b>でバックアップし、新しい端末で<b>「⤒ 復元」</b>してください。" }
+];
+function openOnboarding(){
+  let step=0;
+  const ov=document.createElement("div"); ov.className="overlay";
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  function draw(){
+    const s=ONBOARD_STEPS[step];
+    const last = step===ONBOARD_STEPS.length-1;
+    const dots = ONBOARD_STEPS.map((_,i)=>`<i class="${i===step?'on':''}"></i>`).join("");
+    ov.innerHTML=`<div class="modal onboard">
+      <div class="ob-mark">${s.mark}</div>
+      <div class="ob-title">${t(s.title)}</div>
+      <div class="ob-body">${t(s.body)}</div>
+      ${last?`<div class="ob-legal"><a href="https://eastoceanhelp.github.io/privacy.html" target="_blank" rel="noopener">${t("プライバシーポリシー・免責事項")}</a></div>`:""}
+      <div class="ob-dots">${dots}</div>
+      <div class="ob-actions">
+        <button class="btn ghost sm" id="ob-skip">${last?t("閉じる"):t("スキップ")}</button>
+        <div class="right">
+          ${step>0?`<button class="btn ghost" id="ob-prev">${t("← 戻る")}</button>`:""}
+          ${last
+            ? `<button class="btn ghost" id="ob-sample">${t("サンプルを見る")}</button><button class="btn accent" id="ob-add">${t("＋ 教材を追加")}</button>`
+            : `<button class="btn accent" id="ob-next">${t("次へ →")}</button>`}
+        </div>
+      </div>
+    </div>`;
+    ov.querySelector("#ob-skip").onclick=close;
+    const prev=ov.querySelector("#ob-prev"); if(prev) prev.onclick=()=>{ step--; draw(); };
+    const next=ov.querySelector("#ob-next"); if(next) next.onclick=()=>{ step++; draw(); };
+    const sample=ov.querySelector("#ob-sample"); if(sample) sample.onclick=()=>{ close(); createSample(); };
+    const add=ov.querySelector("#ob-add"); if(add) add.onclick=()=>{ close(); openForm(); };
+  }
+  draw();
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+}
+
+/* =========================================================================
+   Backup: export / import the whole dataset as a JSON file.
+   ========================================================================= */
+function exportData(){
+  if(!DB.materials().length){ alert(t("エクスポートする教材がありません。")); return; }
+  const payload = {
+    app:"studyplan", version:1,
+    exportedAt:new Date().toISOString(),
+    data: DB.exportData()
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `studyplan-backup-${todayStr()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function importData(){
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json,.json";
+  inp.onchange = ()=>{
+    const file = inp.files && inp.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const parsed = JSON.parse(reader.result);
+        const data = parsed && parsed.data ? parsed.data : parsed; // accept raw {materials,entries} too
+        if(!data || !Array.isArray(data.materials) || !Array.isArray(data.entries))
+          throw new Error(t("教材／計画データが見つかりません"));
+        const mc = data.materials.length, ec = data.entries.length;
+        if(!confirm(tf("バックアップを読み込みます。\n教材 {mc}件 ／ 計画 {ec}件\n\n現在のデータはすべて置き換えられます。よろしいですか？",{mc,ec}))) return;
+        DB.replaceAll(data);
+        state.selected = null; state.view = "plans";
+        document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active", x.dataset.view==="plans"));
+        render();
+        alert(tf("インポートが完了しました。（教材 {mc}件）",{mc}));
+      }catch(err){
+        alert(t("インポートに失敗しました。正しいバックアップファイルか確認してください。")+"\n("+err.message+")");
+      }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+
+/* =========================================================================
+   教材リストの読み込み（CSV）
+   アプリは参考書データを内蔵しない。セット追加・入力候補は、ここで
+   読み込んだ教材リスト（DB.library）だけを使う。
+   ========================================================================= */
+function openLibraryImport(){
+  const lib = DB.library();
+  const ov=document.createElement("div"); ov.className="overlay";
+  const stat = lib.books.length
+    ? tf("現在の教材リスト: {n}冊（{d} 読込）",
+         {n:lib.books.length, d:(lib.importedAt||"").slice(0,10)})
+    : t("教材リストはまだ読み込まれていません。");
+  ov.innerHTML=`<div class="modal">
+    <h2>${t("教材リストを読み込む")}</h2>
+    <div class="lead">${t("参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。")}</div>
+    <div class="field"><div class="hint" style="margin-top:0">${esc(stat)}</div></div>
+    <div class="field"><div class="hint" style="margin-top:0">${t("CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。")}</div></div>
+    <div class="err" id="lib-err" style="white-space:pre-line"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="lib-cancel">${t("閉じる")}</button>
+      <div class="right">
+        ${lib.books.length?`<button class="btn ghost" id="lib-clear">${t("リストを消去")}</button>`:""}
+        <button class="btn accent" id="lib-file">${t("CSVファイルを選ぶ")}</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#lib-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  const clearB = ov.querySelector("#lib-clear");
+  if(clearB) clearB.onclick=()=>{
+    if(!confirm(t("教材リストを消去します。登録済みの計画には影響しません。よろしいですか？"))) return;
+    DB.clearLibrary(); close();
+  };
+  ov.querySelector("#lib-file").onclick=()=>{
+    const inp = document.createElement("input");
+    inp.type = "file"; inp.accept = "text/csv,.csv,text/plain,.txt";
+    inp.onchange = ()=>{
+      const file = inp.files && inp.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        const {books, errors} = parseLibraryCSV(reader.result);
+        const errBox = ov.querySelector("#lib-err");
+        if(!books.length){
+          errBox.textContent = t("読み込める行がありませんでした。")+"\n"+errors.slice(0,5).join("\n");
+          return;
+        }
+        if(errors.length &&
+           !confirm(tf("{e}行に問題があります（読み飛ばします）。\n\n{d}\n\n正しい {n}冊 を読み込みますか？",
+             {e:errors.length, d:errors.slice(0,5).join("\n"), n:books.length}))) return;
+        DB.saveLibrary(books);
+        close();
+        alert(tf("教材リストを読み込みました。（{n}冊）",{n:books.length}));
+        render();
+      };
+      reader.readAsText(file);   // UTF-8（BOMは parseCSV が除去）
+    };
+    inp.click();
+  };
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* =========================================================================
+   ポモドーロタイマー
+   時計に揃えたチャイム＝毎時 0分・30分に「学習開始」、25分・55分に「休憩開始」
+   （25分学習＋5分休憩）。開始（今すぐ／時刻指定）から終了時刻まで鳴り、
+   終了時刻になると終了チャイムで自動停止する。
+   実行状態はメモリのみ＝アプリを開いている間だけ動く（ページを閉じると止まる）。
+   前回の終了時刻などはテーマと同じ端末ローカルの UI 設定として
+   localStorage（studyplan.pomodoro）に覚える＝export/import の対象外。
+   ========================================================================= */
+const POMO_MINUTES = [0, 25, 30, 55];
+
+/* d より厳密に後の、最初のチャイム時刻を返す（純粋関数・テスト対象）。
+   「厳密に後」＝境界ちょうどで呼ばれても同じ境界を二度返さない。 */
+function pomoNextBoundary(d){
+  const c = new Date(d.getTime());
+  c.setSeconds(0, 0);
+  for(const m of POMO_MINUTES){
+    c.setMinutes(m);
+    if(c.getTime() > d.getTime()) return c;
+  }
+  c.setMinutes(60);            // 55分より後 → 次の時の0分（日跨ぎは Date が処理）
+  return c;
+}
+/* その時刻が学習中(work)か休憩中(break)か（純粋関数・テスト対象） */
+function pomoPhaseAt(d){
+  const m = d.getMinutes();
+  return (m >= 25 && m < 30) || m >= 55 ? "break" : "work";
+}
+
+const pomo = { running:false, startAt:null, endAt:null, next:null, timerId:null, wakeLock:null, keepAwake:false };
+let pomoAudioCtx = null;   // 「開始する」クリック＝ユーザー操作の中で生成（自動再生制限対策）
+
+/* チャイム（WebAudio）。音が出せない環境でも例外で止めない。 */
+function pomoChime(kind){ // "start"=開始確認 / "work"=学習開始 / "break"=休憩開始 / "end"=終了
+  try{
+    if(!pomoAudioCtx) return;
+    if(pomoAudioCtx.state === "suspended") pomoAudioCtx.resume();
+    const seq = kind==="start" ? [[880,0]] :
+                kind==="work"  ? [[660,0],[880,.25]] :          // 上がる2音＝学習へ
+                kind==="break" ? [[880,0],[660,.25]] :          // 下がる2音＝休憩へ
+                                 [[880,0],[660,.3],[440,.6]];   // 3音＝終了
+    seq.forEach(([f,t])=>{
+      const o = pomoAudioCtx.createOscillator(), g = pomoAudioCtx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      const at = pomoAudioCtx.currentTime + t;
+      g.gain.setValueAtTime(0, at);
+      g.gain.linearRampToValueAtTime(kind==="start" ? .15 : .4, at + .02);
+      g.gain.exponentialRampToValueAtTime(.0001, at + .7);
+      o.connect(g); g.connect(pomoAudioCtx.destination);
+      o.start(at); o.stop(at + .75);
+    });
+  }catch(e){}
+  if(kind!=="start" && navigator.vibrate)
+    navigator.vibrate(kind==="end" ? [250,120,250,120,250] : kind==="break" ? [120,80,120] : [250,120,250]);
+}
+
+/* 画面スリープ抑止（対応ブラウザのみ）。画面が消えると JS のタイマーが止まり
+   チャイムが鳴らないことがあるため、実行中は画面を点けたままにする選択肢。 */
+function pomoWake(on){
+  if(!("wakeLock" in navigator)) return;
+  if(on){
+    navigator.wakeLock.request("screen").then(l=>{ pomo.wakeLock = l; }).catch(()=>{});
+  }else if(pomo.wakeLock){
+    try{ pomo.wakeLock.release(); }catch(e){}
+    pomo.wakeLock = null;
+  }
+}
+document.addEventListener("visibilitychange", ()=>{  // タブ復帰時はロックが失効しているので取り直す
+  if(pomo.running && pomo.keepAwake && document.visibilityState==="visible") pomoWake(true);
+});
+
+function pomoFmtHM(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function pomoRemainStr(ms){
+  const s = Math.max(0, Math.ceil(ms/1000));
+  return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+}
+/* 次に鳴る時刻＝次のチャイムと終了時刻の早い方 */
+function pomoTarget(){
+  return (pomo.next && pomo.next.getTime() <= pomo.endAt.getTime()) ? pomo.next : pomo.endAt;
+}
+
+function pomoStart(startAt, endAt, keepAwake){
+  pomo.running = true; pomo.startAt = startAt; pomo.endAt = endAt; pomo.keepAwake = keepAwake;
+  const now = new Date();
+  // 未来開始なら開始時刻ちょうどの境界（例 15:00）も鳴らす。今すぐなら次の境界から。
+  pomo.next = startAt > now ? pomoNextBoundary(new Date(startAt.getTime()-1)) : pomoNextBoundary(now);
+  pomo.timerId = setInterval(pomoTick, 500);
+  if(keepAwake) pomoWake(true);
+  pomoUpdateNav();
+}
+function pomoStop(){
+  pomo.running = false; pomo.next = null;
+  if(pomo.timerId){ clearInterval(pomo.timerId); pomo.timerId = null; }
+  pomoWake(false);
+  pomoUpdateNav(); pomoUpdatePanel();
+}
+function pomoTick(){
+  if(!pomo.running) return;
+  const now = new Date();
+  if(now.getTime() >= pomo.endAt.getTime()){ pomoChime("end"); pomoStop(); return; }
+  if(pomo.next && now.getTime() >= pomo.next.getTime()){
+    pomoChime(pomoPhaseAt(pomo.next));
+    pomo.next = pomoNextBoundary(now);  // スリープ等で複数境界を飛んでいても鳴らすのは1回
+  }
+  pomoUpdateNav(); pomoUpdatePanel();
+}
+
+function pomoUpdateNav(){
+  const b = document.getElementById("menuBtn"); if(!b) return;
+  if(!pomo.running){
+    b.textContent = "☰"; b.classList.remove("on"); b.title = t("メニュー");
+    return;
+  }
+  b.classList.add("on");
+  b.textContent = "☰ " + pomoRemainStr(pomoTarget().getTime() - Date.now());
+  b.title = t("ポモドーロ実行中（タップで詳細）");
+}
+
+/* 実行中パネルの表示更新。モーダルが開いていなければ何もしない。
+   実行が終わっていた（停止／終了時刻到達）ら設定画面へ戻す。 */
+function pomoUpdatePanel(){
+  const clock = document.getElementById("p-clock"); if(!clock) return;
+  const ov = clock.closest(".overlay");
+  if(!pomo.running){ if(ov && ov._pomoDrawIdle) ov._pomoDrawIdle(); return; }
+  const now = new Date();
+  clock.textContent = pomoRemainStr(pomoTarget().getTime() - now.getTime());
+  const phase = now < pomo.startAt ? "wait" : pomoPhaseAt(now);
+  const phaseEl = document.getElementById("p-phase");
+  phaseEl.className = "pomo-phase " + phase;
+  phaseEl.textContent = phase==="wait" ? t("開始待ち") : (phase==="break" ? t("休憩中") : t("学習中"));
+  const nextEl = document.getElementById("p-next");
+  if(pomo.next && pomo.next.getTime() <= pomo.endAt.getTime()){
+    nextEl.textContent = tf("{t} に{k}のチャイム", {t:pomoFmtHM(pomo.next), k:(pomoPhaseAt(pomo.next)==="break" ? t("休憩開始") : t("学習開始"))});
+  }else{
+    nextEl.textContent = tf("{t} に終了チャイム", {t:pomoFmtHM(pomo.endAt)});
+  }
+}
+
+function openPomodoro(){
+  const ov = document.createElement("div"); ov.className = "overlay";
+  document.body.appendChild(ov);
+  const close = ()=>ov.remove();
+  ov.addEventListener("mousedown", e=>{ if(e.target===ov) close(); });
+  let saved = {}; try{ saved = JSON.parse(localStorage.getItem("studyplan.pomodoro"))||{}; }catch(e){}
+
+  function drawIdle(){
+    const now = new Date();
+    const defEnd = saved.end || pomoFmtHM(new Date(now.getTime() + 2*3600*1000));
+    const hasWake = "wakeLock" in navigator;
+    ov.innerHTML = `<div class="modal">
+      <h2>${t("ポモドーロタイマー")}</h2>
+      <div class="lead">${t("時計に揃えて、毎時 <b>0分・30分に学習開始</b>、<b>25分・55分に休憩開始</b>のチャイムが鳴ります（25分学習＋5分休憩）。アプリを開いている間だけ動きます。")}</div>
+      <div class="field"><label>${t("開始")}</label>
+        <div class="unit-seg">
+          <input type="radio" name="pstart" id="ps-now" value="now" checked><label for="ps-now">${t("今すぐ")}</label>
+          <input type="radio" name="pstart" id="ps-at" value="at"><label for="ps-at">${t("時刻を指定")}</label>
+        </div>
+        <input type="time" id="p-start" value="${pomoFmtHM(now)}" disabled style="margin-top:9px">
+        <div class="hint">${t("指定した時刻以降のチャイムから鳴り始めます。")}</div></div>
+      <div class="field"><label>${t("終了時刻")}</label>
+        <input type="time" id="p-end" value="${defEnd}">
+        <div class="hint">${t("終了時刻になると終了チャイムが鳴って止まります。開始より前の時刻は翌日として扱います。")}</div></div>
+      ${hasWake ? `<div class="field"><label class="pomo-chk"><input type="checkbox" id="p-wake" ${saved.wake===false?"":"checked"}>${t("実行中は画面をスリープさせない")}</label>
+        <div class="hint">${t("画面が消えるとチャイムが鳴らないことがあるため、実行中は画面を点けたままにします。")}</div></div>` : ""}
+      <div class="err" id="p-err"></div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="p-cancel">${t("キャンセル")}</button>
+        <div class="right"><button class="btn accent" id="p-go">${t("開始する")}</button></div>
+      </div>
+    </div>`;
+    const startInp = ov.querySelector("#p-start");
+    ov.querySelectorAll('input[name=pstart]').forEach(r=>
+      r.onchange = ()=>{ startInp.disabled = ov.querySelector("#ps-now").checked; });
+    ov.querySelector("#p-cancel").onclick = close;
+    ov.querySelector("#p-go").onclick = ()=>{
+      const err = ov.querySelector("#p-err"); err.textContent = "";
+      const nowD = new Date();
+      const endV = ov.querySelector("#p-end").value;
+      if(!endV) return err.textContent = t("終了時刻を入力してください。");
+      let startAt = nowD;
+      if(ov.querySelector("#ps-at").checked){
+        const sv = startInp.value;
+        if(!sv) return err.textContent = t("開始時刻を入力してください。");
+        const [sh, sm] = sv.split(":").map(Number);
+        const s = new Date(nowD); s.setHours(sh, sm, 0, 0);
+        startAt = s > nowD ? s : nowD;   // 過去の時刻は「今すぐ」と同じ扱い
+      }
+      const [eh, em] = endV.split(":").map(Number);
+      const endAt = new Date(nowD); endAt.setHours(eh, em, 0, 0);
+      if(endAt.getTime() <= startAt.getTime()) endAt.setDate(endAt.getDate()+1);  // 開始以前＝翌日扱い
+      const keepAwake = hasWake && ov.querySelector("#p-wake").checked;
+      localStorage.setItem("studyplan.pomodoro", JSON.stringify({ end:endV, wake:keepAwake }));
+      saved = { end:endV, wake:keepAwake };
+      try{ if(!pomoAudioCtx) pomoAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+      pomoChime("start");   // ユーザー操作の中で一度鳴らして音を有効化（音量の確認にもなる）
+      pomoStart(startAt, endAt, keepAwake);
+      drawRun();
+    };
+  }
+
+  function drawRun(){
+    const crossDay = pomo.endAt.getDate() !== new Date().getDate();
+    ov.innerHTML = `<div class="modal">
+      <h2>${t("ポモドーロタイマー")}</h2>
+      <div class="lead">${t("毎時 0分・30分に学習開始、25分・55分に休憩開始のチャイムが鳴ります。")}</div>
+      <div class="pomo-now">
+        <span class="pomo-phase" id="p-phase">—</span>
+        <div class="pomo-clock" id="p-clock">--:--</div>
+        <div class="pomo-next" id="p-next">—</div>
+        <div class="pomo-end">${t("終了時刻")} ${pomoFmtHM(pomo.endAt)}${crossDay ? t("（翌日）") : ""}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="p-close">${t("閉じる")}</button>
+        <div class="right"><button class="btn" id="p-stop">${t("停止する")}</button></div>
+      </div>
+    </div>`;
+    ov.querySelector("#p-close").onclick = close;
+    ov.querySelector("#p-stop").onclick = pomoStop;  // 停止 → pomoUpdatePanel 経由で設定画面に戻る
+    pomoUpdatePanel();
+  }
+
+  ov._pomoDrawIdle = drawIdle;
+  if(pomo.running) drawRun(); else drawIdle();
+}
+
+/* theme */
+function applyTheme(th){
+  document.documentElement.setAttribute("data-theme", th);
+  localStorage.setItem("studyplan.theme", th);
+  const b=document.getElementById("themeBtn");
+  if(b){ b.textContent = th==="dark" ? t("☀ 明るく") : t("☾ 暗く"); b.title = t("テーマを切り替え"); }
+}
+document.getElementById("menuBtn").addEventListener("click", openMenu);
+
+/* ---- 設定（ナビ⛭）＝ テーマ・言語・使い方ガイド・共通の除外日設定 をまとめる入口 ----
+   各項目は独立した既存モーダル（openLangSelect / openOnboarding / openGlobalExclude）を
+   そのまま開く。他と同じ .overlay なので戻るボタンの履歴同期に自動で乗る。
+   言語/ガイド/除外日は設定モーダルを閉じてから開く＝1階層だけ積む＋言語変更後の
+   設定モーダルの文言ズレを避ける。テーマだけはトグルなのでその場で切り替える。 */
+function themeStateLabel(){
+  return t(document.documentElement.getAttribute("data-theme")==="dark" ? "暗い" : "明るい");
+}
+/* ---- ハンバーガー（☰）→ 設定／ポモドーロタイマー ----
+   他のモーダルと同じ .overlay なので戻るボタンの履歴同期に自動で乗る。
+   各行は自身を閉じてから対象モーダルを開く（1階層だけ積む）。 */
+function openMenu(){
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal" style="width:min(420px,100%)">
+    <h2>${t("メニュー")}</h2>
+    <div class="set-list">
+      <button class="set-row" id="menu-settings">
+        <span class="set-label">${t("設定")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
+      <button class="set-row" id="menu-pomodoro">
+        <span class="set-label">${t("ポモドーロタイマー")}</span>
+        <span class="set-val">${pomo.running ? pomoRemainStr(pomoTarget().getTime()-Date.now())+" " : ""}<span class="set-chev">›</span></span>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="menu-close">${t("閉じる")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#menu-close").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelector("#menu-settings").onclick=()=>{ close(); openSettings(); };
+  ov.querySelector("#menu-pomodoro").onclick=()=>{ close(); openPomodoro(); };
+}
+
+function openSettings(){
+  const ov=document.createElement("div"); ov.className="overlay";
+  ov.innerHTML=`<div class="modal" style="width:min(420px,100%)">
+    <h2>${t("設定")}</h2>
+    <div class="set-list">
+      <button class="set-row" id="set-theme">
+        <span class="set-label">${t("テーマ")}</span>
+        <span class="set-val" id="set-theme-val">${themeStateLabel()}</span>
+      </button>
+      <button class="set-row" id="set-lang">
+        <span class="set-label">${t("言語")}</span>
+        <span class="set-val">${LANG_LABEL[LANG]||LANG_LABEL.ja}<span class="set-chev">›</span></span>
+      </button>
+      <button class="set-row" id="set-help">
+        <span class="set-label">${t("使い方ガイド")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
+      <button class="set-row" id="set-exclude">
+        <span class="set-label">${t("共通の除外日設定")}</span>
+        <span class="set-val"><span class="set-chev">›</span></span>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="set-close">${t("閉じる")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#set-close").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  // テーマはその場でトグル（設定は開いたまま＝ライブプレビュー）
+  ov.querySelector("#set-theme").onclick=()=>{
+    const cur=document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light";
+    applyTheme(cur==="dark"?"light":"dark");
+    ov.querySelector("#set-theme-val").textContent=themeStateLabel();
+  };
+  // 言語・ガイド・除外日は設定を閉じてから開く
+  ov.querySelector("#set-lang").onclick=()=>{ close(); openLangSelect(); };
+  ov.querySelector("#set-help").onclick=()=>{ close(); openOnboarding(); };
+  ov.querySelector("#set-exclude").onclick=()=>{ close(); openGlobalExclude(); };
+}
+
+/* ---- 言語切替（ナビ「文」→ モーダルで選択） ----
+   他のモーダルと同じ .overlay なので戻るボタンの履歴同期に自動で乗る。
+   選択肢の表記は各言語の自称（日本語／繁體中文／简体中文）＝翻訳不要。 */
+function openLangSelect(){
+  const ov=document.createElement("div"); ov.className="overlay";
+  const opt=(code,label)=>`<button class="btn ${LANG===code?"accent":"ghost"}" data-lang="${code}" style="width:100%;margin-bottom:10px">${label}</button>`;
+  ov.innerHTML=`<div class="modal" style="width:min(380px,100%)">
+    <h2>${t("言語")} <span style="font-size:14px;color:var(--ink-faint)">Language</span></h2>
+    <div class="lead">${t("表示言語を選んでください。")}</div>
+    ${opt("ja",LANG_LABEL.ja)}${opt("tw",LANG_LABEL.tw)}${opt("cn",LANG_LABEL.cn)}
+    <div class="modal-actions">
+      <button class="btn ghost" id="lg-cancel">${t("キャンセル")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector("#lg-cancel").onclick=close;
+  ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
+  ov.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{ applyLang(b.dataset.lang); close(); });
+}
+
+/* ナビなど「描画関数を通らない静的要素」の文言を現在言語で貼り直す。 */
+const TAB_LABELS = { today:["これから","Agenda"], plans:["計画一覧","Plans"], matrix:["全体計画表","Overview"] };
+function applyStaticTexts(){
+  document.querySelectorAll("#tabs button[data-view]").forEach(b=>{
+    const lb = TAB_LABELS[b.dataset.view]; if(!lb) return;
+    b.innerHTML = `${t(lb[0])}<span class="en">${lb[1]}</span>`;
+  });
+  const m=document.getElementById("menuBtn");
+  if(m){ m.setAttribute("aria-label", t("メニュー")); if(!pomo.running) m.title=t("メニュー"); }
+  document.documentElement.lang = LANG==="tw" ? "zh-Hant" : (LANG==="cn" ? "zh-Hans" : "ja");
+}
+
+/* 言語を切り替えて保存し、画面全体を現在言語で描き直す。 */
+function applyLang(l){
+  if(l!=="ja" && !I18N[l]) l="ja";
+  LANG = l;
+  localStorage.setItem("studyplan.lang", l);
+  WD = WD_LANG[LANG] || WD_LANG.ja;
+  applyStaticTexts();
+  applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"dark":"light"); // ボタン文言を貼り直す
+  pomoUpdateNav();
+  setDateline();
+  render();
+}
+
+/* boot */
+/* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
+const APP_VERSION = "v51";
+document.getElementById("appVer").textContent = APP_VERSION;
+applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
+applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
+setDateline();
+repairCollisions();   // heal plans generated before the collision fix (keeps actuals)
+render();
+
+/* ---- Android/TWA ハードウェア戻るボタン対応 ----
+   このアプリはモーダルや詳細画面を URL を変えずに開くため、戻るボタンに
+   「戻る先」が無く、TWA（Playアプリ）ごと終了してしまう。
+   方針＝「開いている階層（モーダル＋詳細）の数」と同じだけ履歴エントリを常に
+   積んでおき、戻る（popstate）が来たら最上位を1段だけ閉じる。階層を“開いた
+   瞬間”にエントリを積むので、戻るボタンを連打しても実在エントリを順に消費でき、
+   「控えを補充し直す」方式のような隙間（補充が間に合わず即終了）が生じない。
+   階層が UI 操作（×ボタン等）で減ったら余分なエントリを1つ畳んで同期する。
+   階層がゼロのときの戻るは履歴のルートなので TWA が自然に終了する。
+   既存のモーダル/遷移コードは変更不要（クリック/タップ操作はそのまま動く）。 */
+function uiLayerCount(){
+  return document.querySelectorAll(".overlay").length + (state.selected ? 1 : 0);
+}
+function closeTopLayer(){
+  const ovs = document.querySelectorAll(".overlay");
+  if(ovs.length){ ovs[ovs.length-1].remove(); return true; }     // 開いているモーダルを閉じる
+  if(state.selected){ state.selected = null; render(); return true; } // 詳細（予実表）→ 一覧へ
+  return false;                                                    // 閉じる物なし＝ルート
+}
+let histDepth = 0;        // 階層用に積んだ履歴エントリ数（通常時 = uiLayerCount）
+let suppressPop = false;  // 同期のために自分で呼んだ history.back() を無視する印
+function syncHistory(){
+  const want = uiLayerCount();
+  while(histDepth < want){ histDepth++; history.pushState({ sp: histDepth }, ""); } // 開いた分を積む
+  if(histDepth > want){    // UI 操作で階層が減った → 余分を1つ畳む（多段は popstate 後に再同期）
+    histDepth--; suppressPop = true; history.back();
+  }
+}
+window.addEventListener("popstate", ()=>{
+  if(suppressPop){ suppressPop = false; syncHistory(); return; }  // 自分で畳んだ分は無視＋再同期
+  if(histDepth > 0) histDepth--;
+  closeTopLayer();          // 戻る＝最上位を1段閉じる（閉じる物が無ければ何もしない＝既にルート）
+});
+/* DOM の変化（モーダルの開閉・詳細の描画）を1フレームにまとめて履歴と同期。
+   subtree 監視だが rAF でまとめるので描画中の連続変化でも syncHistory は1回。 */
+let _syncPending = false;
+new MutationObserver(()=>{
+  if(_syncPending) return;
+  _syncPending = true;
+  requestAnimationFrame(()=>{ _syncPending = false; syncHistory(); });
+}).observe(document.body, { childList: true, subtree: true });
+syncHistory();
+
+/* 初回のみ歓迎ガイドを自動表示（テーマと同じ端末ローカルのフラグで管理）。
+   表示した時点でフラグを立てるので、戻るボタンで閉じても次回からは出さない。
+   ナビの「？」からはいつでも再表示できる。 */
+if(!localStorage.getItem("studyplan.onboarded")){
+  localStorage.setItem("studyplan.onboarded","1");
+  openOnboarding();
+}
+
+/* PWA: register the service worker for offline / installable use.
+   (Only active over http(s) or localhost — ignored on file://.) */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.eastoceanhelp.studyalmanac",
+      "sha256_cert_fingerprints": [
+        "CF:09:21:61:28:E1:A4:C7:D1:A1:26:5F:12:3A:05:D2:31:24:2E:C5:D9:36:50:84:0F:BC:A6:62:C4:C4:05:0A",
+        "8B:B5:E4:85:FB:CC:0A:7D:BD:16:D0:AE:89:AC:A2:61:D6:6B:5C:9A:D2:C9:4B:86:9B:08:00:AD:FC:94:BF:40"
+      ]
+    }
+  }
+]
