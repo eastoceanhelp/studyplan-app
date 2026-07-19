@@ -2680,7 +2680,7 @@ function openRouteWizard(){
           html += `<label class="rw-row ${on?"":"off"}">${ctl}
             <span class="nm">${esc(n)}</span>
             ${sp.par?`<span class="rw-par">${t("並行")}</span>`:""}
-            <span class="rw-cat">${t(sp.cat)}</span>
+            <span class="rw-cat">${esc(t(sp.cat))}</span>
             <span class="rw-dates">${d ? esc(mdLabel(d.startDate)+"〜"+mdLabel(d.endDate))+"・"+tf("{d}日",{d:d.days}) : ""}</span>
           </label>`;
         });
@@ -3476,7 +3476,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v52";
+const APP_VERSION = "v53";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
