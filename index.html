@@ -577,7 +577,7 @@ const DB = (() => {
     if(!cache.settings) cache.settings={};
     if(!Array.isArray(cache.settings.excludeDates)) cache.settings.excludeDates=[];
     if(!Array.isArray(cache.settings.excludeWeekdays)) cache.settings.excludeWeekdays=[];
-    // 教材リスト（CSVから読み込む参考書データ）。アプリは初期データを持たない。
+    // 教材データ（CSVから読み込む参考書データ）。アプリは初期データを持たない。
     if(!cache.library || !Array.isArray(cache.library.books)) cache.library={books:[], importedAt:null};
     // 初回利用日を記録（grandfather=後で無料上限を厳しくする際、既存ユーザーを日付で据え置くため）。一度きり・以後不変。
     if(!cache.settings.installedAt){ cache.settings.installedAt = todayStr(); persist(); }
@@ -641,8 +641,8 @@ const DB = (() => {
           // インポート元の初回利用日を優先（古いバックアップに無ければ現状値→今日）。ユーザー歴を正しく引き継ぐ。
           installedAt: (data.settings&&data.settings.installedAt) || prevInstalled || todayStr()
         },
-        // 教材リストはバックアップに入っていればそれを、無ければ今の端末の分を残す
-        // （計画の復元で教材リストまで消さない）。
+        // 教材データはバックアップに入っていればそれを、無ければ今の端末の分を残す
+        // （計画の復元で教材データまで消さない）。
         library: (data.library && Array.isArray(data.library.books))
           ? data.library : (prevLibrary || {books:[], importedAt:null})
       };
@@ -719,7 +719,7 @@ const I18N_PAIRS = {
   /* ---- 空状態・計画一覧 ---- */
   "まだ学習計画が登録されていません。": ["尚未登錄任何學習計畫。","尚未登记任何学习计划。"],
   "最初の学習計画を立てましょう。": ["來建立第一個學習計畫吧。","来制定第一个学习计划吧。"],
-  "＋ 学習計画を登録": ["＋ 登錄學習計畫","＋ 登记学习计划"],
+  "＋ 計画を立てる": ["＋ 建立計畫","＋ 制定计划"],
   "サンプルを作成": ["建立範例","创建示例"],
   "⤓ エクスポート": ["⤓ 匯出","⤓ 导出"],
   "⤒ インポート": ["⤒ 匯入","⤒ 导入"],
@@ -727,7 +727,6 @@ const I18N_PAIRS = {
   "総{u}数": ["總{u}數","总{u}数"],
   "タスク": ["任務","任务"],
   "達成": ["達成","达成"],
-  "学習計画を登録": ["登錄學習計畫","登记学习计划"],
   /* ---- 全体計画表 ---- */
   "教材名をクリックすると予実表を開きます": ["點教材名稱即可開啟預實表","点击教材名称即可打开预实表"],
   "計画がありません。": ["沒有計畫。","没有计划。"],
@@ -831,7 +830,7 @@ const I18N_PAIRS = {
   "各復習を新規学習の何日後に行うか。重複はできません。": ["設定各次複習在新學後第幾天進行。天數不可重複。","设置各次复习在新学后第几天进行。天数不可重复。"],
   "日後": ["天後","天后"],
   "更新する": ["更新","更新"],
-  "計画を立てる": ["建立計畫","生成计划"],
+  "計画を立てる": ["建立計畫","制定计划"],
   "教材名を入力してください。": ["請輸入教材名稱。","请输入教材名称。"],
   "開始日と終了日を入力してください。": ["請輸入開始日與結束日。","请输入开始日与结束日。"],
   "終了日は開始日以降にしてください。": ["結束日必須在開始日之後。","结束日必须在开始日之后。"],
@@ -839,20 +838,20 @@ const I18N_PAIRS = {
   "復習タイミングが重複しています。重複しない日数を指定してください。": ["複習時間點重複。請指定不重複的天數。","复习时间点重复。请指定不重复的天数。"],
   "除外指定により学習範囲が空になっています。": ["因排除設定，學習範圍已為空。","因排除设置，学习范围已为空。"],
   "計画を作り直します。手入力した予定・実績はリセットされます。よろしいですか？": ["將重新建立計畫。手動輸入的預定與實績將被重設。確定嗎？","将重新生成计划。手动输入的预定与实绩将被重置。确定吗？"],
-  "教材リストから選ぶ（教科をタップ）": ["從教材清單選擇（點科目）","从教材清单选择（点科目）"],
-  /* ---- 教材リスト（CSV読み込み） ---- */
-  "教材リスト": ["教材清單","教材清单"],
-  "教材リストを読み込む": ["載入教材清單","导入教材清单"],
+  "教材データから選ぶ（教科をタップ）": ["從教材資料選擇（點科目）","从教材数据选择（点科目）"],
+  /* ---- 教材データ（CSV読み込み） ---- */
+  "教材データ": ["教材資料","教材数据"],
+  "教材データを読み込む": ["載入教材資料","导入教材数据"],
   "参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。": ["載入參考書清單（CSV檔）後，即可使用套組新增與教材名稱的輸入建議。","导入参考书清单（CSV文件）后，即可使用按套装添加与教材名称的输入建议。"],
-  "現在の教材リスト: {n}冊（{d} 読込）": ["目前的教材清單: {n}本（{d} 載入）","当前教材清单: {n}本（{d} 导入）"],
-  "教材リストはまだ読み込まれていません。": ["尚未載入教材清單。","尚未导入教材清单。"],
+  "現在の教材データ: {n}冊（{d} 読込）": ["目前的教材資料: {n}本（{d} 載入）","当前教材数据: {n}本（{d} 导入）"],
+  "教材データはまだ読み込まれていません。": ["尚未載入教材資料。","尚未导入教材数据。"],
   "CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。": ["CSV欄位: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填為 subject / name / count / unit）。編碼為UTF-8。","CSV列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填为 subject / name / count / unit）。编码为UTF-8。"],
   "リストを消去": ["清除清單","清除清单"],
   "CSVファイルを選ぶ": ["選擇CSV檔","选择CSV文件"],
-  "教材リストを消去します。登録済みの計画には影響しません。よろしいですか？": ["將清除教材清單。不影響已登錄的計畫。確定嗎？","将清除教材清单。不影响已登记的计划。确定吗？"],
+  "教材データを消去します。登録済みの計画には影響しません。よろしいですか？": ["將清除教材資料。不影響已登錄的計畫。確定嗎？","将清除教材数据。不影响已登记的计划。确定吗？"],
   "読み込める行がありませんでした。": ["沒有可載入的資料列。","没有可导入的数据行。"],
   "{e}行に問題があります（読み飛ばします）。\n\n{d}\n\n正しい {n}冊 を読み込みますか？": ["有{e}列資料有問題（將略過）。\n\n{d}\n\n要載入正確的 {n}本 嗎？","有{e}行数据有问题（将跳过）。\n\n{d}\n\n要导入正确的 {n}本 吗？"],
-  "教材リストを読み込みました。（{n}冊）": ["已載入教材清單。（{n}本）","已导入教材清单。（{n}本）"],
+  "教材データを読み込みました。（{n}冊）": ["已載入教材資料。（{n}本）","已导入教材数据。（{n}本）"],
   "ファイルが空です。": ["檔案是空的。","文件为空。"],
   "必要な列がありません: {c}": ["缺少必要欄位: {c}","缺少必要列: {c}"],
   "{n}行目: 教科(subject)がありません": ["第{n}列: 缺少科目(subject)","第{n}行: 缺少科目(subject)"],
@@ -864,8 +863,8 @@ const I18N_PAIRS = {
   /* ---- オンボーディング ---- */
   "学習計画手帳へようこそ": ["歡迎使用學習計畫手帳","欢迎使用学习计划手册"],
   "紙の参考書・問題集を<b>「ページ／問の範囲」</b>で計画するアプリです。新しく学ぶ分に加えて、<b>復習①〜⑤</b>を間隔をあけて自動でスケジュールします。": ["這是把紙本參考書、題庫以<b>「頁／題的範圍」</b>來排定計畫的 App。除了新學的部分，還會按間隔自動排入<b>複習①〜⑤</b>。","这是把纸质参考书、习题集以<b>「页／题的范围」</b>来制定计划的应用。除了新学的部分，还会按间隔自动排入<b>复习①〜⑤</b>。"],
-  "まず学習計画を登録": ["先登錄學習計畫","先登记学习计划"],
-  "<b>「＋ 学習計画を登録」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。": ["用<b>「＋ 登錄學習計畫」</b>輸入教材名稱、範圍、期間，以及想排除的星期或日期，每日學習計畫就會<b>自動排定</b>。","用<b>「＋ 登记学习计划」</b>输入教材名称、范围、期间，以及想排除的星期或日期，每日学习计划就会<b>自动生成</b>。"],
+  "まず計画を立てる": ["先建立計畫","先制定计划"],
+  "<b>「＋ 計画を立てる」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。": ["用<b>「＋ 建立計畫」</b>輸入教材名稱、範圍、期間，以及想排除的星期或日期，每日學習計畫就會<b>自動排定</b>。","用<b>「＋ 制定计划」</b>输入教材名称、范围、期间，以及想排除的星期或日期，每日学习计划就会<b>自动生成</b>。"],
   "予実表で予定と実績を管理": ["用預實表管理預定與實績","用预实表管理预定与实绩"],
   "教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。": ["打開教材即是<b>預實表</b>，可總覽新學與複習的預定和實績。範圍格子<b>點擊可編輯題數</b>、<b>拖曳可移動日期</b>，用上方的<b>「挪動」</b>可將某天之後的計畫整批前後移動。","打开教材即是<b>预实表</b>，可总览新学与复习的预定和实绩。范围格子<b>点击可编辑题数</b>、<b>拖动可移动日期</b>，用上方的<b>「挪动」</b>可将某天之后的计划整批前后移动。"],
   "「今日」タブで今日の分だけ": ["「今日」分頁只看今天的份","「今日」标签只看今天的份"],
@@ -909,8 +908,8 @@ const I18N_PAIRS = {
   "ポモドーロ実行中（タップで詳細）": ["番茄鐘進行中（點擊查看）","番茄钟进行中（点按查看）"],
 
   /* ---- 教材セット一括登録 ---- */
-  "学習計画一括登録": ["批次建立學習計畫","批量创建学习计划"],
-  "教材リストから、期間に合わせて全教材の計画を一括で立てます。": ["從教材清單，依期間一次建立全部教材的計畫。","从教材清单，按期间一次建立全部教材的计划。"],
+  "まとめて計画を立てる": ["批次建立計畫","批量制定计划"],
+  "教材データから、期間に合わせて全教材の計画を一括で立てます。": ["從教材資料，依期間一次建立全部教材的計畫。","从教材数据，按期间一次建立全部教材的计划。"],
   "教科": ["科目","科目"],
   "開始レベル": ["起始程度","起始水平"],
   "ゴールレベル": ["目標程度","目标水平"],
@@ -1175,9 +1174,9 @@ const CIRCLED = ["","①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩"]
 function reviewName(i){ return t("復習")+(CIRCLED[i]||i); }
 
 /* =========================================================================
-   教材リスト（CSVから読み込む）
+   教材データ（CSVから読み込む）
    - アプリは参考書データを一切内蔵しない。ユーザーが用意したCSVを
-     「教材リストを読み込む」で取り込み、DB.library に保存して使う。
+     「教材データを読み込む」で取り込み、DB.library に保存して使う。
    - 列: subject,level,step,cat,pick,par,ss,name,kana,count,unit
      必須の列は subject,level,name,count,unit（level は空でもよい）。
    - 行の並び順＝表示順。教科ごとに易→難、レベル内は取り組む順に並べる前提。
@@ -1194,7 +1193,7 @@ const SUBJECT_KANA = {
 };
 const LIB_REQUIRED = ["subject","level","name","count","unit"];
 
-/* 今読み込まれている教材リスト。 */
+/* 今読み込まれている教材データ。 */
 function LIB(){ return DB.libraryBooks(); }
 
 /* CSV(RFC4180)を 行×列 に分解する。純粋関数。
@@ -1218,7 +1217,7 @@ function parseCSV(text){
   return rows.filter(r=>r.some(v=>v!==""));   // 空行は捨てる
 }
 
-/* CSVテキストを教材リストに変換する。純粋関数。
+/* CSVテキストを教材データに変換する。純粋関数。
    返り値 {books, errors}。errors があっても正しい行は books に入る
    ＝1行の書き間違いでファイル全体が読めなくなるのを避ける。 */
 function parseLibraryCSV(text){
@@ -1253,7 +1252,7 @@ function parseLibraryCSV(text){
   return {books, errors};
 }
 
-/* 教材リストから教科の一覧を作る。純粋関数。行順＝表示順。 */
+/* 教材データから教科の一覧を作る。純粋関数。行順＝表示順。 */
 function libSubjects(books){
   const out=[], seen=new Set();
   (books||[]).forEach(b=>{
@@ -1265,7 +1264,7 @@ function libSubjects(books){
   return out;
 }
 
-/* レベルの並び順（易→難）を教材リストから導く。純粋関数。
+/* レベルの並び順（易→難）を教材データから導く。純粋関数。
    各教科の中ではレベルが取り組む順に並んでいる前提で、教科をまたいでも
    相対順序が壊れないように統合する（ある教科に無いレベルがあってもよい）。 */
 function libLevels(books){
@@ -1328,7 +1327,7 @@ function presetMatch(q, presets, subjects){
 /* =========================================================================
    教材セット（一括登録）
    ========================================================================= */
-/* 教材リストからセットを組み立てる。純粋関数。書誌データは持たず、
+/* 教材データからセットを組み立てる。純粋関数。書誌データは持たず、
    同じ (教科, レベル, step) の行が1つのステップ＝選択肢のまとまりになる。
    step が空の行はセットに入らない（サジェスト専用の本）。
    step: {cat:分野, books:[書名...], pick, par, ss}
@@ -1363,7 +1362,7 @@ function libRoutes(books){
   return routes;
 }
 
-/* 教材リストから書名で1冊引く。純粋関数。 */
+/* 教材データから書名で1冊引く。純粋関数。 */
 function presetByName(name, presets){
   return (presets||LIB()).find(p=>p.name===name) || null;
 }
@@ -1834,13 +1833,13 @@ function emptyPlans(){
     <p>${t("まだ学習計画が登録されていません。")}</p>
     <p class="muted">${t("最初の学習計画を立てましょう。")}</p>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn accent" data-act="new">${t("＋ 学習計画を登録")}</button>
-      <button class="btn ghost" data-act="routeset">${t("学習計画一括登録")}</button>
+      <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
       <button class="btn ghost" data-act="sample">${t("サンプルを作成")}</button>
     </div></div>`;
 }
 function bindEmpty(){
-  // The "学習計画を登録" action appears both in the header and in the empty-state
+  // The "計画を立てる" action appears both in the header and in the empty-state
   // body, so bind ALL matches (querySelectorAll), not just the first.
   viewEl.querySelectorAll('[data-act="new"]').forEach(n=>n.onclick=()=>openForm());
   const s=viewEl.querySelector('[data-act="sample"]'); if(s) s.onclick=createSample;
@@ -1850,8 +1849,8 @@ function renderPlans(){
   const mats = DB.materials();
   let html = `<div class="fade"><div class="section-head"><h2>${t("計画一覧")}</h2></div>
     <div class="head-actions">
-      <button class="btn accent" data-act="new">${t("＋ 学習計画を登録")}</button>
-      <button class="btn ghost" data-act="routeset">${t("学習計画一括登録")}</button>
+      <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
     </div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
 
@@ -1869,7 +1868,7 @@ function renderPlans(){
       <div class="bar"><i style="width:${pct}%;background:${m.color}"></i></div>
     </div>`;
   });
-  html += `<div class="card add" data-act="new"><div style="text-align:center"><div class="plus">＋</div><p>${t("学習計画を登録")}</p></div></div>`;
+  html += `<div class="card add" data-act="new"><div style="text-align:center"><div class="plus">＋</div><p>${t("計画を立てる")}</p></div></div>`;
   html += `</div></div>`;
   viewEl.innerHTML = html;
 
@@ -1894,8 +1893,8 @@ function matrixHead(mode){
       </div>
     </div>
     <div class="head-actions">
-      <button class="btn accent" data-act="new">${t("＋ 学習計画を登録")}</button>
-      <button class="btn ghost" data-act="routeset">${t("学習計画一括登録")}</button>
+      <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
     </div>`;
 }
 function bindMatrixHead(){
@@ -2575,12 +2574,12 @@ function openGlobalExclude(){
   ov.querySelector("#g-save").onclick=()=>{ DB.saveSettings(model); close(); };
 }
 
-/* 教材セットの一括登録ウィザード。教材リスト（CSV）のセットをレベル範囲・
+/* 教材セットの一括登録ウィザード。教材データ（CSV）のセットをレベル範囲・
    期間・選択肢で絞り、allocateRoute で期間を割り当てて教材を一括生成する。 */
 function openRouteWizard(){
   const routes = libRoutes(LIB());
   const subjects = Object.keys(routes);
-  // 教材リスト未読込（またはセット情報なし）→ まず読み込みを案内
+  // 教材データ未読込（またはセット情報なし）→ まず読み込みを案内
   if(!subjects.length){ openLibraryImport(); return; }
   let route = routes[subjects[0]];
   let LV = route.map(lv=>lv.level);
@@ -2591,8 +2590,8 @@ function openRouteWizard(){
   const subOpts = sel => subjects.map(s=>`<option value="${esc(s)}" ${s===sel?"selected":""}>${esc(s)}</option>`).join("");
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal">
-    <h2>${t("学習計画一括登録")}</h2>
-    <div class="lead">${t("教材リストから、期間に合わせて全教材の計画を一括で立てます。")}</div>
+    <h2>${t("まとめて計画を立てる")}</h2>
+    <div class="lead">${t("教材データから、期間に合わせて全教材の計画を一括で立てます。")}</div>
     <div class="row2">
       <div class="field"><label>${t("教科")}</label><select id="rw-sub">${subOpts(st.subject)}</select></div>
       <div class="field"><label>${t("ゴールレベル")}</label><select id="rw-to">${lvOpts(st.toLevel)}</select></div>
@@ -2764,7 +2763,7 @@ function openForm(mat){
   const exModel = { excludeDates:(m.excludeDates||[]).slice(), excludeWeekdays:(m.excludeWeekdays||[]).slice() };
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal">
-    <h2>${editing?t("教材を編集"):t("学習計画を登録")}</h2>
+    <h2>${editing?t("教材を編集"):t("計画を立てる")}</h2>
     <div class="lead">${t("条件から日毎の学習計画を自動で立案します。")}</div>
     <div class="field"><label>${t("教材名")}</label>
       <div class="sug-wrap">
@@ -2826,10 +2825,10 @@ function openForm(mat){
   drawRevs();
   ov.querySelector("#f-addrev").onclick=()=>{ const last=revs[revs.length-1]||0; revs.push(last+ (revs.length?Math.max(1,last):1)); drawRevs(); };
 
-  // ---- 教材名の入力候補（教材リスト） ----
+  // ---- 教材名の入力候補（教材データ） ----
   // 入力が空＝教科チップ（タップでその教科のルート一式）、入力あり＝presetMatch の結果。
-  // 表示順は教材リストの行順（教科→レベル→取り組む順）を保つ。
-  // 教材リスト未読込のときは候補を出さない（手入力はそのまま可能）。
+  // 表示順は教材データの行順（教科→レベル→取り組む順）を保つ。
+  // 教材データ未読込のときは候補を出さない（手入力はそのまま可能）。
   const nameInp = ov.querySelector("#f-name");
   const sugBox = ov.querySelector("#f-sug");
   let sugSubject = null;   // チップで選んだ教科（入力が空の間だけ有効）
@@ -2850,7 +2849,7 @@ function openForm(mat){
     if(q){ list = presetMatch(q, lib); }
     else if(sugSubject){ list = lib.filter(p=>p.subject===sugSubject); }
     else{
-      sugBox.innerHTML = `<div class="sug-chips"><span class="lead-s">${t("教材リストから選ぶ（教科をタップ）")}</span>`
+      sugBox.innerHTML = `<div class="sug-chips"><span class="lead-s">${t("教材データから選ぶ（教科をタップ）")}</span>`
         + libSubjects(lib).map(s=>`<button type="button" class="sug-chip" data-s="${esc(s.name)}">${esc(s.name)}</button>`).join("")
         + `</div>`;
       sugBox.style.display="block"; sugBox._list=null;
@@ -2958,8 +2957,8 @@ function createSample(){
 const ONBOARD_STEPS = [
   { mark:"学", title:"学習計画手帳へようこそ",
     body:"紙の参考書・問題集を<b>「ページ／問の範囲」</b>で計画するアプリです。新しく学ぶ分に加えて、<b>復習①〜⑤</b>を間隔をあけて自動でスケジュールします。" },
-  { mark:"＋", title:"まず学習計画を登録",
-    body:"<b>「＋ 学習計画を登録」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。" },
+  { mark:"＋", title:"まず計画を立てる",
+    body:"<b>「＋ 計画を立てる」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。" },
   { mark:"予", title:"予実表で予定と実績を管理",
     body:"教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。" },
   { mark:"今", title:"「今日」タブで今日の分だけ",
@@ -2987,7 +2986,7 @@ function openOnboarding(){
         <div class="right">
           ${step>0?`<button class="btn ghost" id="ob-prev">${t("← 戻る")}</button>`:""}
           ${last
-            ? `<button class="btn ghost" id="ob-sample">${t("サンプルを見る")}</button><button class="btn accent" id="ob-add">${t("＋ 学習計画を登録")}</button>`
+            ? `<button class="btn ghost" id="ob-sample">${t("サンプルを見る")}</button><button class="btn accent" id="ob-add">${t("＋ 計画を立てる")}</button>`
             : `<button class="btn accent" id="ob-next">${t("次へ →")}</button>`}
         </div>
       </div>
@@ -3048,19 +3047,19 @@ function importData(){
 }
 
 /* =========================================================================
-   教材リストの読み込み（CSV）
+   教材データの読み込み（CSV）
    アプリは参考書データを内蔵しない。セット追加・入力候補は、ここで
-   読み込んだ教材リスト（DB.library）だけを使う。
+   読み込んだ教材データ（DB.library）だけを使う。
    ========================================================================= */
 function openLibraryImport(){
   const lib = DB.library();
   const ov=document.createElement("div"); ov.className="overlay";
   const stat = lib.books.length
-    ? tf("現在の教材リスト: {n}冊（{d} 読込）",
+    ? tf("現在の教材データ: {n}冊（{d} 読込）",
          {n:lib.books.length, d:(lib.importedAt||"").slice(0,10)})
-    : t("教材リストはまだ読み込まれていません。");
+    : t("教材データはまだ読み込まれていません。");
   ov.innerHTML=`<div class="modal">
-    <h2>${t("教材リストを読み込む")}</h2>
+    <h2>${t("教材データを読み込む")}</h2>
     <div class="lead">${t("参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。")}</div>
     <div class="field"><div class="hint" style="margin-top:0">${esc(stat)}</div></div>
     <div class="field"><div class="hint" style="margin-top:0">${t("CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。")}</div></div>
@@ -3079,7 +3078,7 @@ function openLibraryImport(){
   ov.addEventListener("mousedown",e=>{ if(e.target===ov) close(); });
   const clearB = ov.querySelector("#lib-clear");
   if(clearB) clearB.onclick=()=>{
-    if(!confirm(t("教材リストを消去します。登録済みの計画には影響しません。よろしいですか？"))) return;
+    if(!confirm(t("教材データを消去します。登録済みの計画には影響しません。よろしいですか？"))) return;
     DB.clearLibrary(); close();
   };
   ov.querySelector("#lib-file").onclick=()=>{
@@ -3100,7 +3099,7 @@ function openLibraryImport(){
              {e:errors.length, d:errors.slice(0,5).join("\n"), n:books.length}))) return;
         DB.saveLibrary(books);
         close();
-        alert(tf("教材リストを読み込みました。（{n}冊）",{n:books.length}));
+        alert(tf("教材データを読み込みました。（{n}冊）",{n:books.length}));
         render();
       };
       reader.readAsText(file);   // UTF-8（BOMは parseCSV が除去）
@@ -3353,7 +3352,7 @@ document.getElementById("menuBtn").addEventListener("click", openMenu);
 function themeStateLabel(){
   return t(document.documentElement.getAttribute("data-theme")==="dark" ? "暗い" : "明るい");
 }
-/* ---- ハンバーガー（☰）→ 設定／ポモドーロ／教材リスト／エクスポート／インポート ----
+/* ---- ハンバーガー（☰）→ 設定／ポモドーロ／教材データ／エクスポート／インポート ----
    他のモーダルと同じ .overlay なので戻るボタンの履歴同期に自動で乗る。
    各行は自身を閉じてから対象モーダルを開く（1階層だけ積む）。
    エクスポート/インポートは計画一覧ヘッダーから移設（v54）。 */
@@ -3371,7 +3370,7 @@ function openMenu(){
         <span class="set-val">${pomo.running ? pomoRemainStr(pomoTarget().getTime()-Date.now())+" " : ""}<span class="set-chev">›</span></span>
       </button>
       <button class="set-row" id="menu-library">
-        <span class="set-label">${t("教材リスト")}</span>
+        <span class="set-label">${t("教材データ")}</span>
         <span class="set-val"><span class="set-chev">›</span></span>
       </button>
       <button class="set-row" id="menu-export">
@@ -3488,7 +3487,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v60";
+const APP_VERSION = "v61";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
