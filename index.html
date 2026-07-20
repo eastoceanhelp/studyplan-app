@@ -850,12 +850,12 @@ const I18N_PAIRS = {
   "教材データはまだ読み込まれていません。": ["尚未載入教材資料。","尚未导入教材数据。"],
   "CSVの列の説明": ["CSV欄位說明","CSV列说明"],
   "教科名（必須）。例: 英語": ["科目名（必填）。例: 英語","科目名（必填）。例: 英语"],
-  "志望校や難易度のレベル名。例: 日大・MARCH・早慶、基礎・応用・発展。上の行ほど易しく並べる＝この並びが「まとめて計画を立てる」のレベル順になる": ["志願校或難度的級別名。例: 日大・MARCH・早慶、基礎・應用・進階。越上面的列越簡單＝此順序即「批次建立計畫」的級別順序","志愿校或难度的级别名。例: 日大・MARCH・早庆、基础・应用・提高。越靠上的行越简单＝此顺序即「批量制定计划」的级别顺序"],
-  "同じレベルの中で取り組む順番（1,2,…）。「まとめて計画を立てる」はこの順に教材を並べる。空の行は教材名の入力候補にだけ使われる": ["同一級別內的學習順序（1,2,…）。「批次建立計畫」會依此順序排列教材。留空的列只用於教材名稱的輸入建議","同一级别内的学习顺序（1,2,…）。「批量制定计划」会按此顺序排列教材。留空的行只用于教材名称的输入建议"],
+  "志望校や難易度のレベル名。例: 日大・MARCH・早慶、基礎・応用・発展。上の行ほど易しく並べる＝この並びが「まとめて計画」のレベル順になる": ["志願校或難度的級別名。例: 日大・MARCH・早慶、基礎・應用・進階。越上面的列越簡單＝此順序即「批次計畫」的級別順序","志愿校或难度的级别名。例: 日大・MARCH・早庆、基础・应用・提高。越靠上的行越简单＝此顺序即「批量计划」的级别顺序"],
+  "同じレベルの中で取り組む順番（1,2,…）。「まとめて計画」はこの順に教材を並べる。空の行は教材名の入力候補にだけ使われる": ["同一級別內的學習順序（1,2,…）。「批次計畫」會依此順序排列教材。留空的列只用於教材名稱的輸入建議","同一级别内的学习顺序（1,2,…）。「批量计划」会按此顺序排列教材。留空的行只用于教材名称的输入建议"],
   "分類ラベル。例: 単語・文法・長文": ["分類標籤。例: 單字・文法・長文","分类标签。例: 单词・语法・长文"],
   "教科・レベル・step が同じ行は、同じ段階の選択肢のまとまり。one=その中から1冊選ぶ / any=必要なら追加 / 空=全部やる": ["科目・級別・step 相同的列＝同一階段的選項組。one=從中選1本 / any=需要時加入 / 留空=全部","科目・级别・step 相同的行＝同一阶段的选项组。one=从中选1本 / any=需要时添加 / 留空=全部"],
   "1にすると並行教材（単語帳など、他の教材と並行して毎日進める）": ["設為1＝並行教材（如單字書，與其他教材並行每天進行）","设为1＝并行教材（如单词书，与其他教材并行每天进行）"],
-  "1にすると基礎固めの教材＝「まとめて計画を立てる」の「基礎固めの教材も含める」で外せる（旧CSVの列名 ss もそのまま読める）": ["設為1＝打基礎教材，可用「批次建立計畫」的「包含打基礎教材」排除（舊CSV的欄名 ss 也可讀取）","设为1＝打基础教材，可用「批量制定计划」的「包含打基础教材」排除（旧CSV的列名 ss 也可读取）"],
+  "1にすると基礎固めの教材＝「まとめて計画」の「基礎固めの教材も含める」で外せる（旧CSVの列名 ss もそのまま読める）": ["設為1＝打基礎教材，可用「批次計畫」的「包含打基礎教材」排除（舊CSV的欄名 ss 也可讀取）","设为1＝打基础教材，可用「批量计划」的「包含打基础教材」排除（旧CSV的列名 ss 也可读取）"],
   "教材名（必須）。同じ名前は登録できない": ["教材名稱（必填）。名稱不可重複","教材名称（必填）。名称不可重复"],
   "教材名の読み（検索用）。空なら教材名を使う": ["教材名稱的讀音（搜尋用）。留空則使用教材名稱","教材名称的读音（搜索用）。留空则使用教材名称"],
   "分量（必須）。総ページ数か、問題・語の総数": ["分量（必填）。總頁數或題目・單字總數","分量（必填）。总页数或题目・单词总数"],
@@ -924,7 +924,7 @@ const I18N_PAIRS = {
   "ポモドーロ実行中（タップで詳細）": ["番茄鐘進行中（點擊查看）","番茄钟进行中（点按查看）"],
 
   /* ---- 教材セット一括登録 ---- */
-  "まとめて計画を立てる": ["批次建立計畫","批量制定计划"],
+  "まとめて計画": ["批次計畫","批量计划"],
   "教材データから、期間に合わせて全教材の計画を一括で立てます。": ["從教材資料，依期間一次建立全部教材的計畫。","从教材数据，按期间一次建立全部教材的计划。"],
   "教科": ["科目","科目"],
   "開始レベル": ["起始程度","起始水平"],
@@ -1864,7 +1864,7 @@ function emptyPlans(){
     <p class="muted">${t("最初の学習計画を立てましょう。")}</p>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
       <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
-      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画")}</button>
       <button class="btn ghost" data-act="sample">${t("サンプルを作成")}</button>
     </div></div>`;
 }
@@ -1880,7 +1880,7 @@ function renderPlans(){
   let html = `<div class="fade"><div class="section-head"><h2>${t("計画一覧")}</h2></div>
     <div class="head-actions">
       <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
-      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画")}</button>
     </div>`;
   if(!mats.length){ html+=emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return; }
 
@@ -1924,7 +1924,7 @@ function matrixHead(mode){
     </div>
     <div class="head-actions">
       <button class="btn accent" data-act="new">${t("＋ 計画を立てる")}</button>
-      <button class="btn ghost" data-act="routeset">${t("まとめて計画を立てる")}</button>
+      <button class="btn ghost" data-act="routeset">${t("まとめて計画")}</button>
     </div>`;
 }
 function bindMatrixHead(){
@@ -2620,7 +2620,7 @@ function openRouteWizard(){
   const subOpts = sel => subjects.map(s=>`<option value="${esc(s)}" ${s===sel?"selected":""}>${esc(s)}</option>`).join("");
   const ov=document.createElement("div"); ov.className="overlay";
   ov.innerHTML=`<div class="modal">
-    <h2>${t("まとめて計画を立てる")}</h2>
+    <h2>${t("まとめて計画")}</h2>
     <div class="lead">${t("教材データから、期間に合わせて全教材の計画を一括で立てます。")}</div>
     <div class="row2">
       <div class="field"><label>${t("教科")}</label><select id="rw-sub">${subOpts(st.subject)}</select></div>
@@ -3097,12 +3097,12 @@ function openLibraryImport(){
       <div class="xfold-body">
         <div class="lib-cols">
           <code>subject</code><span>${t("教科名（必須）。例: 英語")}</span>
-          <code>level</code><span>${t("志望校や難易度のレベル名。例: 日大・MARCH・早慶、基礎・応用・発展。上の行ほど易しく並べる＝この並びが「まとめて計画を立てる」のレベル順になる")}</span>
-          <code>step</code><span>${t("同じレベルの中で取り組む順番（1,2,…）。「まとめて計画を立てる」はこの順に教材を並べる。空の行は教材名の入力候補にだけ使われる")}</span>
+          <code>level</code><span>${t("志望校や難易度のレベル名。例: 日大・MARCH・早慶、基礎・応用・発展。上の行ほど易しく並べる＝この並びが「まとめて計画」のレベル順になる")}</span>
+          <code>step</code><span>${t("同じレベルの中で取り組む順番（1,2,…）。「まとめて計画」はこの順に教材を並べる。空の行は教材名の入力候補にだけ使われる")}</span>
           <code>cat</code><span>${t("分類ラベル。例: 単語・文法・長文")}</span>
           <code>pick</code><span>${t("教科・レベル・step が同じ行は、同じ段階の選択肢のまとまり。one=その中から1冊選ぶ / any=必要なら追加 / 空=全部やる")}</span>
           <code>par</code><span>${t("1にすると並行教材（単語帳など、他の教材と並行して毎日進める）")}</span>
-          <code>base</code><span>${t("1にすると基礎固めの教材＝「まとめて計画を立てる」の「基礎固めの教材も含める」で外せる（旧CSVの列名 ss もそのまま読める）")}</span>
+          <code>base</code><span>${t("1にすると基礎固めの教材＝「まとめて計画」の「基礎固めの教材も含める」で外せる（旧CSVの列名 ss もそのまま読める）")}</span>
           <code>name</code><span>${t("教材名（必須）。同じ名前は登録できない")}</span>
           <code>kana</code><span>${t("教材名の読み（検索用）。空なら教材名を使う")}</span>
           <code>count</code><span>${t("分量（必須）。総ページ数か、問題・語の総数")}</span>
@@ -3545,7 +3545,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v64";
+const APP_VERSION = "v65";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
