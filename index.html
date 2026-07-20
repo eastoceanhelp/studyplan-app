@@ -452,7 +452,7 @@ thead th{
 .rw-choice input{flex:none;margin:0;accent-color:var(--vermilion)}
 .rw-row{display:flex;align-items:center;gap:8px;padding:5px 12px;font-size:13px;color:var(--ink)}
 .rw-row input{flex:none;margin:0;accent-color:var(--vermilion)}
-.rw-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw-row .nm{flex:1;min-width:0;overflow-wrap:anywhere}
 .rw-row.off .nm{color:var(--ink-faint)}
 .rw-cat{flex:none;font-family:var(--serif);font-size:10px;color:var(--ink-soft);
   border:1px solid var(--line);border-radius:4px;padding:1px 6px;letter-spacing:.05em}
@@ -3487,7 +3487,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v61";
+const APP_VERSION = "v62";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
