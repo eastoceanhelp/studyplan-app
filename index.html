@@ -477,6 +477,9 @@ thead th{
 .xfold[open]>summary{border-bottom:1px solid var(--line-soft)}
 .xfold-body{padding:14px 14px 0}
 .xfold-body .field:last-child{margin-bottom:14px}
+/* 教材データ読み込み: CSV列の説明 */
+.lib-cols{display:grid;grid-template-columns:auto 1fr;gap:7px 12px;font-size:11.5px;line-height:1.55;color:var(--ink-soft)}
+.lib-cols code{font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:600;color:var(--ink)}
 .unit-seg{display:flex;gap:0;border:1.5px solid var(--line);border-radius:7px;overflow:hidden;width:fit-content}
 .unit-seg label{padding:8px 18px;font-family:var(--serif);font-size:14px;cursor:pointer;color:var(--ink-soft);background:var(--input-bg);transition:.15s}
 .unit-seg input{display:none}
@@ -845,7 +848,20 @@ const I18N_PAIRS = {
   "参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。": ["載入參考書清單（CSV檔）後，即可使用套組新增與教材名稱的輸入建議。","导入参考书清单（CSV文件）后，即可使用按套装添加与教材名称的输入建议。"],
   "現在の教材データ: {n}冊（{d} 読込）": ["目前的教材資料: {n}本（{d} 載入）","当前教材数据: {n}本（{d} 导入）"],
   "教材データはまだ読み込まれていません。": ["尚未載入教材資料。","尚未导入教材数据。"],
-  "CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。": ["CSV欄位: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填為 subject / name / count / unit）。編碼為UTF-8。","CSV列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必填为 subject / name / count / unit）。编码为UTF-8。"],
+  "CSVの列の説明": ["CSV欄位說明","CSV列说明"],
+  "教科名（必須）。例: 英語": ["科目名（必填）。例: 英語","科目名（必填）。例: 英语"],
+  "レベル名。上の行ほど易しい並びにする": ["級別名。越上面的列越簡單","级别名。越靠上的行越简单"],
+  "「まとめて計画を立てる」で取り組む順（1,2,…）。空の行は教材名の入力候補にだけ使われる": ["「批次建立計畫」的學習順序（1,2,…）。留空的列只用於教材名稱的輸入建議","「批量制定计划」的学习顺序（1,2,…）。留空的行只用于教材名称的输入建议"],
+  "分類ラベル。例: 単語・文法・長文": ["分類標籤。例: 單字・文法・長文","分类标签。例: 单词・语法・长文"],
+  "同じ順番に複数の行があるときの選び方。one=1冊選ぶ / any=必要なら追加 / 空=全部": ["同一順序有多列時的選法。one=選1本 / any=需要時加入 / 留空=全部","同一顺序有多行时的选法。one=选1本 / any=需要时添加 / 留空=全部"],
+  "1にすると並行教材（単語帳など、他の教材と並行して毎日進める）": ["設為1＝並行教材（如單字書，與其他教材並行每天進行）","设为1＝并行教材（如单词书，与其他教材并行每天进行）"],
+  "1にすると基礎固め教材（「まとめて計画を立てる」で外せる）": ["設為1＝打基礎教材（可在「批次建立計畫」中排除）","设为1＝打基础教材（可在「批量制定计划」中排除）"],
+  "教材名（必須）。同じ名前は登録できない": ["教材名稱（必填）。名稱不可重複","教材名称（必填）。名称不可重复"],
+  "教材名の読み（検索用）。空なら教材名を使う": ["教材名稱的讀音（搜尋用）。留空則使用教材名稱","教材名称的读音（搜索用）。留空则使用教材名称"],
+  "分量（必須）。総ページ数か、問題・語の総数": ["分量（必填）。總頁數或題目・單字總數","分量（必填）。总页数或题目・单词总数"],
+  "単位（必須）。page=ページ / problem=問題・語": ["單位（必填）。page=頁 / problem=題・字","单位（必填）。page=页 / problem=题・词"],
+  "1行目は列名。文字コードはUTF-8。行の並び順がそのまま表示順になる。": ["第1列為欄位名。編碼為UTF-8。列的順序即顯示順序。","第1行为列名。编码为UTF-8。行的顺序即显示顺序。"],
+  "サンプルCSVをダウンロード": ["下載範例CSV","下载示例CSV"],
   "リストを消去": ["清除清單","清除清单"],
   "CSVファイルを選ぶ": ["選擇CSV檔","选择CSV文件"],
   "教材データを消去します。登録済みの計画には影響しません。よろしいですか？": ["將清除教材資料。不影響已登錄的計畫。確定嗎？","将清除教材数据。不影响已登记的计划。确定吗？"],
@@ -1192,6 +1208,17 @@ const SUBJECT_KANA = {
   "日本史":"にほんし","世界史":"せかいし","地理":"ちり"
 };
 const LIB_REQUIRED = ["subject","level","name","count","unit"];
+
+/* サンプルCSV（ダウンロード用）。教材名は実在の書名を使わない。
+   pick/par/ss の使い方が1行ずつ入った、そのまま読み込める最小の見本。 */
+const LIB_SAMPLE_CSV = [
+  "subject,level,step,cat,pick,par,ss,name,kana,count,unit",
+  "英語,基礎,1,単語,,1,,単語帳１,たんごちょう1,1000,problem",
+  "英語,基礎,2,文法,,,1,文法問題集１,ぶんぽうもんだいしゅう1,300,problem",
+  "英語,基礎,3,長文,one,,,長文問題集１,ちょうぶんもんだいしゅう1,150,page",
+  "英語,基礎,3,長文,one,,,長文問題集２,ちょうぶんもんだいしゅう2,180,page",
+  "数学,基礎,1,問題集,,,,数学問題集１,すうがくもんだいしゅう1,320,page"
+].join("\r\n");
 
 /* 今読み込まれている教材データ。 */
 function LIB(){ return DB.libraryBooks(); }
@@ -3062,7 +3089,26 @@ function openLibraryImport(){
     <h2>${t("教材データを読み込む")}</h2>
     <div class="lead">${t("参考書のリスト（CSVファイル）を読み込むと、セット追加と教材名の入力候補が使えるようになります。")}</div>
     <div class="field"><div class="hint" style="margin-top:0">${esc(stat)}</div></div>
-    <div class="field"><div class="hint" style="margin-top:0">${t("CSVの列: subject, level, step, cat, pick, par, ss, name, kana, count, unit（必須は subject / name / count / unit）。文字コードはUTF-8。")}</div></div>
+    <details class="xfold">
+      <summary>${t("CSVの列の説明")}<span class="xfold-sub">subject, name, count, unit …</span></summary>
+      <div class="xfold-body">
+        <div class="lib-cols">
+          <code>subject</code><span>${t("教科名（必須）。例: 英語")}</span>
+          <code>level</code><span>${t("レベル名。上の行ほど易しい並びにする")}</span>
+          <code>step</code><span>${t("「まとめて計画を立てる」で取り組む順（1,2,…）。空の行は教材名の入力候補にだけ使われる")}</span>
+          <code>cat</code><span>${t("分類ラベル。例: 単語・文法・長文")}</span>
+          <code>pick</code><span>${t("同じ順番に複数の行があるときの選び方。one=1冊選ぶ / any=必要なら追加 / 空=全部")}</span>
+          <code>par</code><span>${t("1にすると並行教材（単語帳など、他の教材と並行して毎日進める）")}</span>
+          <code>ss</code><span>${t("1にすると基礎固め教材（「まとめて計画を立てる」で外せる）")}</span>
+          <code>name</code><span>${t("教材名（必須）。同じ名前は登録できない")}</span>
+          <code>kana</code><span>${t("教材名の読み（検索用）。空なら教材名を使う")}</span>
+          <code>count</code><span>${t("分量（必須）。総ページ数か、問題・語の総数")}</span>
+          <code>unit</code><span>${t("単位（必須）。page=ページ / problem=問題・語")}</span>
+        </div>
+        <div class="hint">${t("1行目は列名。文字コードはUTF-8。行の並び順がそのまま表示順になる。")}</div>
+        <div class="field"><button class="btn ghost sm" id="lib-sample">⤓ ${t("サンプルCSVをダウンロード")}</button></div>
+      </div>
+    </details>
     <div class="err" id="lib-err" style="white-space:pre-line"></div>
     <div class="modal-actions">
       <button class="btn ghost" id="lib-cancel">${t("閉じる")}</button>
@@ -3080,6 +3126,15 @@ function openLibraryImport(){
   if(clearB) clearB.onclick=()=>{
     if(!confirm(t("教材データを消去します。登録済みの計画には影響しません。よろしいですか？"))) return;
     DB.clearLibrary(); close();
+  };
+  ov.querySelector("#lib-sample").onclick=()=>{
+    // BOM付きUTF-8＝日本語Excelでそのまま開ける（parseCSVはBOMを除去する）
+    const blob = new Blob(["\uFEFF"+LIB_SAMPLE_CSV], {type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "教材データ_サンプル.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
   };
   ov.querySelector("#lib-file").onclick=()=>{
     const inp = document.createElement("input");
@@ -3487,7 +3542,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v62";
+const APP_VERSION = "v63";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
