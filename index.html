@@ -498,7 +498,7 @@ thead th{
 .rev-row .del{margin-left:auto;border:none;background:transparent;color:var(--ink-faint);cursor:pointer;font-size:18px;line-height:1}
 .rev-row .del:hover{color:var(--vermilion)}
 .add-rev{align-self:flex-start;margin-top:4px}
-.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .modal-actions .right{display:flex;gap:10px;margin-left:auto}
 .err{color:var(--vermilion);font-size:12px;margin-top:8px;min-height:14px}
 .wd-seg{display:flex;gap:6px;flex-wrap:wrap}
@@ -532,6 +532,16 @@ thead th{
   .task{grid-template-columns:18px minmax(0,1fr) 42px minmax(0,1fr) 52px;gap:10px}
   .task .t-range{font-size:14px}.task .t-count{font-size:12px}
   .row2{gap:10px}
+  /* スマホではダイアログの余白・入力高さを詰めて1画面に収める */
+  .overlay{padding:18px 14px}
+  .modal{padding:22px 18px 18px}
+  .modal h2{font-size:22px}
+  .modal .lead{margin-bottom:12px}
+  .field{margin-bottom:11px}
+  .field input[type=text],.field input[type=number],.field input[type=date],.field input[type=time],.field select{padding:7px 12px}
+  .unit-seg label{padding:7px 16px}
+  .xfold>summary{padding:10px 14px}
+  .reviews{gap:6px}
 }
 @media(max-width:480px){
   /* 狭幅では分野バッジを省き教材名の可読幅を確保（並行・日付は残す） */
@@ -768,7 +778,7 @@ const I18N_PAIRS = {
   "進捗": ["進度","进度"],
   "編集": ["編輯","编辑"],
   "予定をずらす": ["挪動計畫","挪动计划"],
-  "再生成": ["重新產生","重新生成"],
+  "リセット": ["重設","重置"],
   "削除": ["刪除","删除"],
   "日付": ["日期","日期"],
   "日計": ["日計","日计"],
@@ -786,7 +796,7 @@ const I18N_PAIRS = {
   "実績の数字はクリックして直接編集できます": ["實績數字可點擊直接編輯","实绩数字可点击直接编辑"],
   "実績合計": ["實績合計","实绩合计"],
   "予定合計": ["預定合計","预定合计"],
-  "計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？": ["將重新產生計畫。手動輸入的預定與實績將被重設。確定嗎？","将重新生成计划。手动输入的预定与实绩将被重置。确定吗？"],
+  "計画をリセットします。手入力した予定・実績は消えます。よろしいですか？": ["將重設計畫。手動輸入的預定與實績將會消失。確定嗎？","将重置计划。手动输入的预定与实绩将会消失。确定吗？"],
   "「{name}」を削除します。よろしいですか？": ["將刪除「{name}」。確定嗎？","将删除「{name}」。确定吗？"],
   /* ---- ドラッグ追従バナー ---- */
   "復習も一緒に動きます": ["複習也會一起移動","复习也会一起移动"],
@@ -820,7 +830,7 @@ const I18N_PAIRS = {
   "旅行・予定などで学習しない特定の日を計画から除きます。": ["將旅行、有安排等不學習的特定日子從計畫中排除。","将旅行、有安排等不学习的特定日子从计划中排除。"],
   "共通の除外日": ["共用排除日期","通用排除日期"],
   "すべての教材の計画立案で除外する曜日・日付です。教材ごとの除外は各教材の編集画面で設定できます。": ["所有教材排定計畫時共同排除的星期與日期。各教材單獨的排除可在其編輯畫面設定。","所有教材制定计划时共同排除的星期与日期。各教材单独的排除可在其编辑画面设置。"],
-  "※ 変更後、既存の計画に反映するには各教材の「再生成」を実行してください。": ["※ 變更後，要反映到既有計畫請對各教材執行「重新產生」。","※ 变更后，要反映到既有计划请对各教材执行「重新生成」。"],
+  "※ 変更後、既存の計画に反映するには各教材の「リセット」を実行してください。": ["※ 變更後，要反映到既有計畫請對各教材執行「重設」。","※ 变更后，要反映到既有计划请对各教材执行「重置」。"],
   /* ---- 教材フォーム ---- */
   "教材を編集": ["編輯教材","编辑教材"],
   "条件から日毎の学習計画を自動で立案します。": ["依條件自動排定每日學習計畫。","依条件自动制定每日学习计划。"],
@@ -1531,7 +1541,7 @@ function reflowCounts(counts, k, newCount, N){
    total. Subsequent chunks reflow (content shifts; the last absorbs the
    difference; chunks emptied out are removed) and every affected chunk's
    reviews re-sync their range/label/count. Dates and entered actuals are kept
-   in place (position-based) — unlike 再生成 which discards them. Reads/writes
+   in place (position-based) — unlike リセット(regen) which discards them. Reads/writes
    DB. Returns true if anything changed. */
 function editChunkCount(materialId, chunkId, newCount){
   const mat = DB.material(materialId);
@@ -2337,7 +2347,7 @@ function renderDetail(id){
   html += `<div class="detail-actions">
         <button class="btn ghost sm" data-act="edit">${t("編集")}</button>
         <button class="btn ghost sm" data-act="shift">${t("予定をずらす")}</button>
-        <button class="btn ghost sm" data-act="regen">${t("再生成")}</button>
+        <button class="btn ghost sm" data-act="regen">${t("リセット")}</button>
         <button class="btn ghost sm" data-act="del" style="color:var(--vermilion)">${t("削除")}</button>
       </div>`;
   html += tb;
@@ -2359,7 +2369,7 @@ function renderDetail(id){
   viewEl.querySelector('[data-act="edit"]').onclick=()=>openForm(m);
   viewEl.querySelector('[data-act="shift"]').onclick=()=>openBulkShift(m.id);
   viewEl.querySelector('[data-act="regen"]').onclick=()=>{
-    if(confirm(t("計画を再生成します。手入力した予定・実績はリセットされます。よろしいですか？"))){
+    if(confirm(t("計画をリセットします。手入力した予定・実績は消えます。よろしいですか？"))){
       DB.saveMaterial(m, generatePlan(m)); render();
     }
   };
@@ -2629,7 +2639,7 @@ function openGlobalExclude(){
     <h2>${t("共通の除外日")}</h2>
     <div class="lead">${t("すべての教材の計画立案で除外する曜日・日付です。教材ごとの除外は各教材の編集画面で設定できます。")}</div>
     <div id="g-ex"></div>
-    <div class="lead" style="margin-top:4px">${t("※ 変更後、既存の計画に反映するには各教材の「再生成」を実行してください。")}</div>
+    <div class="lead" style="margin-top:4px">${t("※ 変更後、既存の計画に反映するには各教材の「リセット」を実行してください。")}</div>
     <div class="modal-actions">
       <button class="btn ghost" id="g-cancel">${t("キャンセル")}</button>
       <div class="right"><button class="btn accent" id="g-save">${t("保存する")}</button></div>
@@ -2827,7 +2837,7 @@ function openForm(mat){
   const m = mat || {
     name:"", unit:"problem", startDate:todayStr(),
     endDate:fmtD(addDays(new Date(),29)), rangeStart:1, rangeEnd:90,
-    excluded:"", reviews:[1,3,7,28,56]
+    excluded:"", reviews:[1,7]
   };
   const exModel = { excludeDates:(m.excludeDates||[]).slice(), excludeWeekdays:(m.excludeWeekdays||[]).slice() };
   const ov=document.createElement("div"); ov.className="overlay";
@@ -2979,7 +2989,7 @@ function openForm(mat){
     };
     // Only rebuild the plan (which wipes手編集/実績) when a field that actually
     // shapes the plan changed. A cosmetic edit (e.g. just renaming) keeps the
-    // existing entries. To re-apply 共通除外日 or discard manual edits, use 再生成.
+    // existing entries. To re-apply 共通除外日 or discard manual edits, use リセット(regen).
     // 期間（開始/終了日）だけの変更はガントのリサイズと同じ扱い＝実績・過去は
     // そのまま残し、未消化分だけを新期間へ配り直す（replanPeriod）。
     const shapeFields = mm => [mm.rangeStart, mm.rangeEnd, mm.excluded||"",
@@ -3584,7 +3594,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v69";
+const APP_VERSION = "v70";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
