@@ -195,6 +195,17 @@ nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);fon
 .card.add .plus{font-family:var(--serif);font-size:22px;color:var(--vermilion);line-height:1}
 .card.add p{font-family:var(--serif);letter-spacing:.18em;color:var(--ink-soft);margin-top:2px}
 
+/* ---------- drag reorder（計画一覧カード・全体計画表の行をドラッグで並び替え） ---------- */
+.grip{color:var(--ink-faint);cursor:grab;touch-action:none;font-size:15px;line-height:1;
+  user-select:none;-webkit-user-select:none;padding:2px;display:inline-block}
+.grip:hover{color:var(--ink-soft)}
+.grip:active{cursor:grabbing}
+.card > .grip{position:absolute;top:6px;right:8px;z-index:2;color:var(--ink-soft)}
+.matname .grip,.g-name .grip{margin-right:4px;vertical-align:middle}
+.card.reordering{opacity:.92;box-shadow:0 12px 28px -8px rgba(35,33,28,.55);transform:scale(1.015);z-index:7}
+tr.reordering td{background:var(--paper-3)!important}
+.g-row.reordering,.g-row.reordering .g-name{background:var(--paper-3)}
+
 /* ---------- today ---------- */
 .today-grid{display:grid;grid-template-columns:1fr;gap:22px}
 .day-block .day-label{font-family:var(--serif);font-size:13px;letter-spacing:.18em;color:var(--ink-soft);
@@ -643,6 +654,17 @@ const DB = (() => {
       db.entries = db.entries.filter(e=>e.materialId!==id);
       persist();
     },
+    // 教材の並び順を orderedIds の順に入れ替える（計画一覧・全体計画表のドラッグ並び替え用）。
+    // orderedIds に無いIDは元の順序のまま末尾に残す＝過不足があっても教材を落とさない。
+    reorderMaterials(orderedIds){
+      const db = load();
+      const byId = new Map(db.materials.map(m=>[m.id, m]));
+      const next = [];
+      orderedIds.forEach(id=>{ const m=byId.get(id); if(m){ next.push(m); byId.delete(id); } });
+      db.materials.forEach(m=>{ if(byId.has(m.id)) next.push(m); });
+      db.materials = next;
+      persist();
+    },
     updateEntry(id, patch){
       const e = load().entries.find(x=>x.id===id);
       if(e){ Object.assign(e, patch); persist(); }
@@ -778,6 +800,7 @@ const I18N_PAIRS = {
   "進捗": ["進度","进度"],
   "編集": ["編輯","编辑"],
   "予定をずらす": ["挪動計畫","挪动计划"],
+  "ドラッグで並び替え": ["拖曳可排序","拖动可排序"],
   "リセット": ["重設","重置"],
   "削除": ["刪除","删除"],
   "日付": ["日期","日期"],
@@ -1941,6 +1964,7 @@ function renderPlans(){
     const reviews = (m.reviews||[]).length;
     html += `<div class="card" data-id="${m.id}">
       <span class="swatch" style="background:${m.color}"></span>
+      <span class="grip" title="${t("ドラッグで並び替え")}" aria-hidden="true">⠿</span>
       <h3>${esc(m.name)}</h3>
       <div class="meta">${mdLabel(m.startDate)} 〜 ${mdLabel(m.endDate)} ・ ${m.rangeStart}〜${m.rangeEnd}${unitLabel(m.unit)} ・ ${tf("復習{n}回",{n:reviews})} ・ <b class="mstat">${doneSum}/${total}</b> ・ <b class="mstat">${pct}%</b></div>
       <div class="bar"><i style="width:${pct}%;background:${m.color}"></i></div>
@@ -1953,6 +1977,11 @@ function renderPlans(){
   viewEl.querySelectorAll(".card[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
   viewEl.querySelectorAll('[data-act="new"]').forEach(b=>b.onclick=()=>openForm());
   const rsB=viewEl.querySelector('[data-act="routeset"]'); if(rsB) rsB.onclick=openRouteWizard;
+  bindReorder(viewEl.querySelector(".cards"), ".card[data-id]", {
+    idOf: el=>el.dataset.id,
+    onTap: id=>{ state.selected=id; render(); },
+    onDrop: ids=>{ DB.reorderMaterials(ids); render(); }
+  });
 }
 
 /* ---------- MATRIX (overview) ---------- */
@@ -2009,7 +2038,7 @@ function renderMatrix(){
   });
   tb+=`</tr></thead><tbody>`;
   mats.forEach(m=>{
-    tb+=`<tr><td class="matname" data-id="${m.id}"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</td>`;
+    tb+=`<tr data-id="${m.id}"><td class="matname" data-id="${m.id}"><span class="grip" title="${t("ドラッグで並び替え")}" aria-hidden="true">⠿</span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</td>`;
     days.forEach(d=>{
       const v=(sum[m.id]||{})[d]||0;
       const cls=[isWeekend(parseD(d))?'wknd':'', d===today?'today':'', v?'':'zero'].join(' ');
@@ -2028,6 +2057,11 @@ function renderMatrix(){
   viewEl.innerHTML = html;
   bindMatrixHead();
   viewEl.querySelectorAll("td.matname[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  bindReorder(viewEl.querySelector(".matrix tbody"), "tr[data-id]", {
+    idOf: el=>el.dataset.id,
+    onTap: id=>{ state.selected=id; render(); },
+    onDrop: ids=>{ DB.reorderMaterials(ids); render(); }
+  });
   // Scroll the matrix so today's column sits just right of the sticky 教材名 column
   // (past columns are kept — scroll left to see them). Non-destructive default view.
   const wrap = viewEl.querySelector(".table-wrap");
@@ -2118,7 +2152,7 @@ function renderGantt(head, mode){
         style="--mat:${m.color};left:${pct(diffDays(tlStart,bMin))};width:${pct(span)}">
         ${tail}<span class="g-h l"></span><span class="g-lbl">${lbl}</span><span class="g-h r"></span></div>`;
     }
-    html += `<div class="g-row"><div class="g-name" data-id="${m.id}" title="${esc(m.name)}"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</div>
+    html += `<div class="g-row" data-id="${m.id}"><div class="g-name" data-id="${m.id}" title="${esc(m.name)}"><span class="grip" title="${t("ドラッグで並び替え")}" aria-hidden="true">⠿</span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${m.color};margin-right:7px"></span>${esc(m.name)}</div>
       <div class="g-track">${cellsHtml}${nowLine}${barHtml}</div></div>`;
   });
   html += `</div></div>
@@ -2127,6 +2161,11 @@ function renderGantt(head, mode){
 
   bindMatrixHead();
   viewEl.querySelectorAll(".g-name[data-id]").forEach(c=>c.onclick=()=>{ state.selected=c.dataset.id; render(); });
+  bindReorder(viewEl.querySelector(".gantt"), ".g-row[data-id]", {
+    idOf: el=>el.dataset.id,
+    onTap: id=>{ state.selected=id; render(); },
+    onDrop: ids=>{ DB.reorderMaterials(ids); render(); }
+  });
   viewEl.querySelectorAll(".g-bar[data-id]").forEach(bar=>{
     bar.addEventListener("pointerdown", ev=>{ ganttDrag.down(bar, ev, totalDays); ev.preventDefault(); });
   });
@@ -2235,6 +2274,86 @@ const ganttDrag = (()=>{
   window.addEventListener("pointercancel", cancel);
   return { down };
 })();
+
+/* Pointer-driven vertical reorder for the material list (計画一覧 cards) and the
+   全体計画表 rows (day テーブル / 週・月ガント). Dragging the grip (≡) snaps the
+   item between its siblings; on release the new material order is persisted with
+   DB.reorderMaterials and the view re-renders. A press that moves <6px is a tap
+   and runs onTap (＝教材名タップと同じ予実表を開く). Pointer Events (not HTML5 DnD)
+   so touch and mouse behave the same, matching the gantt bars; only the grip has
+   touch-action:none so the rest of the row/card still scrolls the page normally. */
+const dragReorder = (()=>{
+  let st = null;
+  // cfg: { item, items:()=>Element[]（並び替え対象を現在のDOM順で返す）, container,
+  //        idOf:el=>id, onTap:id=>void, onDrop:orderedIds=>void }
+  function down(handle, ev, cfg){
+    if(st || ev.isPrimary===false) return;
+    if(ev.button!=null && ev.button>0) return;   // 左ボタン／タッチのみ
+    st = { cfg, item:cfg.item, id:cfg.idOf(cfg.item),
+           y0:ev.clientY, x0:ev.clientX, dragging:false };
+    try{ handle.setPointerCapture(ev.pointerId); }catch(_){ }
+  }
+  function move(ev){
+    if(!st) return;
+    if(!st.dragging){
+      if(Math.hypot(ev.clientX-st.x0, ev.clientY-st.y0) < 6) return;
+      st.dragging = true;
+      st.item.classList.add("reordering");
+      dragBanner.show(`<div class="dbsrc">${esc(DB.material(st.id)?DB.material(st.id).name:"")}</div><div class="dbtgt">${t("ドラッグで並び替え")}</div>`);
+    }
+    dragBanner.move(ev.clientX, ev.clientY);
+    // ポインタの縦位置で挿入先を決める：中心がポインタより下の最初の対象の前に入れる
+    const items = st.cfg.items();
+    const y = ev.clientY;
+    let ref = null;
+    for(const el of items){
+      if(el===st.item) continue;
+      const r = el.getBoundingClientRect();
+      if(y < r.top + r.height/2){ ref = el; break; }
+    }
+    let desired;
+    if(ref) desired = ref;
+    else { const others = items.filter(el=>el!==st.item); const last = others[others.length-1];
+           desired = last ? last.nextSibling : null; }
+    if(desired!==st.item && st.item.nextSibling!==desired)
+      st.cfg.container.insertBefore(st.item, desired);
+  }
+  function up(){
+    if(!st) return;
+    const s = st; st = null;
+    dragBanner.hide();
+    if(!s.dragging){ s.cfg.onTap(s.id); return; }   // tap → 予実表
+    s.item.classList.remove("reordering");
+    s.cfg.onDrop(s.cfg.items().map(el=>s.cfg.idOf(el)));
+  }
+  function cancel(){
+    if(!st) return;
+    const s = st; st = null;
+    dragBanner.hide();
+    s.item.classList.remove("reordering");
+    render();   // DOMを元の並びに戻す
+  }
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", up);
+  window.addEventListener("pointercancel", cancel);
+  return { down };
+})();
+
+// 各ビューの並び替え対象（.grip を含む要素）にドラッグを結線する共通ヘルパ。
+// container=insertBefore する親、itemSel=対象要素、common={idOf,onTap,onDrop}。
+function bindReorder(container, itemSel, common){
+  if(!container) return;
+  const items = ()=>[...container.querySelectorAll(itemSel)];
+  items().forEach(item=>{
+    const grip = item.querySelector(".grip"); if(!grip) return;
+    grip.addEventListener("pointerdown", ev=>{
+      ev.preventDefault(); ev.stopPropagation();
+      dragReorder.down(grip, ev, { item, container, items,
+        idOf: common.idOf, onTap: common.onTap, onDrop: common.onDrop });
+    });
+    grip.addEventListener("click", ev=>{ ev.stopPropagation(); ev.preventDefault(); });
+  });
+}
 
 /* Follow-banner shown while dragging a 予実表 cell. On phones the dragged cell
    sits under the finger, so this pinned pill (offset above the pointer) tells
@@ -2837,7 +2956,7 @@ function openForm(mat){
   const m = mat || {
     name:"", unit:"problem", startDate:todayStr(),
     endDate:fmtD(addDays(new Date(),29)), rangeStart:1, rangeEnd:90,
-    excluded:"", reviews:[1,7]
+    excluded:"", reviews:[1,3]
   };
   const exModel = { excludeDates:(m.excludeDates||[]).slice(), excludeWeekdays:(m.excludeWeekdays||[]).slice() };
   const ov=document.createElement("div"); ov.className="overlay";
@@ -3594,7 +3713,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v70";
+const APP_VERSION = "v71";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
