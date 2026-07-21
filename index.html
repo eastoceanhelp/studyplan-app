@@ -249,9 +249,30 @@ tr.reordering td{background:var(--paper-3)!important}
 .day-block.done-block .day-label{color:var(--ink-faint);border-bottom-color:var(--line)}
 @keyframes taskSettle{0%{background:rgba(187,60,40,.16);transform:translateY(-7px)}55%{background:rgba(187,60,40,.06)}100%{background:transparent;transform:none}}
 .task.just-moved{animation:taskSettle .5s cubic-bezier(.22,.61,.36,1)}
-@media (prefers-reduced-motion:reduce){.task.just-moved{animation:none}}
+/* チェック直後・完了へ移す前の間（達成感を少し見せてから移動） */
+@keyframes chkPop{0%{transform:scale(.55)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
+.task.checking{background:rgba(187,60,40,.08)}
+.task.checking .chk{animation:chkPop .34s ease}
+@media (prefers-reduced-motion:reduce){.task.just-moved,.task.checking .chk{animation:none}}
 .today-done{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:14px;color:var(--ink-soft);padding:8px 6px;border-bottom:1px solid var(--line)}
 .today-done .mk{display:inline-grid;place-items:center;width:24px;height:24px;flex:none;border-radius:50%;background:var(--vermilion);color:var(--paper);font-size:12px;font-weight:700}
+/* 本日分を全て終えたときのお祝いエフェクト（履歴には乗せない一過性レイヤー） */
+.celebrate{position:fixed;inset:0;z-index:150;display:grid;place-items:center;
+  background:rgba(35,33,28,.30);backdrop-filter:blur(2px);opacity:0;transition:opacity .35s;pointer-events:none}
+.celebrate.show{opacity:1;pointer-events:auto}
+.cf-field{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.cf{position:absolute;top:-6vh;border-radius:1px;opacity:.9;animation:cfFall linear forwards}
+@keyframes cfFall{0%{transform:translateY(-8vh) rotate(0)}100%{transform:translateY(112vh) rotate(600deg)}}
+.cel-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);padding:30px 40px;text-align:center;max-width:82vw;
+  transform:scale(.86);transition:transform .42s cubic-bezier(.22,1.2,.4,1)}
+.celebrate.show .cel-card{transform:scale(1)}
+.cel-seal{display:inline-grid;place-items:center;width:56px;height:56px;margin:0 auto 12px;border-radius:50%;
+  background:var(--vermilion);color:var(--paper);font-family:var(--serif);font-size:27px;font-weight:700;
+  box-shadow:0 4px 14px rgba(187,60,40,.42)}
+.cel-title{font-family:var(--serif);font-size:20px;letter-spacing:.12em;color:var(--ink);font-weight:700}
+.cel-sub{font-family:var(--serif);font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-top:6px}
+@media (prefers-reduced-motion:reduce){.cel-card{transition:none;transform:none}.celebrate.show .cel-card{transform:none}.cf{display:none}}
 .empty-state{text-align:center;padding:70px 20px;color:var(--ink-soft)}
 .empty-state .mark{font-family:var(--serif);font-size:52px;color:var(--vermilion);opacity:.8}
 .empty-state p{font-family:var(--serif);letter-spacing:.1em;margin-top:6px}
@@ -753,6 +774,8 @@ const I18N_PAIRS = {
   "今日の学習": ["今日的學習","今日学习"],
   "この先の予定": ["接下來的計畫","接下来的计划"],
   "今日の学習は完了しました。": ["今天的學習已完成。","今天的学习已完成。"],
+  "おめでとうございます": ["恭喜您","恭喜您"],
+  "本日の学習をすべて終えました。": ["今天的學習全部完成了。","今天的学习全部完成了。"],
   "明日": ["明天","明天"],
   "やり残し": ["逾期未完成","逾期未完成"],
   "本日分": ["今日進度","今日进度"],
@@ -1892,17 +1915,65 @@ function todayGridHTML(){
 function bindTodayTasks(){
   viewEl.querySelectorAll(".day-block:not(.preview) .task").forEach(taskEl=>{
     taskEl.querySelector(".chk").addEventListener("click", ()=>{
+      if(taskEl.dataset.busy) return;            // 移動待ち・連打中は無視
       const e = DB.entries().find(x=>x.id===taskEl.dataset.id);
       if(!e) return;
-      const done = !e.done;
-      DB.updateEntry(e.id, {done, actualCount: done ? e.planCount : null, doneDate: done ? todayStr() : null});
-      justMovedId = e.id; // 移動先で1回だけアニメ
-      const grid = viewEl.querySelector(".today-grid");
-      if(grid){ grid.innerHTML = todayGridHTML(); }
-      justMovedId = null;
-      bindTodayTasks();
+      if(!e.done){
+        // 完了へ移す前に、チェックが付いた様子を少し見せてから移動する（達成感を残す）
+        taskEl.dataset.busy = "1";
+        taskEl.classList.add("done","checking");
+        setTimeout(()=>commitToggle(e.id, true), 620);
+      } else {
+        commitToggle(e.id, false);               // 本日分へ戻すのは即時
+      }
     });
   });
+}
+// done を確定して .today-grid を差し替える（完了に移したら全終了かを判定）
+function commitToggle(id, done){
+  const e = DB.entries().find(x=>x.id===id);
+  if(!e) return;
+  DB.updateEntry(id, {done, actualCount: done ? e.planCount : null, doneDate: done ? todayStr() : null});
+  justMovedId = id; // 移動先で1回だけアニメ
+  const grid = viewEl.querySelector(".today-grid");
+  if(grid){ grid.innerHTML = todayGridHTML(); }
+  justMovedId = null;
+  bindTodayTasks();
+  if(done) maybeCelebrate();
+}
+// 本日およびそれ以前のやり残しが全て片付いたら、お祝いエフェクトを一度出す
+function maybeCelebrate(){
+  const today = todayStr();
+  if(DB.entries().some(e=>!e.done && e.date<=today)) return; // まだ残っている
+  showCelebration();
+}
+function showCelebration(){
+  if(document.querySelector(".celebrate")) return;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const layer = document.createElement("div");
+  layer.className = "celebrate";
+  let conf = "";
+  if(!reduce){
+    const cols = ["var(--vermilion)","var(--indigo)","#c9a227","#4a7c59"];
+    for(let i=0;i<44;i++){
+      const size = 6+Math.random()*7;
+      conf += `<span class="cf" style="left:${Math.random()*100}%;background:${cols[i%cols.length]};`
+        + `width:${size.toFixed(1)}px;height:${(size*0.5).toFixed(1)}px;`
+        + `animation-delay:${(Math.random()*0.7).toFixed(2)}s;animation-duration:${(2.6+Math.random()*1.7).toFixed(2)}s"></span>`;
+    }
+  }
+  layer.innerHTML = `<div class="cf-field">${conf}</div>
+    <div class="cel-card">
+      <div class="cel-seal">祝</div>
+      <div class="cel-title">${t("おめでとうございます")}</div>
+      <div class="cel-sub">${t("本日の学習をすべて終えました。")}</div>
+    </div>`;
+  document.body.appendChild(layer);
+  void layer.offsetWidth;            // 強制リフローで opacity 0→1 のトランジションを確実に再生
+  layer.classList.add("show");
+  const close = ()=>{ if(!layer.isConnected) return; layer.classList.remove("show"); setTimeout(()=>layer.remove(),400); };
+  layer.addEventListener("click", close);
+  setTimeout(close, 4200);
 }
 
 function renderToday(){
@@ -3713,7 +3784,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v71";
+const APP_VERSION = "v72";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
