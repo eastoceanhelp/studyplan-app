@@ -247,13 +247,11 @@ tr.reordering td{background:var(--paper-3)!important}
 /* 完了セクション（本日分の下・チェック済み） */
 .day-block.done-block{margin-top:4px}
 .day-block.done-block .day-label{color:var(--ink-faint);border-bottom-color:var(--line)}
-@keyframes taskSettle{0%{background:rgba(187,60,40,.16);transform:translateY(-7px)}55%{background:rgba(187,60,40,.06)}100%{background:transparent;transform:none}}
-.task.just-moved{animation:taskSettle .5s cubic-bezier(.22,.61,.36,1)}
-/* チェック直後・完了へ移す前の間（達成感を少し見せてから移動） */
-@keyframes chkPop{0%{transform:scale(.55)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
-.task.checking{background:rgba(187,60,40,.08)}
-.task.checking .chk{animation:chkPop .34s ease}
-@media (prefers-reduced-motion:reduce){.task.just-moved,.task.checking .chk{animation:none}}
+/* 完了へ移動した直後の「着地」アニメ。すぐ動き始めるが、少しゆっくり収まる */
+@keyframes taskSettle{0%{background:rgba(187,60,40,.18);transform:translateY(-12px);opacity:.35}
+  55%{background:rgba(187,60,40,.07)}100%{background:transparent;transform:none;opacity:1}}
+.task.just-moved{animation:taskSettle .95s cubic-bezier(.22,.61,.36,1)}
+@media (prefers-reduced-motion:reduce){.task.just-moved{animation:none}}
 .today-done{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:14px;color:var(--ink-soft);padding:8px 6px;border-bottom:1px solid var(--line)}
 .today-done .mk{display:inline-grid;place-items:center;width:24px;height:24px;flex:none;border-radius:50%;background:var(--vermilion);color:var(--paper);font-size:12px;font-weight:700}
 /* 本日分を全て終えたときのお祝いエフェクト（履歴には乗せない一過性レイヤー） */
@@ -1915,17 +1913,10 @@ function todayGridHTML(){
 function bindTodayTasks(){
   viewEl.querySelectorAll(".day-block:not(.preview) .task").forEach(taskEl=>{
     taskEl.querySelector(".chk").addEventListener("click", ()=>{
-      if(taskEl.dataset.busy) return;            // 移動待ち・連打中は無視
       const e = DB.entries().find(x=>x.id===taskEl.dataset.id);
       if(!e) return;
-      if(!e.done){
-        // 完了へ移す前に、チェックが付いた様子を少し見せてから移動する（達成感を残す）
-        taskEl.dataset.busy = "1";
-        taskEl.classList.add("done","checking");
-        setTimeout(()=>commitToggle(e.id, true), 620);
-      } else {
-        commitToggle(e.id, false);               // 本日分へ戻すのは即時
-      }
+      // タップ後は即座に移動を開始（動きのゆっくりさは移動先の taskSettle 側で調整）
+      commitToggle(e.id, !e.done);
     });
   });
 }
@@ -3784,7 +3775,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v72";
+const APP_VERSION = "v73";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
