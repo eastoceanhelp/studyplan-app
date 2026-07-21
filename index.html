@@ -1780,7 +1780,11 @@ function render(){
 /* ---------- TODAY ---------- */
 // 直近にチェック/取り消しで移動したエントリID。再描画で1回だけ移動アニメを付ける。
 let justMovedId = null;
-function renderToday(){
+
+// ToDoの日毎ブロック（やり残し／本日分／完了／プレビュー）のHTMLだけを組み立てる。
+// チェックのたびに .today-grid の中身だけを差し替え、外側の .fade を作り直さない
+// （＝画面全体のフェード再生＝「リフレッシュ感」を避ける）ために本体から切り出している。
+function todayGridHTML(){
   const today = todayStr();
   const tomorrow = fmtD(addDays(new Date(),1));
   const horizon = fmtD(addDays(new Date(),6)); // 今日を含め先7日
@@ -1795,18 +1799,6 @@ function renderToday(){
     .filter(e=>!e.done && e.date>today && e.date<=horizon)
     .sort((a,b)=>a.date.localeCompare(b.date));
 
-  let html = `<div class="fade"><div class="section-head"><h2>${t("ToDo")}</h2>
-    <span class="muted">${fullLabel(today)}</span></div>`;
-
-  if(!DB.materials().length){
-    html += emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return;
-  }
-  if(!pending.length && !future.length && !completed.length){
-    html += `<div class="empty-state"><div class="mark">了</div>
-      <p>${t("本日およびそれ以前にやり残した学習はありません。")}</p>
-      <p class="muted">${t("よく出来ました。明日の計画は「全体計画表」から確認できます。")}</p></div></div>`;
-    viewEl.innerHTML=html; return;
-  }
   // 教材名などの共通セル（チェック欄はcheckable/previewで差し替え）
   const cells = e => {
     const m=mats[e.materialId]; if(!m) return null;
@@ -1846,33 +1838,61 @@ function renderToday(){
     return s+`</div>`;
   };
 
-  html += `<div class="today-grid">`;
+  let s = "";
   if(pending.length){
-    html += block(t("やり残し"), overdue, "overdue");
-    html += block(t("本日分"), now, "");
+    s += block(t("やり残し"), overdue, "overdue");
+    s += block(t("本日分"), now, "");
   } else {
-    html += `<div class="today-done"><span class="mk">了</span>${t("今日の学習は完了しました。")}</div>`;
+    s += `<div class="today-done"><span class="mk">了</span>${t("今日の学習は完了しました。")}</div>`;
   }
   // 本日分の下に「完了」セクション（タップで本日分へ戻せる）
-  html += block(t("完了"), completed, "done-block", true);
+  s += block(t("完了"), completed, "done-block", true);
   if(future.length){
-    html += `<div class="preview-head">${t("この先の予定")}</div>`;
-    [...new Set(future.map(e=>e.date))].sort().forEach(date=>{ html += previewBlock(date); });
+    s += `<div class="preview-head">${t("この先の予定")}</div>`;
+    [...new Set(future.map(e=>e.date))].sort().forEach(date=>{ s += previewBlock(date); });
   }
-  html += `</div></div>`;
-  viewEl.innerHTML = html;
+  return s;
+}
 
-  // チェック（実績化）はプレビュー以外のみ。完了へ移動・本日分へ復帰の両方に対応。
-  viewEl.querySelectorAll(".day-block:not(.preview) .task").forEach(t=>{
-    t.querySelector(".chk").addEventListener("click", ()=>{
-      const e = DB.entries().find(x=>x.id===t.dataset.id);
+// チェック（実績化）はプレビュー以外のみ。完了へ移動・本日分へ復帰の両方に対応。
+// タップ時は .today-grid の中身だけを差し替える（＝外枠 .fade は再生させない）。
+function bindTodayTasks(){
+  viewEl.querySelectorAll(".day-block:not(.preview) .task").forEach(taskEl=>{
+    taskEl.querySelector(".chk").addEventListener("click", ()=>{
+      const e = DB.entries().find(x=>x.id===taskEl.dataset.id);
+      if(!e) return;
       const done = !e.done;
-      DB.updateEntry(e.id, {done, actualCount: done ? e.planCount : null, doneDate: done ? today : null});
+      DB.updateEntry(e.id, {done, actualCount: done ? e.planCount : null, doneDate: done ? todayStr() : null});
       justMovedId = e.id; // 移動先で1回だけアニメ
-      renderToday();
+      const grid = viewEl.querySelector(".today-grid");
+      if(grid){ grid.innerHTML = todayGridHTML(); }
+      justMovedId = null;
+      bindTodayTasks();
     });
   });
-  justMovedId = null; // アニメは描画のたびに1回だけ
+}
+
+function renderToday(){
+  const today = todayStr();
+  const horizon = fmtD(addDays(new Date(),6));
+  let html = `<div class="fade"><div class="section-head"><h2>${t("ToDo")}</h2>
+    <span class="muted">${fullLabel(today)}</span></div>`;
+
+  if(!DB.materials().length){
+    html += emptyPlans()+`</div>`; viewEl.innerHTML=html; bindEmpty(); return;
+  }
+  const anyPending = DB.entries().some(e=>!e.done && e.date<=today);
+  const anyFuture = DB.entries().some(e=>!e.done && e.date>today && e.date<=horizon);
+  const anyCompleted = DB.entries().some(e=>e.done && e.doneDate===today);
+  if(!anyPending && !anyFuture && !anyCompleted){
+    html += `<div class="empty-state"><div class="mark">了</div>
+      <p>${t("本日およびそれ以前にやり残した学習はありません。")}</p>
+      <p class="muted">${t("よく出来ました。明日の計画は「全体計画表」から確認できます。")}</p></div></div>`;
+    viewEl.innerHTML=html; return;
+  }
+  html += `<div class="today-grid">${todayGridHTML()}</div></div>`;
+  viewEl.innerHTML = html;
+  bindTodayTasks();
 }
 
 /* ---------- PLANS ---------- */
@@ -3563,7 +3583,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v66";
+const APP_VERSION = "v67";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
