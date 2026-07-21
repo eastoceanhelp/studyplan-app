@@ -205,7 +205,7 @@ nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);fon
 .task{
   display:grid;align-items:center;
   grid-template-columns:18px minmax(0,1fr) 48px minmax(0,1.1fr) 64px;
-  gap:14px;padding:6px 6px 6px 4px;border-bottom:1px solid var(--line);
+  gap:14px;padding:11px 6px 11px 4px;border-bottom:1px solid var(--line);
   position:relative;transition:background .12s,opacity .2s;
 }
 .task:hover{background:rgba(35,33,28,.035)}
@@ -220,7 +220,7 @@ nav.tabs .nav-icon-p.on{color:var(--vermilion);border-color:var(--vermilion);fon
 .task.done .chk{background:var(--vermilion);border-color:var(--vermilion)}
 .task .chk svg{width:11px;height:11px;opacity:0}
 .task.done .chk svg{opacity:1}
-.task .t-mat{font-family:var(--serif);font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .t-mat{font-family:var(--serif);font-weight:600;font-size:14.5px;overflow-wrap:anywhere;line-height:1.35}
 .task .t-type{font-size:10.5px;letter-spacing:.04em;padding:1.5px 0;border-radius:4px;font-weight:700;text-align:center}
 .t-type.new{background:rgba(47,79,100,.12);color:var(--indigo)}
 .t-type.rev{background:rgba(187,60,40,.11);color:var(--vermilion)}
@@ -256,7 +256,7 @@ thead th{
 .matrix th.matname,.matrix td.matname{
   position:sticky;left:0;z-index:3;background:var(--paper-2);text-align:left;
   font-family:var(--serif);min-width:140px;max-width:150px;border-right:2px solid var(--line);
-  overflow:hidden;text-overflow:ellipsis;
+  white-space:normal;overflow-wrap:anywhere;line-height:1.3;
 }
 .matrix thead th.matname{z-index:5}        /* top-left corner: above both sticky row & column */
 .matrix td.matname{background:var(--card);cursor:pointer;color:var(--indigo);font-weight:600}
@@ -281,7 +281,7 @@ thead th{
 .g-row:first-of-type{border-top:0}
 .g-name{flex:0 0 var(--name-w);width:var(--name-w);box-sizing:border-box;position:sticky;left:0;z-index:4;background:var(--card);
   padding:12px 10px;font-family:var(--serif);font-weight:600;font-size:13px;color:var(--indigo);cursor:pointer;
-  border-right:2px solid var(--line);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  border-right:2px solid var(--line);overflow-wrap:anywhere;line-height:1.3}
 .g-name:hover{color:var(--vermilion)}
 .g-head .g-name{background:var(--paper-2);cursor:default;z-index:5;color:var(--ink-soft);font-size:11px;padding:8px 10px}
 .g-days{flex:1;display:flex}
@@ -767,7 +767,7 @@ const I18N_PAIRS = {
   "復習回数": ["複習次數","复习次数"],
   "進捗": ["進度","进度"],
   "編集": ["編輯","编辑"],
-  "ずらす": ["挪動","挪动"],
+  "予定をずらす": ["挪動計畫","挪动计划"],
   "再生成": ["重新產生","重新生成"],
   "削除": ["刪除","删除"],
   "日付": ["日期","日期"],
@@ -782,7 +782,7 @@ const I18N_PAIRS = {
   "📦 新規の学習範囲をドラッグ＝新規と復習をまとめて移動（復習のタイミングを保つ／他の新規がある日へ落とすと2つを入れ替え／除外日には置けません）": ["📦 拖曳新學的範圍＝新學與複習一起移動（保持複習的時間點／拖到已有其他新學的日子則兩者互換／不能放到排除日）","📦 拖动新学的范围＝新学与复习一起移动（保持复习的时间点／拖到已有其他新学的日子则两者互换／不能放到排除日）"],
   "↕ 復習の範囲をドラッグ＝その復習だけ別日へ移動": ["↕ 拖曳複習的範圍＝只移動該次複習","↕ 拖动复习的范围＝只移动该次复习"],
   "✎ 新規の学習範囲をクリックすると問数を編集できます（以降が連動）": ["✎ 點擊新學的範圍可編輯題數（後續連動調整）","✎ 点击新学的范围可编辑题数（后续联动调整）"],
-  "📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）": ["📅 用上方的「挪動」可將某天之後的計畫整批前後移動（複習也會跟著動）","📅 用上方的「挪动」可将某天之后的计划整批前后移动（复习也会跟着动）"],
+  "📅 ヘッダーの「予定をずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）": ["📅 用上方的「挪動計畫」可將某天之後的計畫整批前後移動（複習也會跟著動）","📅 用上方的「挪动计划」可将某天之后的计划整批前后移动（复习也会跟着动）"],
   "実績の数字はクリックして直接編集できます": ["實績數字可點擊直接編輯","实绩数字可点击直接编辑"],
   "実績合計": ["實績合計","实绩合计"],
   "予定合計": ["預定合計","预定合计"],
@@ -889,7 +889,7 @@ const I18N_PAIRS = {
   "まず計画を立てる": ["先建立計畫","先制定计划"],
   "<b>「＋ 計画を立てる」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。": ["用<b>「＋ 建立計畫」</b>輸入教材名稱、範圍、期間，以及想排除的星期或日期，每日學習計畫就會<b>自動排定</b>。","用<b>「＋ 制定计划」</b>输入教材名称、范围、期间，以及想排除的星期或日期，每日学习计划就会<b>自动生成</b>。"],
   "予実表で予定と実績を管理": ["用預實表管理預定與實績","用预实表管理预定与实绩"],
-  "教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。": ["打開教材即是<b>預實表</b>，可總覽新學與複習的預定和實績。範圍格子<b>點擊可編輯題數</b>、<b>拖曳可移動日期</b>，用上方的<b>「挪動」</b>可將某天之後的計畫整批前後移動。","打开教材即是<b>预实表</b>，可总览新学与复习的预定和实绩。范围格子<b>点击可编辑题数</b>、<b>拖动可移动日期</b>，用上方的<b>「挪动」</b>可将某天之后的计划整批前后移动。"],
+  "教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「予定をずらす」</b>である日以降をまとめて前後にずらせます。": ["打開教材即是<b>預實表</b>，可總覽新學與複習的預定和實績。範圍格子<b>點擊可編輯題數</b>、<b>拖曳可移動日期</b>，用上方的<b>「挪動計畫」</b>可將某天之後的計畫整批前後移動。","打开教材即是<b>预实表</b>，可总览新学与复习的预定和实绩。范围格子<b>点击可编辑题数</b>、<b>拖动可移动日期</b>，用上方的<b>「挪动计划」</b>可将某天之后的计划整批前后移动。"],
   "「今日」タブで今日の分だけ": ["「今日」分頁只看今天的份","「今日」标签只看今天的份"],
   "今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。": ["只列出今天要做的學習。<b>打勾即記為實績</b>，並反映到進度。","只列出今天要做的学习。<b>打勾即记为实绩</b>，并反映到进度。"],
   "保存とバックアップ": ["儲存與備份","保存与备份"],
@@ -2290,7 +2290,7 @@ function renderDetail(id){
       <div class="crumb" data-act="back">${t("‹ 計画一覧へ戻る")}</div>
       <div class="detail-actions">
         <button class="btn ghost sm" data-act="edit">${t("編集")}</button>
-        <button class="btn ghost sm" data-act="shift">${t("ずらす")}</button>
+        <button class="btn ghost sm" data-act="shift">${t("予定をずらす")}</button>
         <button class="btn ghost sm" data-act="regen">${t("再生成")}</button>
         <button class="btn ghost sm" data-act="del" style="color:var(--vermilion)">${t("削除")}</button>
       </div>
@@ -2347,7 +2347,7 @@ function renderDetail(id){
     <span>${t("📦 新規の学習範囲をドラッグ＝新規と復習をまとめて移動（復習のタイミングを保つ／他の新規がある日へ落とすと2つを入れ替え／除外日には置けません）")}</span>
     <span>${t("↕ 復習の範囲をドラッグ＝その復習だけ別日へ移動")}</span>
     <span>${t("✎ 新規の学習範囲をクリックすると問数を編集できます（以降が連動）")}</span>
-    <span>${t("📅 ヘッダーの「ずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）")}</span>
+    <span>${t("📅 ヘッダーの「予定をずらす」で、ある日以降の予定をまとめて前後に動かせます（復習も連動）")}</span>
     <span>${t("実績の数字はクリックして直接編集できます")}</span>
   </div>`;
   html += `<div style="margin-top:14px" class="muted">${t("実績合計")} <span id="actualSumN">${actualSum}</span> / ${t("予定合計")} ${total} ${unitLabel(m.unit)}</div></div>`;
@@ -2554,7 +2554,7 @@ function openBulkShift(materialId){
     <div class="lead" style="margin-top:10px">${t("※ 移動先が除外日になる予定は次の空き日へずれます。前倒しは、先頭の予定が今日より前にならない範囲までに制限されます。")}</div>
     <div class="modal-actions">
       <button class="btn ghost" id="bs-cancel">${t("キャンセル")}</button>
-      <div class="right"><button class="btn accent" id="bs-save">${t("ずらす")}</button></div>
+      <div class="right"><button class="btn accent" id="bs-save">${t("予定をずらす")}</button></div>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -3028,7 +3028,7 @@ const ONBOARD_STEPS = [
   { mark:"＋", title:"まず計画を立てる",
     body:"<b>「＋ 計画を立てる」</b>で、教材名・範囲・期間・除外したい曜日や日付を入れるだけ。日毎の学習計画が<b>自動で立案</b>されます。" },
   { mark:"予", title:"予実表で予定と実績を管理",
-    body:"教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「ずらす」</b>である日以降をまとめて前後にずらせます。" },
+    body:"教材を開くと<b>予実表</b>。新規と復習の予定、実績を一覧できます。範囲のマスを<b>クリックで問数を編集</b>、<b>ドラッグで日付を移動</b>、ヘッダーの<b>「予定をずらす」</b>である日以降をまとめて前後にずらせます。" },
   { mark:"今", title:"「今日」タブで今日の分だけ",
     body:"今日やる学習だけを抜き出して表示します。<b>チェックを入れると実績</b>になり、進捗に反映されます。" },
   { mark:"控", title:"保存とバックアップ",
@@ -3583,7 +3583,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v67";
+const APP_VERSION = "v68";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
