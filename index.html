@@ -247,30 +247,47 @@ tr.reordering td{background:var(--paper-3)!important}
 /* 完了セクション（本日分の下・チェック済み） */
 .day-block.done-block{margin-top:4px}
 .day-block.done-block .day-label{color:var(--ink-faint);border-bottom-color:var(--line)}
-/* 完了へ移動した直後の「着地」アニメ。すぐ動き始めるが、少しゆっくり収まる */
-@keyframes taskSettle{0%{background:rgba(187,60,40,.18);transform:translateY(-12px);opacity:.35}
-  55%{background:rgba(187,60,40,.07)}100%{background:transparent;transform:none;opacity:1}}
-.task.just-moved{animation:taskSettle .95s cubic-bezier(.22,.61,.36,1)}
+/* 完了へ移動した直後の「着地」アニメ。すぐ動き始め少しゆっくり収まるが、
+   グレー化（.done の opacity）は最初から効かせる＝opacity はアニメで触らない */
+@keyframes taskSettle{0%{background:rgba(187,60,40,.18);transform:translateY(-12px)}
+  55%{background:rgba(187,60,40,.07)}100%{background:transparent;transform:none}}
+.task.just-moved{animation:taskSettle .8s cubic-bezier(.22,.61,.36,1)}
 @media (prefers-reduced-motion:reduce){.task.just-moved{animation:none}}
 .today-done{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:14px;color:var(--ink-soft);padding:8px 6px;border-bottom:1px solid var(--line)}
 .today-done .mk{display:inline-grid;place-items:center;width:24px;height:24px;flex:none;border-radius:50%;background:var(--vermilion);color:var(--paper);font-size:12px;font-weight:700}
-/* 本日分を全て終えたときのお祝いエフェクト（履歴には乗せない一過性レイヤー） */
-.celebrate{position:fixed;inset:0;z-index:150;display:grid;place-items:center;
-  background:rgba(35,33,28,.30);backdrop-filter:blur(2px);opacity:0;transition:opacity .35s;pointer-events:none}
+/* 本日分を全て終えたときのクリア演出（ゲームのクリアエフェクト風・枠なし・一過性レイヤー） */
+.celebrate{position:fixed;inset:0;z-index:150;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(circle at center, rgba(35,33,28,.34), rgba(35,33,28,.08) 58%, transparent);
+  opacity:0;transition:opacity .25s;pointer-events:none}
 .celebrate.show{opacity:1;pointer-events:auto}
-.cf-field{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.cf{position:absolute;top:-6vh;border-radius:1px;opacity:.9;animation:cfFall linear forwards}
-@keyframes cfFall{0%{transform:translateY(-8vh) rotate(0)}100%{transform:translateY(112vh) rotate(600deg)}}
-.cel-card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
-  box-shadow:var(--shadow);padding:30px 40px;text-align:center;max-width:82vw;
-  transform:scale(.86);transition:transform .42s cubic-bezier(.22,1.2,.4,1)}
-.celebrate.show .cel-card{transform:scale(1)}
-.cel-seal{display:inline-grid;place-items:center;width:56px;height:56px;margin:0 auto 12px;border-radius:50%;
-  background:var(--vermilion);color:var(--paper);font-family:var(--serif);font-size:27px;font-weight:700;
-  box-shadow:0 4px 14px rgba(187,60,40,.42)}
-.cel-title{font-family:var(--serif);font-size:20px;letter-spacing:.12em;color:var(--ink);font-weight:700}
-.cel-sub{font-family:var(--serif);font-size:13px;letter-spacing:.06em;color:var(--ink-soft);margin-top:6px}
-@media (prefers-reduced-motion:reduce){.cel-card{transition:none;transform:none}.celebrate.show .cel-card{transform:none}.cf{display:none}}
+/* 放射状の光線 */
+.cel-rays{position:absolute;width:170vmax;height:170vmax;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg, rgba(232,184,75,.16) 0deg 6deg, transparent 6deg 13deg);
+  transform:scale(.2) rotate(0);opacity:0;animation:celRays 1.5s ease-out forwards}
+@keyframes celRays{0%{transform:scale(.2) rotate(0deg);opacity:0}22%{opacity:.85}100%{transform:scale(1) rotate(26deg);opacity:0}}
+/* 中央から広がる光の輪 */
+.cel-flash{position:absolute;width:40px;height:40px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,244,214,.95), rgba(201,162,39,.55) 42%, transparent 70%);
+  transform:scale(0);animation:celFlash .7s ease-out forwards}
+@keyframes celFlash{0%{transform:scale(0);opacity:.95}100%{transform:scale(28);opacity:0}}
+/* 中央から弾ける紙吹雪 */
+.cf-field{position:absolute;inset:0;pointer-events:none}
+.cf{position:absolute;left:50%;top:50%;border-radius:1px;animation:cfBurst 1.2s ease-out forwards}
+@keyframes cfBurst{0%{transform:translate(-50%,-50%) scale(.4) rotate(0);opacity:1}
+  100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty) + 46px)) scale(1) rotate(var(--rot));opacity:0}}
+/* メインの文字（金グラデ・バウンドで登場） */
+.cel-punch{position:relative;font-family:var(--serif);font-weight:800;line-height:1;white-space:nowrap;
+  font-size:clamp(46px,15vw,116px);letter-spacing:.04em;
+  background:linear-gradient(180deg,#f8ecb2 0%,#d8ab2e 52%,#9a7412 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 5px 14px rgba(120,88,10,.45));
+  transform:scale(0);animation:celPunch .72s cubic-bezier(.18,1.6,.4,1) .04s both}
+@keyframes celPunch{0%{transform:scale(0) rotate(-12deg);opacity:0}
+  55%{transform:scale(1.18) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .celebrate{background:rgba(35,33,28,.3)}
+  .cel-punch{animation:none;transform:none}
+  .cf,.cel-rays,.cel-flash{display:none}}
 .empty-state{text-align:center;padding:70px 20px;color:var(--ink-soft)}
 .empty-state .mark{font-family:var(--serif);font-size:52px;color:var(--vermilion);opacity:.8}
 .empty-state p{font-family:var(--serif);letter-spacing:.1em;margin-top:6px}
@@ -772,8 +789,7 @@ const I18N_PAIRS = {
   "今日の学習": ["今日的學習","今日学习"],
   "この先の予定": ["接下來的計畫","接下来的计划"],
   "今日の学習は完了しました。": ["今天的學習已完成。","今天的学习已完成。"],
-  "おめでとうございます": ["恭喜您","恭喜您"],
-  "本日の学習をすべて終えました。": ["今天的學習全部完成了。","今天的学习全部完成了。"],
+  "達成！": ["達成！","达成！"],
   "明日": ["明天","明天"],
   "やり残し": ["逾期未完成","逾期未完成"],
   "本日分": ["今日進度","今日进度"],
@@ -1943,28 +1959,29 @@ function showCelebration(){
   const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   const layer = document.createElement("div");
   layer.className = "celebrate";
+  // 中央から放射状に弾ける紙吹雪（ゲームのクリア演出風）
   let conf = "";
   if(!reduce){
-    const cols = ["var(--vermilion)","var(--indigo)","#c9a227","#4a7c59"];
-    for(let i=0;i<44;i++){
-      const size = 6+Math.random()*7;
-      conf += `<span class="cf" style="left:${Math.random()*100}%;background:${cols[i%cols.length]};`
-        + `width:${size.toFixed(1)}px;height:${(size*0.5).toFixed(1)}px;`
-        + `animation-delay:${(Math.random()*0.7).toFixed(2)}s;animation-duration:${(2.6+Math.random()*1.7).toFixed(2)}s"></span>`;
+    const cols = ["var(--vermilion)","var(--indigo)","#d8ab2e","#4a7c59","#e8b84b"];
+    for(let i=0;i<54;i++){
+      const ang = Math.random()*Math.PI*2;
+      const dist = 130+Math.random()*320;
+      const tx = Math.cos(ang)*dist, ty = Math.sin(ang)*dist;
+      const size = 6+Math.random()*8;
+      conf += `<span class="cf" style="--tx:${tx.toFixed(0)}px;--ty:${ty.toFixed(0)}px;`
+        + `--rot:${(Math.random()*720-360).toFixed(0)}deg;background:${cols[i%cols.length]};`
+        + `width:${size.toFixed(1)}px;height:${(size*0.55).toFixed(1)}px;`
+        + `animation-duration:${(1.0+Math.random()*0.7).toFixed(2)}s"></span>`;
     }
   }
-  layer.innerHTML = `<div class="cf-field">${conf}</div>
-    <div class="cel-card">
-      <div class="cel-seal">祝</div>
-      <div class="cel-title">${t("おめでとうございます")}</div>
-      <div class="cel-sub">${t("本日の学習をすべて終えました。")}</div>
-    </div>`;
+  const fx = reduce ? "" : `<div class="cel-rays"></div><div class="cel-flash"></div>`;
+  layer.innerHTML = `${fx}<div class="cf-field">${conf}</div><div class="cel-punch">${t("達成！")}</div>`;
   document.body.appendChild(layer);
   void layer.offsetWidth;            // 強制リフローで opacity 0→1 のトランジションを確実に再生
   layer.classList.add("show");
-  const close = ()=>{ if(!layer.isConnected) return; layer.classList.remove("show"); setTimeout(()=>layer.remove(),400); };
+  const close = ()=>{ if(!layer.isConnected) return; layer.classList.remove("show"); setTimeout(()=>layer.remove(),300); };
   layer.addEventListener("click", close);
-  setTimeout(close, 4200);
+  setTimeout(close, 2400);
 }
 
 function renderToday(){
@@ -3775,7 +3792,7 @@ function applyLang(l){
 
 /* boot */
 /* アプリのバージョン。sw.js の CACHE = "studyplan-vNN" と必ず揃えること。 */
-const APP_VERSION = "v73";
+const APP_VERSION = "v74";
 document.getElementById("appVer").textContent = APP_VERSION;
 applyStaticTexts();   // ナビ等の静的文言を現在言語で貼る（初回は端末言語から自動判定）
 applyTheme(localStorage.getItem("studyplan.theme")==="dark"?"dark":"light");
